@@ -2,21 +2,19 @@ package me.mathyj.lexer;
 
 import me.mathyj.token.Token;
 
-import java.nio.charset.StandardCharsets;
-
 public class Lexer {
     public static final char EOF = '\0';
-    // 输入字节数组
-    private final byte[] input;
+    // 输入字符数组
+    private final char[] input;
 
-    // 游标位置，指向待读取的字节
+    // 游标位置，指向待读取的字符
     private int cursor = -1;
 
-    // 读取字节
-    private byte ch;
+    // 读取字符
+    private char ch;
 
     public Lexer(String input) {
-        this.input = input.getBytes(StandardCharsets.UTF_8);
+        this.input = input.toCharArray();
         // 光标移向待读取字符
         readChar();
     }
@@ -110,22 +108,25 @@ public class Lexer {
     /**
      * 是否是数字
      */
-    private boolean isDigit(byte ch) {
-        return ch >= '0' && ch <= '9';
+    private boolean isDigit(char ch) {
+        return Character.isDigit(ch);
+//        return ch >= '0' && ch <= '9';
     }
 
     /**
      * 跳过空格
      */
     private void skipWhiteSpace() {
-        while (ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t') readChar();
+        while (Character.isWhitespace(ch)) readChar();
+//        while (ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t') readChar();
     }
 
     /**
      * 是否是字符
      */
-    private boolean isLetter(byte ch) {
-        return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_';
+    private boolean isLetter(char ch) {
+        return Character.isLetter(ch);
+//        return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_';
     }
 
     /**
@@ -138,7 +139,7 @@ public class Lexer {
             // 在循环外必定判断出当前是字符了，所以第一次放心执行
             readChar();
             len++;
-        } while (isLetter(ch));
+        } while (isLetter(ch) || isDigit(ch));
         // 当前cursor已经指向下一个待解析字节
         return new String(input, startPos, len);
     }
@@ -171,7 +172,7 @@ public class Lexer {
         }
     }
 
-    private byte peekChar() {
+    private char peekChar() {
         if (cursor + 1 >= input.length) {
             return EOF;
         } else {
@@ -182,8 +183,5 @@ public class Lexer {
     private boolean peekChar(char c) {
         return c == peekChar();
     }
-//    private Token peekCharIs(byte c, Token me.mathyj.token) {
-//        if (peekChar() == c) return me.mathyj.token;
-//        return null;
-//    }
+
 }

@@ -60,9 +60,9 @@ public record Token(TokenType type, String literal) {
         return build(TokenType.INT, literal + "");
     }
 
-    public static Token ILLEGAL(byte ch) {
+    public static Token ILLEGAL(char ch) {
         // char=>[0, 255]  byte=>[-127, 128]
-        return build(TokenType.ILLEGAL, ch >= 0 ? "char: " + (char) ch : "other: " + ch);
+        return build(TokenType.ILLEGAL, "char: " + ch);
     }
 
     private static Token build(TokenType type, String literal) {
