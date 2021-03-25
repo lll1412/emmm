@@ -1,8 +1,8 @@
-package token;
+package me.mathyj.token;
 
 public enum TokenType {
     ILLEGAL("ILLEGAL"),
-    EOF("EOF"),
+    EOF("\0"),
 
     // 标识符 + 字面量
     IDENT("IDENT"), // add, foobar, x, y, ...
@@ -10,7 +10,18 @@ public enum TokenType {
 
     // 操作符
     ASSIGN("="),
+
     PLUS("+"),
+    MINUS("-"),
+    ASTERISK("*"),
+    SLASH("/"),
+
+    BANG("!"),
+
+    LT("<"),
+    GT(">"),
+    EQ("=="),
+    NE("!="),
 
     // 分隔符
     COMMA(","),
@@ -22,8 +33,13 @@ public enum TokenType {
     RBRACE("}"),
 
     // 关键字
-    FUNCTION("FUNCTION"),
-    LET("LET"),
+    FUNCTION("fn"),
+    LET("let"),
+    IF("if"),
+    ELSE("else"),
+    TRUE("true"),
+    FALSE("false"),
+    RETURN("return"),
 
     ;
 
