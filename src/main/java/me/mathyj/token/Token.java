@@ -61,7 +61,6 @@ public record Token(TokenType type, String literal) {
     }
 
     public static Token ILLEGAL(char ch) {
-        // char=>[0, 255]  byte=>[-127, 128]
         return build(TokenType.ILLEGAL, "char: " + ch);
     }
 
@@ -71,5 +70,14 @@ public record Token(TokenType type, String literal) {
 
     private static Token build(TokenType type) {
         return build(type, type.literal);
+    }
+
+    @Override
+    public String toString() {
+        var format = switch (type) {
+            case INT -> "%s(%s)";
+            default -> "%s('%s')";
+        };
+        return format.formatted(type, literal);
     }
 }
