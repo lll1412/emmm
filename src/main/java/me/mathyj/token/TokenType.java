@@ -1,12 +1,12 @@
 package me.mathyj.token;
 
 public enum TokenType {
-    ILLEGAL("ILLEGAL"),
+    ILLEGAL,
     EOF("\0"),
 
     // 标识符 + 字面量
-    IDENT("IDENT"), // add, foobar, x, y, ...
-    INT("INT"), // 123456
+    IDENT, // add, foobar, x, y, ...
+    INT, // 123456
 
     // 操作符
     ASSIGN("="),
@@ -47,5 +47,7 @@ public enum TokenType {
 
     TokenType(String literal) {
         this.literal = literal;
+    }
+    TokenType() {
     }
 }

@@ -2,11 +2,11 @@ package me.mathyj.exception;
 
 import me.mathyj.token.Token;
 
-public class UnSupportedStatement extends RuntimeException {
+public class UnSupportedStatementException extends ParseException {
     private final Token token;
     private final int lineNumber;
 
-    public UnSupportedStatement(Token token, int lineNumber) {
+    public UnSupportedStatementException(Token token, int lineNumber) {
         this.token = token;
         this.lineNumber = lineNumber;
     }
