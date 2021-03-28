@@ -2,17 +2,20 @@ package me.mathyj.ast.statement;
 
 import me.mathyj.ast.expression.Expression;
 import me.mathyj.ast.expression.Identifier;
+import me.mathyj.object.Environment;
+import me.mathyj.object.Object;
 import me.mathyj.token.Token;
 
 public class LetStatement extends Statement {
-    private final Identifier name;
-    private final Expression value;
-    private final Token token = Token.LET;
+    private static final Token token = Token.LET;
+    public final Identifier name;
+    public final Expression value;
 
     public LetStatement(Identifier name, Expression value) {
         this.name = name;
         this.value = value;
     }
+
     @Override
     public String toString() {
         return "%s %s = %s;".formatted(token.literal(), name, value);
@@ -20,5 +23,12 @@ public class LetStatement extends Statement {
 
     public String name() {
         return name.toString();
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        var eval = value.eval(env);
+        env.set(name.identifier, eval);
+        return eval;
     }
 }

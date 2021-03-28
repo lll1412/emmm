@@ -1,6 +1,9 @@
 package me.mathyj.ast.expression;
 
 import me.mathyj.ast.statement.BlockStatement;
+import me.mathyj.object.Environment;
+import me.mathyj.object.IntegerObject;
+import me.mathyj.object.Object;
 
 public class IfExpression extends Expression {
     // if (condition) {
@@ -41,5 +44,23 @@ public class IfExpression extends Expression {
                     """.formatted(condition, consequence);
         }
         return formatted;
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        var cond = condition.eval(env);
+        var ret = Object.NULL;
+        if (isTruthy(cond)) {
+            if (consequence != null) ret = consequence.eval(env);
+        } else {
+            if (alternative != null) ret = alternative.eval(env);
+        }
+        return ret;
+    }
+
+    private boolean isTruthy(Object obj) {
+        return obj != null
+               && !obj.equals(IntegerObject.valueOf(0))
+               && !obj.equals(Object.FALSE);
     }
 }

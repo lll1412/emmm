@@ -1,5 +1,8 @@
 package me.mathyj.ast.expression;
 
+import me.mathyj.object.BooleanObject;
+import me.mathyj.object.Environment;
+import me.mathyj.object.Object;
 import me.mathyj.token.Token;
 
 public class BooleanLiteral extends Expression {
@@ -12,11 +15,17 @@ public class BooleanLiteral extends Expression {
     }
 
     public BooleanLiteral(Token token) {
-        this.bool = token == Token.TRUE;
+        this.bool = token.equals(Token.TRUE);
     }
 
     @Override
     public String toString() {
         return String.valueOf(bool);
     }
+
+    @Override
+    public Object eval(Environment env) {
+        return BooleanObject.valueOf(bool);
+    }
+
 }

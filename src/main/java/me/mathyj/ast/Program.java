@@ -1,23 +1,21 @@
 package me.mathyj.ast;
 
 import me.mathyj.ast.statement.Statement;
-import me.mathyj.exception.ParseException;
+import me.mathyj.exception.parse.ParseException;
+import me.mathyj.object.Environment;
+import me.mathyj.object.Object;
+import me.mathyj.object.ObjectType;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Program implements Node {
-    private final List<Statement> statements;
+    public final List<Statement> statements;
     private final List<String> errors;
+    private Environment env;
 
     public Program() {
         this.statements = new ArrayList<>();
-        this.errors = new ArrayList<>();
-    }
-
-    public Program(List<Statement> statements) {
-        this.statements = statements;
         this.errors = new ArrayList<>();
     }
 
@@ -30,12 +28,10 @@ public class Program implements Node {
         return buf.toString();
     }
 
-    public int size() {
-        return statements.size();
-    }
 
-    public void addStatement(Statement statement) {
+    public Program addStatement(Statement statement) {
         statements.add(statement);
+        return this;
     }
 
     public void addError(ParseException e) {
@@ -45,7 +41,19 @@ public class Program implements Node {
     public List<String> getErrors() {
         return errors;
     }
+
     public boolean hasErrors() {
         return !errors.isEmpty();
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        var ret = Object.NULL;
+        for (var statement : statements) {
+            ret = statement.eval(env);
+            //如果是return对象，不计算后续，直接返回
+            if (ret.type() == ObjectType.RETURN) break;
+        }
+        return ret;
     }
 }

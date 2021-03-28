@@ -10,9 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AstTest {
     @Test
     void string() {
-        var program = new Program(List.of(
-                new LetStatement(new Identifier("myVar"), new Identifier("anotherVar"))
-        ));
+        var program = new Program().addStatement(new LetStatement(new Identifier("myVar"), new Identifier("anotherVar")));
 
         assertEquals("let myVar = anotherVar;", program.toString());
     }

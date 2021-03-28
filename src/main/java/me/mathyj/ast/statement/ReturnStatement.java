@@ -1,11 +1,14 @@
 package me.mathyj.ast.statement;
 
 import me.mathyj.ast.expression.Expression;
+import me.mathyj.object.Environment;
+import me.mathyj.object.Object;
+import me.mathyj.object.ReturnObject;
 import me.mathyj.token.Token;
 
 public class ReturnStatement extends Statement {
     private static final Token token = Token.RETURN;
-    private final Expression returnValue;
+    public final Expression returnValue;
 
     public ReturnStatement(Expression returnValue) {
         this.returnValue = returnValue;
@@ -14,5 +17,10 @@ public class ReturnStatement extends Statement {
     @Override
     public String toString() {
         return "%s %s;".formatted(token.literal(), returnValue);
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        return new ReturnObject(returnValue.eval(env));
     }
 }

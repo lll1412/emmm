@@ -1,6 +1,6 @@
 package me.mathyj.ast.operator;
 
-import me.mathyj.exception.UnsupportedBinaryOperator;
+import me.mathyj.exception.parse.UnsupportedBinaryOperator;
 import me.mathyj.token.Token;
 
 public enum BinaryOperator {
@@ -13,7 +13,7 @@ public enum BinaryOperator {
     EQUALS("=="),
     NOT_EQUALS("!="),
     ;
-    String literal;
+    final String literal;
 
     BinaryOperator(String literal) {
         this.literal = literal;

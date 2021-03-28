@@ -1,4 +1,4 @@
-package me.mathyj.exception;
+package me.mathyj.exception.parse;
 
 import me.mathyj.token.Token;
 import me.mathyj.token.TokenType;

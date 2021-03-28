@@ -3,7 +3,7 @@ package me.mathyj.ast.expression;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FunctionParams extends Expression {
+public class FunctionParams {
     private List<Identifier> params;
 
     public FunctionParams(List<Identifier> params) {
@@ -20,5 +20,12 @@ public class FunctionParams extends Expression {
                 .map(Identifier::toString)
                 .collect(Collectors.joining(", "));
         return "%s".formatted(s);
+    }
+
+    public int size() {
+        return params == null ? 0 : params.size();
+    }
+    public String getParam(int i) {
+        return params.get(i).identifier;
     }
 }

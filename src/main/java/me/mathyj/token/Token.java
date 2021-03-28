@@ -81,7 +81,4 @@ public record Token(TokenType type, String literal) {
         return format.formatted(type, literal);
     }
 
-    public static void main(String[] args) {
-
-    }
 }

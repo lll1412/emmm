@@ -1,9 +1,9 @@
-package me.mathyj.exception;
+package me.mathyj.exception.parse;
 
 import me.mathyj.token.Token;
 
 public class NoBinaryParseException extends ParseException {
-    private Token token;
+    private final Token token;
 
     public NoBinaryParseException(Token token) {
         this.token = token;

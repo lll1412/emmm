@@ -1,5 +1,9 @@
 package me.mathyj.ast.expression;
 
+import me.mathyj.object.Environment;
+import me.mathyj.object.IntegerObject;
+import me.mathyj.object.Object;
+
 public class IntegerLiteral extends Expression {
     private final int value;
 
@@ -14,5 +18,10 @@ public class IntegerLiteral extends Expression {
     @Override
     public String toString() {
         return String.valueOf(value);
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        return IntegerObject.valueOf(value);
     }
 }

@@ -1,13 +1,13 @@
 package me.mathyj.ast.operator;
 
-import me.mathyj.exception.UnsupportedUnaryException;
+import me.mathyj.exception.parse.UnsupportedUnaryException;
 import me.mathyj.token.Token;
 
 public enum UnaryOperator {
     BANG("!"),
     MINUS("-");
 
-    private String literal;
+    private final String literal;
 
     UnaryOperator(String literal) {
         this.literal = literal;

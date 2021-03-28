@@ -1,6 +1,9 @@
 package me.mathyj.ast.expression;
 
 import me.mathyj.ast.statement.BlockStatement;
+import me.mathyj.object.Environment;
+import me.mathyj.object.FunctionObject;
+import me.mathyj.object.Object;
 
 /**
  * fn identifier(params...) { body }
@@ -41,5 +44,10 @@ public class FunctionLiteral extends Expression {
                     %s
                 }
                 """.formatted(ifNull(identifier), ifNull(params), ifNull(body));
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        return new FunctionObject(params, body, env);
     }
 }

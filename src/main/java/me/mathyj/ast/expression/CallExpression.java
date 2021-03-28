@@ -1,20 +1,36 @@
 package me.mathyj.ast.expression;
 
+import me.mathyj.exception.eval.ErrorArgumentsCount;
+import me.mathyj.exception.eval.UndefinedException;
+import me.mathyj.object.Environment;
+import me.mathyj.object.FunctionObject;
+import me.mathyj.object.Object;
+
 public class CallExpression extends Expression {
-    private Identifier identifier;
-    private CallArguments arguments;
+    private final Identifier fnName;
+    // 实参
+    private final CallArguments arguments;
 
-    public CallExpression(Identifier identifier, CallArguments arguments) {
-        this.identifier = identifier;
+    public CallExpression(Identifier fnName, CallArguments arguments) {
+        this.fnName = fnName;
         this.arguments = arguments;
-    }
-
-    public CallExpression(Identifier identifier) {
-        this.identifier = identifier;
     }
 
     @Override
     public String toString() {
-        return "%s(%s)".formatted(ifNull(identifier), ifNull(arguments));
+        return "%s(%s)".formatted(ifNull(fnName), ifNull(arguments));
+    }
+
+    @Override
+    public Object eval(Environment env) {
+        var obj = env.get(fnName.identifier);
+        if (obj instanceof FunctionObject) {
+            var fn = ((FunctionObject) obj);
+            if(arguments.size() != fn.params.size()) {
+                throw new ErrorArgumentsCount(fn.params.size(), arguments.size());
+            }
+            return fn.apply(arguments);
+        }
+        throw new UndefinedException(fnName.identifier);
     }
 }

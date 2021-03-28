@@ -1,17 +1,17 @@
 package me.mathyj.ast;
 
-import java.util.Collection;
+import me.mathyj.exception.UnimplementedException;
+import me.mathyj.object.Environment;
+import me.mathyj.object.Object;
 
 public interface Node {
-    default String ifNull(Object o) {
-        if (o == null) return "";
-        return o.toString();
+
+    default Object eval(Environment env) {
+        throw new UnimplementedException(getClass().getName());
     }
 
-    default boolean isEmpty(Object o) {
-        if (o == null) return true;
-        if (o instanceof String) return o.equals("");
-        if (o instanceof Collection) return ((Collection<?>) o).isEmpty();
-        return false;
+    default String ifNull(java.lang.Object o) {
+        if (o == null) return "";
+        return o.toString();
     }
 }

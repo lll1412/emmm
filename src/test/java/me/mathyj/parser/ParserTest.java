@@ -27,11 +27,11 @@ class ParserTest {
                 let y = true
                 let foobar = y;
                 """;
-        var tests = Map.of(input, new Program(List.of(
-                new LetStatement(new Identifier("x"), new IntegerLiteral(5)),
-                new LetStatement(new Identifier("y"), BooleanLiteral.TRUE),
-                new LetStatement(new Identifier("foobar"), new Identifier("y"))
-        )));
+        var tests = Map.of(input, new Program()
+                .addStatement(new LetStatement(new Identifier("x"), new IntegerLiteral(5)))
+                .addStatement(new LetStatement(new Identifier("y"), BooleanLiteral.TRUE))
+                .addStatement(new LetStatement(new Identifier("foobar"), new Identifier("y")))
+        );
         check(tests);
     }
 
@@ -45,11 +45,10 @@ class ParserTest {
                 return 10;
                 return 233;
                 """;
-        var expected = new Program(List.of(
-                new ReturnStatement(new IntegerLiteral(1)),
-                new ReturnStatement(new IntegerLiteral(10)),
-                new ReturnStatement(new IntegerLiteral(233))
-        ));
+        var expected = new Program()
+                .addStatement(new ReturnStatement(new IntegerLiteral(1)))
+                .addStatement(new ReturnStatement(new IntegerLiteral(10)))
+                .addStatement(new ReturnStatement(new IntegerLiteral(233)));
         var tests = Map.of(input, expected);
         check(tests);
     }
