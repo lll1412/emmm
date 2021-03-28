@@ -1,5 +1,8 @@
 package me.mathyj.ast.expression;
 
+import me.mathyj.object.Environment;
+import me.mathyj.object.Object;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,5 +29,11 @@ public class CallArguments {
 
     public int size() {
         return arguments.size();
+    }
+
+    public List<Object> eval(Environment env) {
+        return arguments.stream()
+                .map(arg -> arg.eval(env))
+                .collect(Collectors.toList());
     }
 }

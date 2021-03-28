@@ -8,7 +8,8 @@ import me.mathyj.ast.operator.BinaryOperator;
 import me.mathyj.ast.operator.UnaryOperator;
 import me.mathyj.ast.statement.BlockStatement;
 import me.mathyj.ast.statement.ExpressionStatement;
-import me.mathyj.exception.eval.EvalException;
+import me.mathyj.exception.UnsupportedArgumentException;
+import me.mathyj.exception.WrongArgumentsCount;
 import me.mathyj.exception.eval.TypeMismatchException;
 import me.mathyj.exception.eval.UnknownOperatorException;
 import me.mathyj.object.Object;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class EvaluatorTest {
     /**
@@ -170,6 +172,16 @@ class EvaluatorTest {
         check(tests);
     }
 
+    @Test
+    void builtinFunction() {
+        var tests = Map.of(
+                "len('hello')", 5,
+                "len(123)", new UnsupportedArgumentException(ObjectType.STRING, ObjectType.INTEGER, "len"),
+                "len('one','two')", new WrongArgumentsCount(1, 2, "len")
+        );
+        check(tests);
+    }
+
     /**
      * 辅助方法
      */
@@ -177,14 +189,19 @@ class EvaluatorTest {
         tests.forEach((input, expected) -> {
             var program = new Parser(input).parseProgram();
             try {
-                var evalResult = program.eval(new Environment());
+                var env = new Environment();
+                var evalResult = program.eval(env);
                 if (expected instanceof Object) {
                     assertEquals(((Object) expected).value(), evalResult.value());
                 } else {
                     assertEquals(expected.toString(), evalResult.toString());
                 }
-            } catch (EvalException e) {
-                assertEquals(((EvalException) expected).getMessage(), e.getMessage());
+            } catch (RuntimeException e) {
+                if (expected instanceof RuntimeException) {
+                    assertEquals(((RuntimeException) expected).getMessage(), e.getMessage());
+                } else {
+                    fail(e);
+                }
             }
         });
     }

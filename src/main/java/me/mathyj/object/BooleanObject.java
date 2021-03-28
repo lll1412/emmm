@@ -24,4 +24,9 @@ public class BooleanObject implements Object {
     public String value() {
         return valueStr;
     }
+
+    @Override
+    public String toString() {
+        return value();
+    }
 }

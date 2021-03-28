@@ -16,4 +16,9 @@ public class NullObject implements Object {
     public String value() {
         return "null";
     }
+
+    @Override
+    public String toString() {
+        return value();
+    }
 }

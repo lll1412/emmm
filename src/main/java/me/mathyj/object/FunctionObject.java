@@ -31,7 +31,6 @@ public class FunctionObject implements Object {
             var val = expr.eval(localEnv);
             var param = params.getParam(i);
             localEnv.set(param, val);
-//            if (val.type().equals(ObjectType.RETURN)) return val;
         }
         return body.eval(localEnv);
     }
