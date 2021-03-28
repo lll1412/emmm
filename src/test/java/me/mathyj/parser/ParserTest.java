@@ -86,7 +86,14 @@ class ParserTest {
         );
         check(tests);
     }
-
+    @Test
+    void stringLiteral() {
+        var tests = Map.of(
+                "'hello'", new StringLiteral("hello"),
+                "\"world\";", new StringLiteral("world")
+        );
+        check(tests);
+    }
     /**
      * 一元表达式测试
      */

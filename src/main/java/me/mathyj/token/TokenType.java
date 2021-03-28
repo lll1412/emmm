@@ -7,6 +7,7 @@ public enum TokenType {
     // 标识符 + 字面量
     IDENT, // add, foobar, x, y, ...
     INT, // 123456
+    STRING,// "hello"
 
     // 操作符
     ASSIGN("="),

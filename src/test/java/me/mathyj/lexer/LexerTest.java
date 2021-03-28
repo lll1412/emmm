@@ -27,6 +27,8 @@ class LexerTest {
                 }
                 10 == 10;
                 10 != 9;
+                "hello"
+                'world'
                 """;
         var expectedTokenList = List.of(
                 LET, IDENT("five"), ASSIGN, INT(5), SEMICOLON,
@@ -38,6 +40,8 @@ class LexerTest {
                 IF, LPAREN, INT(5), LT, INT(10), RPAREN, LBRACE, RETURN, TRUE, SEMICOLON, RBRACE, ELSE, LBRACE, RETURN, FALSE, SEMICOLON, RBRACE,
                 INT(10), EQ, INT(10), SEMICOLON,
                 INT(10), NE, INT(9), SEMICOLON,
+                STRING("hello"),
+                STRING("world"),
                 EOF
         );
         var lexer = new Lexer(input);

@@ -117,6 +117,7 @@ public class Parser {
         return switch (curToken.type()) {
             case IDENT -> this::parseIdentifier;
             case INT -> this::parseIntegerLiteral;
+            case STRING -> this::parseStringLiteral;
             case BANG, MINUS -> this::parseUnaryExpression;
             case TRUE, FALSE -> this::parseBooleanLiteral;
             case LPAREN -> this::parseGroupExpression;
@@ -227,6 +228,10 @@ public class Parser {
 
     private Expression parseBooleanLiteral() {
         return new BooleanLiteral(curToken);
+    }
+
+    private Expression parseStringLiteral() {
+        return new StringLiteral(curToken.literal());
     }
 
     /**

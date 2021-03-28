@@ -46,6 +46,12 @@ public class BinaryExpression extends Expression {
                 case NOT_EQUALS -> BooleanObject.valueOf(!eq);
                 default -> throw new UnknownOperatorException(left, operator, right);
             };
+        } else if (left.type().equals(ObjectType.STRING)) {
+            if (operator.equals(BinaryOperator.ADD)) {
+                return new StringObject(left.value() + right.value());
+            } else {
+                throw new UnknownOperatorException(left, operator, right);
+            }
         }
         throw new TypeMismatchException(left, operator, right);
     }

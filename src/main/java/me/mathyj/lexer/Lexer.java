@@ -92,6 +92,9 @@ public class Lexer {
                 } else if (isDigit(ch)) {// 数字
                     var digit = readNumber();
                     return Token.INT(digit);
+                } else if (ch == '\'' || ch == '"') {
+                    var str = readString();
+                    return Token.STRING(str);
                 } else {
                     return Token.ILLEGAL(ch);
                 }
@@ -99,6 +102,19 @@ public class Lexer {
         // 光标移向待读取字符
         readChar();
         return token;
+    }
+
+    private String readString() {
+        var endCh = ch;
+        int count = 0;
+        var offset = cursor + 1;// 忽略引号
+        readChar();// 跳过开头的引号 '\'' / '"'
+        do {
+            readChar();
+            count++;
+        } while (ch != endCh);
+        readChar();// 跳过结尾的引号
+        return new String(input, offset, count);
     }
 
     /*

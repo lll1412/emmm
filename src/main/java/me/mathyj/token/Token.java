@@ -60,6 +60,10 @@ public record Token(TokenType type, String literal) {
         return build(TokenType.INT, literal + "");
     }
 
+    public static Token STRING(String val) {
+        return build(TokenType.STRING, val);
+    }
+
     public static Token ILLEGAL(char ch) {
         return build(TokenType.ILLEGAL, "char: " + ch);
     }

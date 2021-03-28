@@ -11,10 +11,8 @@ import me.mathyj.ast.statement.ExpressionStatement;
 import me.mathyj.exception.eval.EvalException;
 import me.mathyj.exception.eval.TypeMismatchException;
 import me.mathyj.exception.eval.UnknownOperatorException;
-import me.mathyj.object.Environment;
-import me.mathyj.object.FunctionObject;
-import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
+import me.mathyj.object.*;
 import me.mathyj.parser.Parser;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +43,15 @@ class EvaluatorTest {
         var tests = Map.of(
                 "true", Object.TRUE,
                 "false", Object.FALSE
+        );
+        check(tests);
+    }
+
+    @Test
+    void stringObject() {
+        var tests = Map.of(
+                "'hello'", new StringObject("hello"),
+                "\"world\"", new StringObject("world")
         );
         check(tests);
     }
@@ -85,7 +92,9 @@ class EvaluatorTest {
                 "5==5", Object.TRUE,
                 "5!=5", Object.FALSE,
                 "(1 < 2) == true", Object.TRUE,
-                "(1 > 2) != false", Object.FALSE
+                "(1 > 2) != false", Object.FALSE,
+                "'hello'+' world'", new StringObject("hello world"),
+                "'hello'-'world'", new UnknownOperatorException(new StringObject("hello"), BinaryOperator.SUBTRACT, new StringObject("world"))
         );
         check(tests);
     }
@@ -136,7 +145,8 @@ class EvaluatorTest {
                 "let a = 5; a", 5,
                 "let a = 5 * 5; a", 25,
                 "let a = 5;let b =a; b", 5,
-                "let a = 5;let b = a; let c = a + b + 5;c", 15
+                "let a = 5;let b = a; let c = a + b + 5;c", 15,
+                "let s = 'hello';s", "hello"
         );
         check(tests);
     }
