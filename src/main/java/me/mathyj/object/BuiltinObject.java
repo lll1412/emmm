@@ -5,23 +5,37 @@ import me.mathyj.exception.WrongArgumentsCount;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class BuiltinObject implements Object {
     private static final BuiltinObject len = new BuiltinObject(lenFn());
     private static final BuiltinObject first = new BuiltinObject(firstFn());
     private static final BuiltinObject last = new BuiltinObject(lastFn());
     private static final BuiltinObject push = new BuiltinObject(pushFn());
+    private static final BuiltinObject print = new BuiltinObject(printFn());
     public static Map<String, Object> builtins = Map.of(
             "len", len,
             "first", first,
             "last", last,
-            "push", push
+            "push", push,
+            "print", print
     );
     private final Function<List<Object>, Object> fn;
 
     private BuiltinObject(Function<List<Object>, Object> fn) {
         this.fn = fn;
+    }
+
+    private static Function<List<Object>, Object> printFn() {
+        return args -> {
+            if (args == null) return StringObject.valueOf("\n");
+            else if (args.size() == 1) return args.get(0);
+            else {
+                return StringObject.valueOf(args.stream().map(Objects::toString).collect(Collectors.joining("\n")));
+            }
+        };
     }
 
     private static Function<List<Object>, Object> firstFn() {
