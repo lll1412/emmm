@@ -86,6 +86,7 @@ class ParserTest {
         );
         check(tests);
     }
+
     @Test
     void stringLiteral() {
         var tests = Map.of(
@@ -94,6 +95,25 @@ class ParserTest {
         );
         check(tests);
     }
+
+    @Test
+    void arrayLiteral() {
+        var tests = Map.of(
+                "[1,2,3]", new ArrayLiteral(new IntegerLiteral(1), new IntegerLiteral(2), new IntegerLiteral(3)),
+                "[]", new ArrayLiteral()
+        );
+        check(tests);
+    }
+
+    @Test
+    void indexExpression() {
+        var tests = Map.of(
+                "[1,2,3][1]", new IndexExpression(new ArrayLiteral(new IntegerLiteral(1), new IntegerLiteral(2), new IntegerLiteral(3)), new IntegerLiteral(1)),
+                "[]", new ArrayLiteral()
+        );
+        check(tests);
+    }
+
     /**
      * 一元表达式测试
      */
@@ -192,10 +212,10 @@ class ParserTest {
                             x + y
                         }
                         """,
-                new FunctionLiteral(new FunctionParams(List.of(x, y)),
+                new FunctionLiteral(List.of(x, y),
                         new BlockStatement(List.of(new ExpressionStatement(new BinaryExpression(x, BinaryOperator.ADD, y))))),
                 "fn(){}", new FunctionLiteral(),
-                "fn(x){}", new FunctionLiteral(new FunctionParams(List.of(new Identifier("x"))))
+                "fn(x){}", new FunctionLiteral(List.of(new Identifier("x")))
         );
         check(tests);
     }
@@ -206,7 +226,7 @@ class ParserTest {
     @Test
     void callExpression() {
         var tests = Map.of(
-                "add(1, 3)", new CallExpression(new Identifier("add"), new CallArguments(List.of(new IntegerLiteral(1), new IntegerLiteral(3)))),
+                "add(1, 3)", new CallExpression(new Identifier("add"), List.of(new IntegerLiteral(1), new IntegerLiteral(3))),
                 "a + add(b * c) + d", "((a + add((b * c))) + d)",
                 "add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))", "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))",
                 "add(a + b + c * d / f + g)", "add((((a + b) + ((c * d) / f)) + g))"

@@ -1,36 +1,40 @@
 package me.mathyj.object;
 
-import me.mathyj.ast.expression.CallArguments;
-import me.mathyj.ast.expression.FunctionParams;
+import me.mathyj.ast.expression.Expression;
+import me.mathyj.ast.expression.Identifier;
 import me.mathyj.ast.statement.BlockStatement;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FunctionObject implements Object {
     private static final String TAB = "  ";
     // 形参
-    public final FunctionParams params;
-    public final Environment localEnv;
+    public final List<Expression> params;
+    private final Environment localEnv;
     private final BlockStatement body;
 
-    public FunctionObject(FunctionParams params, BlockStatement body, Environment parent) {
+    public FunctionObject(List<Expression> params, BlockStatement body, Environment parent) {
         this.localEnv = new Environment(parent);
         this.params = params;
         this.body = body;
     }
 
     public FunctionObject(Environment parent) {
-        this(new FunctionParams(), BlockStatement.emptyBlock(), parent);
+        this(List.of(), BlockStatement.emptyBlock(), parent);
     }
 
     public FunctionObject() {
-        this(new FunctionParams(), BlockStatement.emptyBlock(), null);
+        this(List.of(), BlockStatement.emptyBlock(), null);
     }
 
-    public Object apply(CallArguments arguments) {
-        for (int i = 0; i < arguments.arguments.size(); i++) {
-            var expr = arguments.arguments.get(i);
+    public Object apply(List<Expression> arguments) {
+        for (int i = 0; i < arguments.size(); i++) {
+            var expr = arguments.get(i);
             var val = expr.eval(localEnv);
-            var param = params.getParam(i);
-            localEnv.set(param, val);
+            var param = params.get(i);
+            localEnv.set(((Identifier) param).identifier, val);
         }
         return body.eval(localEnv);
     }
@@ -47,10 +51,13 @@ public class FunctionObject implements Object {
 
     @Override
     public String toString() {
+        var paramsStr = params == null ? "" : params.stream()
+                .map(Objects::toString)
+                .collect(Collectors.joining(", "));
         return """
                 fn(%s) {
                 %s%s
                 }
-                """.formatted(params, TAB, body);
+                """.formatted(paramsStr, TAB, body);
     }
 }

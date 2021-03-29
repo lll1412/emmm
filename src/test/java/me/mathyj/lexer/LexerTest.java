@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static me.mathyj.token.Token.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LexerTest {
 
@@ -29,6 +29,7 @@ class LexerTest {
                 10 != 9;
                 "hello"
                 'world'
+                [1, 2]
                 """;
         var expectedTokenList = List.of(
                 LET, IDENT("five"), ASSIGN, INT(5), SEMICOLON,
@@ -42,6 +43,7 @@ class LexerTest {
                 INT(10), NE, INT(9), SEMICOLON,
                 STRING("hello"),
                 STRING("world"),
+                LBRACKET, INT(1), COMMA, INT(2), RBRACKET,
                 EOF
         );
         var lexer = new Lexer(input);

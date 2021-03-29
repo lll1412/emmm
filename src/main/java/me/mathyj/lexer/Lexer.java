@@ -80,6 +80,12 @@ public class Lexer {
             case '}':
                 token = Token.RBRACE;
                 break;
+            case '[':
+                token = Token.LBRACKET;
+                break;
+            case ']':
+                token = Token.RBRACKET;
+                break;
             case '\0':
                 token = Token.EOF;
                 break;
@@ -112,7 +118,7 @@ public class Lexer {
         do {
             readChar();
             count++;
-        } while (ch != endCh);
+        } while (ch != endCh && ch != EOF);
         readChar();// 跳过结尾的引号
         return new String(input, offset, count);
     }

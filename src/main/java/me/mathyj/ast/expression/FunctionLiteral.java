@@ -5,6 +5,10 @@ import me.mathyj.object.Environment;
 import me.mathyj.object.FunctionObject;
 import me.mathyj.object.Object;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 /**
  * fn identifier(params...) { body }
  * or
@@ -12,21 +16,21 @@ import me.mathyj.object.Object;
  */
 public class FunctionLiteral extends Expression {
     private Identifier identifier;
-    private FunctionParams params;
+    private List<Expression> params;
     private BlockStatement body;
 
-    public FunctionLiteral(Identifier identifier, FunctionParams params, BlockStatement body) {
+    public FunctionLiteral(Identifier identifier, List<Expression> params, BlockStatement body) {
         this.identifier = identifier;
         this.params = params;
         this.body = body;
     }
 
-    public FunctionLiteral(FunctionParams params, BlockStatement body) {
+    public FunctionLiteral(List<Expression> params, BlockStatement body) {
         this.params = params;
         this.body = body;
     }
 
-    public FunctionLiteral(FunctionParams params) {
+    public FunctionLiteral(List<Expression> params) {
         this.params = params;
     }
 
@@ -43,7 +47,7 @@ public class FunctionLiteral extends Expression {
                 fn %s(%s) {
                     %s
                 }
-                """.formatted(ifNull(identifier), ifNull(params), ifNull(body));
+                """.formatted(ifNull(identifier), toString(params), ifNull(body));
     }
 
     @Override

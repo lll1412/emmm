@@ -1,7 +1,6 @@
 package me.mathyj.eval;
 
 import me.mathyj.ast.expression.BinaryExpression;
-import me.mathyj.ast.expression.FunctionParams;
 import me.mathyj.ast.expression.Identifier;
 import me.mathyj.ast.expression.IntegerLiteral;
 import me.mathyj.ast.operator.BinaryOperator;
@@ -58,6 +57,16 @@ class EvaluatorTest {
         check(tests);
     }
 
+    @Test
+    void arrayObject() {
+        var tests = Map.of(
+                "[1,2,3]", new ArrayObject(IntegerObject.valueOf(1), IntegerObject.valueOf(2), IntegerObject.valueOf(3)),
+                "['hello',2+2, fn(){}]", new ArrayObject(StringObject.valueOf("hello"), IntegerObject.valueOf(4), new FunctionObject())
+        );
+        check(tests);
+
+    }
+
     /**
      * 一元表达式求值测试
      */
@@ -102,7 +111,7 @@ class EvaluatorTest {
     }
 
     @Test
-    void testReturnStatement() {
+    void returnStatement() {
         var tests = MyMap.of(
                 "return 1;", IntegerObject.valueOf(1),
                 "if(true) {1+1;return 3; 2+2}", IntegerObject.valueOf(3),
@@ -157,7 +166,7 @@ class EvaluatorTest {
     void functionExpression() {
         var tests = Map.of(
                 "fn(x){x+2}", new FunctionObject(
-                        new FunctionParams(List.of(new Identifier("x"))),
+                        List.of(new Identifier("x")),
                         new BlockStatement(List.of(new ExpressionStatement(new BinaryExpression(new Identifier("x"), BinaryOperator.ADD, new IntegerLiteral(2)))))
                         , null),
                 "let identity = fn(x){return x; 1};identity(5)", 5,
@@ -173,10 +182,20 @@ class EvaluatorTest {
     }
 
     @Test
+    void indexExpression() {
+        var tests = Map.of(
+                "[1,2,3][1]", 2,
+                "let arr = [1,2,3];arr[1]", 2,
+                "let arr = [1,2,3];let i = 2; arr[i]", 3
+        );
+        check(tests);
+    }
+
+    @Test
     void builtinFunction() {
         var tests = Map.of(
                 "len('hello')", 5,
-                "len(123)", new UnsupportedArgumentException(ObjectType.STRING, ObjectType.INTEGER, "len"),
+                "len(123)", new UnsupportedArgumentException(ObjectType.INTEGER, "len"),
                 "len('one','two')", new WrongArgumentsCount(1, 2, "len")
         );
         check(tests);

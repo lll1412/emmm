@@ -53,7 +53,7 @@ public class Parser {
         };
     }
 
-    private Statement parseExpressionStatement() {
+    private ExpressionStatement parseExpressionStatement() {
         // 当前指向语句的第一个符号
         var expr = parseExpression();
         // 当前指向表达式结尾
@@ -66,7 +66,7 @@ public class Parser {
         return statement;
     }
 
-    private Statement parseReturnStatement() {
+    private ReturnStatement parseReturnStatement() {
         // 当前指向 return,
         nextToken();
         var retVal = parseExpression();
@@ -78,7 +78,7 @@ public class Parser {
         return new ReturnStatement(retVal);
     }
 
-    private Statement parseLetStatement() {
+    private LetStatement parseLetStatement() {
         // 当前指向 let，期望下一个是标识符
         expectPeekIs(TokenType.IDENT);
         var name = new Identifier(curToken.literal());
@@ -121,13 +121,27 @@ public class Parser {
             case BANG, MINUS -> this::parseUnaryExpression;
             case TRUE, FALSE -> this::parseBooleanLiteral;
             case LPAREN -> this::parseGroupExpression;
+            case LBRACKET -> this::parseArrayLiteral;
             case IF -> this::parseIfExpression;
             case FUNCTION -> this::parseFunctionLiteral;
             default -> throw new NoUnaryParseException(curToken);
         };
     }
 
-    private Expression parseFunctionLiteral() {
+    /**
+     * 解析数组字面量
+     * []
+     * [a]
+     * [a  ,b  ,c  ,d]  ','号来识别是否还有参数
+     */
+    private ArrayLiteral parseArrayLiteral() {
+        // curToken: '['
+        List<Expression> elements = parseExpressionList(TokenType.RBRACKET);
+        // curToken: ']'
+        return new ArrayLiteral(elements);
+    }
+
+    private FunctionLiteral parseFunctionLiteral() {
         // 当前指向 Token('fn')
         Identifier name = null;
         if (peekTokenIs(TokenType.IDENT)) {// 如果有函数名
@@ -135,7 +149,7 @@ public class Parser {
             name = new Identifier(curToken.literal());
         }
         expectPeekIs(TokenType.LPAREN);
-        var params = parseFunctionParameters();
+        List<Expression> params = parseExpressionList(TokenType.RPAREN);
         // 当前指向  Token(')')
         expectPeekIs(TokenType.LBRACE);
         var body = parseBlockStatement();
@@ -144,32 +158,28 @@ public class Parser {
     }
 
     /**
-     * 解析参数列表 (a, b, c)
+     * 解析表达式列表
      */
-    private FunctionParams parseFunctionParameters() {
-        // cur: '('
-        List<Identifier> params = new ArrayList<>();
-        if (peekTokenNot(TokenType.RPAREN)) {//不是右括号说明有参数
-            nextToken();//skip '('
-            // cur: ident   peek: ',' or ')'
-            while (peekTokenIs(TokenType.COMMA)) {
-                params.add(new Identifier(curToken.literal()));
-                // cur: ident   peek: ','
-                nextToken();
-                // cur: ','   peek: ident
-                nextToken();
+    @SuppressWarnings("all")
+    private <T> List<T> parseExpressionList(TokenType endToken) {
+        List<T> elements = new ArrayList<>();
+        if (peekTokenNot(endToken)) {// 不是endToken说明数组有值
+            nextToken();
+            elements.add((T) parseExpression());
+            while (peekTokenIs(TokenType.COMMA)) {// 如果是逗号 说明还有值 继续解析
+                nextToken();// skip curToken
+                nextToken();// skip delimiter
+                elements.add((T) parseExpression());
             }
-            params.add(new Identifier(curToken.literal()));
         }
-        expectPeekIs(TokenType.RPAREN);
-        // cur: ')'
-        return new FunctionParams(params);
+        expectPeekIs(endToken);
+        return elements;
     }
 
     /**
      * 解析If表达式
      */
-    private Expression parseIfExpression() {
+    private IfExpression parseIfExpression() {
         // 当前指向 Token('if')
         expectPeekIs(TokenType.LPAREN);
         // 当前指向 Token('(')
@@ -218,26 +228,26 @@ public class Parser {
     /**
      * 解析标识符
      */
-    private Expression parseIdentifier() {
+    private Identifier parseIdentifier() {
         return new Identifier(curToken.literal());
     }
 
-    private Expression parseIntegerLiteral() {
+    private IntegerLiteral parseIntegerLiteral() {
         return new IntegerLiteral(curToken.literal());
     }
 
-    private Expression parseBooleanLiteral() {
+    private BooleanLiteral parseBooleanLiteral() {
         return new BooleanLiteral(curToken);
     }
 
-    private Expression parseStringLiteral() {
+    private StringLiteral parseStringLiteral() {
         return new StringLiteral(curToken.literal());
     }
 
     /**
      * 解析一元表达式
      */
-    private Expression parseUnaryExpression() {
+    private UnaryExpression parseUnaryExpression() {
         //当前指向一元操作符
         var operator = UnaryOperator.from(curToken);
         nextToken();
@@ -251,35 +261,25 @@ public class Parser {
         return switch (curToken.type()) {
             case PLUS, MINUS, ASTERISK, SLASH, EQ, NE, LT, GT -> this::parseBinaryExpression;
             case LPAREN -> this::parseCallExpression;
+            case LBRACKET -> this::parseIndexExpression;
             default -> throw new NoBinaryParseException(curToken);
         };
     }
 
-    private Expression parseCallExpression(Expression expression) {
-        var identifier = ((Identifier) expression);
-        var arguments = parseCallArguments();
-        return new CallExpression(identifier, arguments);
+    private IndexExpression parseIndexExpression(Expression left) {
+        // cur: '['
+        nextToken();
+        var index = parseExpression();
+        nextToken();
+        return new IndexExpression(left, index);
     }
 
-    private CallArguments parseCallArguments() {
-        // cur: '('
-        List<Expression> args = new ArrayList<>();
-        if (peekTokenNot(TokenType.RPAREN)) {//不是右括号说明有参数
-            nextToken();//skip '('
-            args.add(parseExpression());
-            // cur: ident   peek: ',' or ')'
-            while (peekTokenIs(TokenType.COMMA)) {
-                nextToken();
-                nextToken();
-                args.add(parseExpression());
-            }
-        }
-        expectPeekIs(TokenType.RPAREN);
-        // cur: ')'
-        return new CallArguments(args);
+    private CallExpression parseCallExpression(Expression left) {
+        List<Expression> arguments = parseExpressionList(TokenType.RPAREN);
+        return new CallExpression(left, arguments);
     }
 
-    private Expression parseBinaryExpression(Expression left) {
+    private BinaryExpression parseBinaryExpression(Expression left) {
         //当前指向操作符
         var operator = BinaryOperator.from(curToken);
         var precedence = Precedence.from(curToken);

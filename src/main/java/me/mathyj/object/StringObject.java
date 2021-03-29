@@ -7,6 +7,10 @@ public class StringObject implements Object {
         this.val = val;
     }
 
+    public static StringObject valueOf(String val) {
+        return new StringObject(val);
+    }
+
     @Override
     public ObjectType type() {
         return ObjectType.STRING;

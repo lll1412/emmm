@@ -7,24 +7,29 @@ import me.mathyj.object.Environment;
 import me.mathyj.object.FunctionObject;
 import me.mathyj.object.Object;
 
-public class CallExpression extends Expression {
-    private final Identifier fnName;
-    // 实参
-    private final CallArguments arguments;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-    public CallExpression(Identifier fnName, CallArguments arguments) {
-        this.fnName = fnName;
+public class CallExpression extends Expression {
+    private final Expression left;
+    // 实参
+    private final List<Expression> arguments;
+
+    public CallExpression(Expression left, List<Expression> arguments) {
+        this.left = left;
         this.arguments = arguments;
     }
 
     @Override
     public String toString() {
-        return "%s(%s)".formatted(ifNull(fnName), ifNull(arguments));
+        var argumentsStr = arguments == null ? "" : arguments.stream().map(Objects::toString).collect(Collectors.joining(", "));
+        return "%s(%s)".formatted(ifNull(left), argumentsStr);
     }
 
     @Override
     public Object eval(Environment env) {
-        var obj = env.get(fnName.identifier);
+        var obj = left.eval(env);
         if (obj instanceof FunctionObject) {
             var fn = ((FunctionObject) obj);
             if (arguments.size() != fn.params.size()) {
@@ -32,9 +37,13 @@ public class CallExpression extends Expression {
             }
             return fn.apply(arguments);
         } else if (obj instanceof BuiltinObject) {
-            var args = arguments.eval(env);
+            var args = eval(arguments, env);
             return ((BuiltinObject) obj).apply(args);
         }
-        throw new UndefinedException(fnName.identifier);
+        throw new UndefinedException("");
+    }
+
+    private List<Object> eval(List<Expression> expressionList, Environment env) {
+        return expressionList.stream().map(expr -> expr.eval(env)).collect(Collectors.toList());
     }
 }

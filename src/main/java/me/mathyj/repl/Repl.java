@@ -49,9 +49,9 @@ public class Repl {
         try {
             var eval = program.eval(env);
             out.println(eval.value());
-        } catch (EvalException e) {
+        } catch (RuntimeException e) {
             out.println("  eval errors:");
-            out.println(e.getMessage());
+            out.println("  \t"+e.getMessage());
         }
     }
 }

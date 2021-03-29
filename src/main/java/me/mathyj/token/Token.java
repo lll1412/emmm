@@ -32,6 +32,8 @@ public record Token(TokenType type, String literal) {
     public static final Token RPAREN = build(TokenType.RPAREN);
     public static final Token LBRACE = build(TokenType.LBRACE);
     public static final Token RBRACE = build(TokenType.RBRACE);
+    public static final Token LBRACKET = build(TokenType.LBRACKET);
+    public static final Token RBRACKET = build(TokenType.RBRACKET);
 
     // 关键字
     private static final Map<String, Token> keywords = new HashMap<>() {{

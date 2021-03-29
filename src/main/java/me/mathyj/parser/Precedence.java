@@ -19,7 +19,8 @@ public enum Precedence {
     PREFIX,
     // myFunction(x)
     CALL,
-
+    //
+    INDEX,
     ;
 
     public static Precedence from(Token token) {
@@ -29,6 +30,7 @@ public enum Precedence {
             case PLUS, MINUS -> SUM;
             case ASTERISK, SLASH -> PRODUCT;
             case LPAREN -> CALL;
+            case LBRACKET -> INDEX;
             default -> LOWEST;
         };
     }
