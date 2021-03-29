@@ -65,6 +65,9 @@ public class Lexer {
             case ';':
                 token = Token.SEMICOLON;
                 break;
+            case ':':
+                token = Token.COLON;
+                break;
             case ',':
                 token = Token.COMMA;
                 break;

@@ -30,6 +30,7 @@ class LexerTest {
                 "hello"
                 'world'
                 [1, 2]
+                {"a":1, 2:true}
                 """;
         var expectedTokenList = List.of(
                 LET, IDENT("five"), ASSIGN, INT(5), SEMICOLON,
@@ -44,6 +45,7 @@ class LexerTest {
                 STRING("hello"),
                 STRING("world"),
                 LBRACKET, INT(1), COMMA, INT(2), RBRACKET,
+                LBRACE, STRING("a"), COLON, INT(1), COMMA, INT(2), COLON, TRUE, RBRACE,
                 EOF
         );
         var lexer = new Lexer(input);

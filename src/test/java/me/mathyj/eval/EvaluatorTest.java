@@ -67,6 +67,18 @@ class EvaluatorTest {
 
     }
 
+    @Test
+    void hashObject() {
+        LinkedHashMap<Object, Object> map = new LinkedHashMap<>();
+        map.put(StringObject.valueOf("a"), IntegerObject.valueOf(1));
+        map.put(IntegerObject.valueOf(4), BooleanObject.TRUE);
+        var tests = Map.of(
+                "{}", new HashObject(),
+                "{'a':1, 4: true}", new HashObject(map)
+        );
+        check(tests);
+    }
+
     /**
      * 一元表达式求值测试
      */
@@ -186,7 +198,8 @@ class EvaluatorTest {
         var tests = Map.of(
                 "[1,2,3][1]", 2,
                 "let arr = [1,2,3];arr[1]", 2,
-                "let arr = [1,2,3];let i = 2; arr[i]", 3
+                "let arr = [1,2,3];let i = 2; arr[i]", 3,
+                "let h = {'a':22,'b':false}; h['b']", false
         );
         check(tests);
     }

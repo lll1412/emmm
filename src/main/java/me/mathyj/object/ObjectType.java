@@ -5,6 +5,7 @@ public enum ObjectType {
     INTEGER,
     STRING,
     ARRAY,
+    HASH,
 
     NULL,
     RETURN,

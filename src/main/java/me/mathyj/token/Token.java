@@ -27,6 +27,7 @@ public record Token(TokenType type, String literal) {
 
     public static final Token COMMA = build(TokenType.COMMA);
     public static final Token SEMICOLON = build(TokenType.SEMICOLON);
+    public static final Token COLON = build(TokenType.COLON);
 
     public static final Token LPAREN = build(TokenType.LPAREN);
     public static final Token RPAREN = build(TokenType.RPAREN);

@@ -1,32 +1,38 @@
 package me.mathyj.ast.expression;
 
-import me.mathyj.object.ArrayObject;
-import me.mathyj.object.Environment;
-import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
+import me.mathyj.object.*;
 
 /**
  * 索引表达式
  * arr[i]
  */
 public class IndexExpression extends Expression {
-    private final Expression array;
+    private final Expression left;
     private final Expression index;
 
-    public IndexExpression(Expression array, Expression index) {
-        this.array = array;
+    public IndexExpression(Expression left, Expression index) {
+        this.left = left;
         this.index = index;
     }
 
     @Override
     public Object eval(Environment env) {
-        var arrayObject = ((ArrayObject) array.eval(env));
-        var indexObj = ((IntegerObject) index.eval(env));
-        return arrayObject.get(indexObj.value);
+        var leftObj = left.eval(env);
+        var indexObj = index.eval(env);
+        if (leftObj instanceof ArrayObject) {
+            var arrayObject = (ArrayObject) leftObj;
+            var index = ((IntegerObject) indexObj);
+            return arrayObject.get(index.value);
+        } else if (leftObj instanceof HashObject) {
+            var hashObject = ((HashObject) leftObj);
+            return hashObject.get(indexObj);
+        }
+        return Object.NULL;
     }
 
     @Override
     public String toString() {
-        return "%s[%s]".formatted(array, index);
+        return "%s[%s]".formatted(left, index);
     }
 }

@@ -122,10 +122,41 @@ public class Parser {
             case TRUE, FALSE -> this::parseBooleanLiteral;
             case LPAREN -> this::parseGroupExpression;
             case LBRACKET -> this::parseArrayLiteral;
+            case LBRACE -> this::parseHashLiteral;
             case IF -> this::parseIfExpression;
             case FUNCTION -> this::parseFunctionLiteral;
             default -> throw new NoUnaryParseException(curToken);
         };
+    }
+    // example: {key: val, key2, val2}
+    private HashLiteral parseHashLiteral() {
+        // cur: '{'
+        List<HashLiteral.Pair> pairs = new ArrayList<>();
+        if (peekTokenNot(TokenType.RBRACE)) {
+            nextToken();
+            // cur: key
+            var key = parseExpression();
+            nextToken();
+            nextToken();
+            // cur: ':'
+            var val = parseExpression();
+            pairs.add(HashLiteral.Pair.of(key, val));
+            // cur: ',' or '}'
+            while (peekTokenIs(TokenType.COMMA)) {
+                nextToken();
+                // cur: ','
+                nextToken();
+                // cur: key
+                key = parseExpression();
+                nextToken();
+                nextToken();
+                // cur: ':'
+                val = parseExpression();
+                pairs.add(HashLiteral.Pair.of(key, val));
+            }
+        }
+        expectPeekIs(TokenType.RBRACE);
+        return new HashLiteral(pairs);
     }
 
     /**
@@ -163,7 +194,7 @@ public class Parser {
     @SuppressWarnings("all")
     private <T> List<T> parseExpressionList(TokenType endToken) {
         List<T> elements = new ArrayList<>();
-        if (peekTokenNot(endToken)) {// 不是endToken说明数组有值
+        if (peekTokenNot(endToken)) {// 不是endToken说明有值
             nextToken();
             elements.add((T) parseExpression());
             while (peekTokenIs(TokenType.COMMA)) {// 如果是逗号 说明还有值 继续解析

@@ -106,10 +106,21 @@ class ParserTest {
     }
 
     @Test
+    void hashLiteral() {
+        var tests = Map.of(
+                "{}", new HashLiteral(),
+                "{'a':1}", new HashLiteral(List.of(HashLiteral.Pair.of(new StringLiteral("a"), new IntegerLiteral(1))))
+        );
+        check(tests);
+    }
+
+    @Test
     void indexExpression() {
         var tests = Map.of(
                 "[1,2,3][1]", new IndexExpression(new ArrayLiteral(new IntegerLiteral(1), new IntegerLiteral(2), new IntegerLiteral(3)), new IntegerLiteral(1)),
-                "[]", new ArrayLiteral()
+                "{'a':1, 2: true}['a']", new IndexExpression(
+                        new HashLiteral(List.of(HashLiteral.Pair.of(new StringLiteral("a"), new IntegerLiteral(1)), HashLiteral.Pair.of(new IntegerLiteral(2), BooleanLiteral.TRUE))),
+                        new StringLiteral("a"))
         );
         check(tests);
     }
