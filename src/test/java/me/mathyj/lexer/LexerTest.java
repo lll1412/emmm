@@ -1,5 +1,6 @@
 package me.mathyj.lexer;
 
+import me.mathyj.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,12 +13,12 @@ class LexerTest {
     @Test
     void nextToken() {
         var input = """
-                let five = 5;
-                let ten = 10;
-                let add = fn(x, y) {
+                build(TokenType.LET) five = 5;
+                build(TokenType.LET) ten = 10;
+                build(TokenType.LET) add = fn(x, y) {
                     x + y;
                 };
-                let result = add(five, ten);
+                build(TokenType.LET) resubuild(TokenType.LT) = add(five, ten);
                 !-/*5;
                 5 < 10 > 5;
                 if (5 < 10) {
@@ -34,21 +35,21 @@ class LexerTest {
                 for
                 """;
         var expectedTokenList = List.of(
-                LET, IDENT("five"), ASSIGN, INT(5), SEMICOLON,
-                LET, IDENT("ten"), ASSIGN, INT(10), SEMICOLON,
-                LET, IDENT("add"), ASSIGN, FUNCTION, LPAREN, IDENT("x"), COMMA, IDENT("y"), RPAREN, LBRACE, IDENT("x"), PLUS, IDENT("y"), SEMICOLON, RBRACE, SEMICOLON,
-                LET, IDENT("result"), ASSIGN, IDENT("add"), LPAREN, IDENT("five"), COMMA, IDENT("ten"), RPAREN, SEMICOLON,
-                BANG, MINUS, SLASH, ASTERISK, INT(5), SEMICOLON,
-                INT(5), LT, INT(10), GT, INT(5), SEMICOLON,
-                IF, LPAREN, INT(5), LT, INT(10), RPAREN, LBRACE, RETURN, TRUE, SEMICOLON, RBRACE, ELSE, LBRACE, RETURN, FALSE, SEMICOLON, RBRACE,
-                INT(10), EQ, INT(10), SEMICOLON,
-                INT(10), NE, INT(9), SEMICOLON,
+                build(TokenType.LET), IDENT("five"), build(TokenType.ASSIGN), INT(5), build(TokenType.SEMICOLON),
+                build(TokenType.LET), IDENT("ten"), build(TokenType.ASSIGN), INT(10), build(TokenType.SEMICOLON),
+                build(TokenType.LET), IDENT("add"), build(TokenType.ASSIGN), build(TokenType.FUNCTION), build(TokenType.LPAREN), IDENT("x"), build(TokenType.COMMA), IDENT("y"), build(TokenType.RPAREN), build(TokenType.LBRACE), IDENT("x"), build(TokenType.PLUS), IDENT("y"), build(TokenType.SEMICOLON), build(TokenType.RBRACE), build(TokenType.SEMICOLON),
+                build(TokenType.LET), IDENT("result"), build(TokenType.ASSIGN), IDENT("add"), build(TokenType.LPAREN), IDENT("five"), build(TokenType.COMMA), IDENT("ten"), build(TokenType.RPAREN), build(TokenType.SEMICOLON),
+                build(TokenType.BANG), build(TokenType.MINUS), build(TokenType.SLASH), build(TokenType.ASTERISK), INT(5), build(TokenType.SEMICOLON),
+                INT(5), build(TokenType.LT), INT(10), build(TokenType.GT), INT(5), build(TokenType.SEMICOLON),
+                build(TokenType.IF), build(TokenType.LPAREN), INT(5), build(TokenType.LT), INT(10), build(TokenType.RPAREN), build(TokenType.LBRACE), build(TokenType.RETURN), build(TokenType.TRUE), build(TokenType.SEMICOLON), build(TokenType.RBRACE), build(TokenType.ELSE), build(TokenType.LBRACE), build(TokenType.RETURN), build(TokenType.FALSE), build(TokenType.SEMICOLON), build(TokenType.RBRACE),
+                INT(10), build(TokenType.EQ), INT(10), build(TokenType.SEMICOLON),
+                INT(10), build(TokenType.NE), INT(9), build(TokenType.SEMICOLON),
                 STRING("hello"),
                 STRING("world"),
-                LBRACKET, INT(1), COMMA, INT(2), RBRACKET,
-                LBRACE, STRING("a"), COLON, INT(1), COMMA, INT(2), COLON, TRUE, RBRACE,
-                FOR,
-                EOF
+                build(TokenType.LBRACKET), INT(1), build(TokenType.COMMA), INT(2), build(TokenType.RBRACKET),
+                build(TokenType.LBRACE), STRING("a"), build(TokenType.COLON), INT(1), build(TokenType.COMMA), INT(2), build(TokenType.COLON), build(TokenType.TRUE), build(TokenType.RBRACE),
+                build(TokenType.FOR),
+                build(TokenType.EOF)
         );
         var lexer = new Lexer(input);
         for (var i = 0; i < expectedTokenList.size(); i++) {

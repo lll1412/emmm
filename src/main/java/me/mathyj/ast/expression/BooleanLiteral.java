@@ -4,6 +4,7 @@ import me.mathyj.object.BooleanObject;
 import me.mathyj.object.Environment;
 import me.mathyj.object.Object;
 import me.mathyj.token.Token;
+import me.mathyj.token.TokenType;
 
 public class BooleanLiteral extends Expression {
     public static final BooleanLiteral TRUE = new BooleanLiteral(true);
@@ -15,7 +16,7 @@ public class BooleanLiteral extends Expression {
     }
 
     public BooleanLiteral(Token token) {
-        this.bool = token.equals(Token.TRUE);
+        this.bool = token.type().equals(TokenType.TRUE);
     }
 
     @Override

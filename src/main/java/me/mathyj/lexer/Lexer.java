@@ -1,6 +1,7 @@
 package me.mathyj.lexer;
 
 import me.mathyj.token.Token;
+import me.mathyj.token.TokenType;
 
 public class Lexer {
     public static final char EOF = '\0';
@@ -29,68 +30,68 @@ public class Lexer {
             case '!':
                 // maybe "!="
                 if (peekChar('=')) {
-                    token = Token.NE;
+                    token = Token.build(TokenType.NE);
                     readChar();
                 } else {
-                    token = Token.BANG;
+                    token = Token.build(TokenType.BANG);
                 }
                 break;
             case '=':
                 // maybe "=="
                 if (peekChar('=')) {
-                    token = Token.EQ;
+                    token = Token.build(TokenType.EQ);
                     readChar();
                 } else {
-                    token = Token.ASSIGN;
+                    token = Token.build(TokenType.ASSIGN);
                 }
                 break;
             case '+':
-                token = Token.PLUS;
+                token = Token.build(TokenType.PLUS);
                 break;
             case '-':
-                token = Token.MINUS;
+                token = Token.build(TokenType.MINUS);
                 break;
             case '*':
-                token = Token.ASTERISK;
+                token = Token.build(TokenType.ASTERISK);
                 break;
             case '/':
-                token = Token.SLASH;
+                token = Token.build(TokenType.SLASH);
                 break;
             case '>':
-                token = Token.GT;
+                token = Token.build(TokenType.GT);
                 break;
             case '<':
-                token = Token.LT;
+                token = Token.build(TokenType.LT);
                 break;
             case ';':
-                token = Token.SEMICOLON;
+                token = Token.build(TokenType.SEMICOLON);
                 break;
             case ':':
-                token = Token.COLON;
+                token = Token.build(TokenType.COLON);
                 break;
             case ',':
-                token = Token.COMMA;
+                token = Token.build(TokenType.COMMA);
                 break;
             case '(':
-                token = Token.LPAREN;
+                token = Token.build(TokenType.LPAREN);
                 break;
             case ')':
-                token = Token.RPAREN;
+                token = Token.build(TokenType.RPAREN);
                 break;
             case '{':
-                token = Token.LBRACE;
+                token = Token.build(TokenType.LBRACE);
                 break;
             case '}':
-                token = Token.RBRACE;
+                token = Token.build(TokenType.RBRACE);
                 break;
             case '[':
-                token = Token.LBRACKET;
+                token = Token.build(TokenType.LBRACKET);
                 break;
             case ']':
-                token = Token.RBRACKET;
+                token = Token.build(TokenType.RBRACKET);
                 break;
             case '\0':
-                token = Token.EOF;
+                token = Token.build(TokenType.EOF);
                 break;
             default:
                 // 这几种情况读取完后，不读取下一个字符，直接返回

@@ -32,7 +32,7 @@ public class Parser {
 
     public Program parseProgram() {
         var program = new Program();
-        while (curToken != Token.EOF) {
+        while (curToken.type() != TokenType.EOF) {
             try {
                 var statement = parseStatement();
                 program.addStatement(statement);
@@ -80,17 +80,16 @@ public class Parser {
         return forStatement;
     }
 
-    private ExpressionStatement parseExpressionStatement() {
+    private Expression parseExpressionStatement() {
         // 当前指向语句的第一个符号
         var expr = parseExpression();
         // 当前指向表达式结尾
-        var statement = new ExpressionStatement(expr);
         // 下一个token是否是分号，是的话指向分号
         if (peekTokenIs(TokenType.SEMICOLON)) {
             nextToken();
         }
         // 当前指向结尾分号（语句末尾）
-        return statement;
+        return expr;
     }
 
     private ReturnStatement parseReturnStatement() {
@@ -126,7 +125,7 @@ public class Parser {
         // 当前指向表达式第一个token
         var leftExpr = unaryFn().get();
         // 下一个token不是分号 并且 当前的优先级低于下一个token的 则优先计算后面的表达式（如果当前优先级高，则当前就已经是一个完整的表达式了）
-        while (peekToken != Token.SEMICOLON && precedence.lt(Precedence.from(peekToken))) {
+        while (peekToken.type() != TokenType.SEMICOLON && precedence.lt(Precedence.from(peekToken))) {
             //当前指向前面一元表达式解析的结尾
             nextToken();
             // 当前指向二元操作符

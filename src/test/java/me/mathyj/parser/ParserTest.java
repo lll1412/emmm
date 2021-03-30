@@ -5,7 +5,6 @@ import me.mathyj.ast.expression.*;
 import me.mathyj.ast.operator.BinaryOperator;
 import me.mathyj.ast.operator.UnaryOperator;
 import me.mathyj.ast.statement.BlockStatement;
-import me.mathyj.ast.statement.ExpressionStatement;
 import me.mathyj.ast.statement.LetStatement;
 import me.mathyj.ast.statement.ReturnStatement;
 import org.junit.jupiter.api.Test;
@@ -203,8 +202,8 @@ class ParserTest {
                         """,
                 new IfExpression(
                         new BinaryExpression(new Identifier("x"), BinaryOperator.LESS_THEN, new Identifier("y")),
-                        new BlockStatement(List.of(new ExpressionStatement(new Identifier("x")))),
-                        new BlockStatement(List.of(new ExpressionStatement(new Identifier("y"))))
+                        new BlockStatement(List.of(new Identifier("x"))),
+                        new BlockStatement(List.of(new Identifier("y")))
                 )
         );
         check(tests);
@@ -243,7 +242,7 @@ class ParserTest {
                         }
                         """,
                 new FunctionLiteral(List.of(x, y),
-                        new BlockStatement(List.of(new ExpressionStatement(new BinaryExpression(x, BinaryOperator.ADD, y))))),
+                        new BlockStatement(List.of(new BinaryExpression(x, BinaryOperator.ADD, y)))),
                 "fn(){}", new FunctionLiteral(),
                 "fn(x){}", new FunctionLiteral(List.of(new Identifier("x")))
         );

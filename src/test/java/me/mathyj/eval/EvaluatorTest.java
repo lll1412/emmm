@@ -6,7 +6,6 @@ import me.mathyj.ast.expression.IntegerLiteral;
 import me.mathyj.ast.operator.BinaryOperator;
 import me.mathyj.ast.operator.UnaryOperator;
 import me.mathyj.ast.statement.BlockStatement;
-import me.mathyj.ast.statement.ExpressionStatement;
 import me.mathyj.exception.UnsupportedArgumentException;
 import me.mathyj.exception.WrongArgumentsCount;
 import me.mathyj.exception.eval.TypeMismatchException;
@@ -193,7 +192,7 @@ class EvaluatorTest {
         var tests = Map.of(
                 "fn(x){x+2}", new FunctionObject(
                         List.of(new Identifier("x")),
-                        new BlockStatement(List.of(new ExpressionStatement(new BinaryExpression(new Identifier("x"), BinaryOperator.ADD, new IntegerLiteral(2)))))
+                        new BlockStatement(List.of(new BinaryExpression(new Identifier("x"), BinaryOperator.ADD, new IntegerLiteral(2))))
                         , null),
                 "let identity = fn(x){return x; 1};identity(5)", 5,
                 """

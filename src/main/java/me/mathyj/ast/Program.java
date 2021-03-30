@@ -12,7 +12,6 @@ import java.util.List;
 public class Program implements Node {
     public final List<Statement> statements;
     private final List<String> errors;
-    private Environment env;
 
     public Program() {
         this.statements = new ArrayList<>();

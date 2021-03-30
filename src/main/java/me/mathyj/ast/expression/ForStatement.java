@@ -7,8 +7,11 @@ import me.mathyj.object.BooleanObject;
 import me.mathyj.object.Environment;
 import me.mathyj.object.Object;
 import me.mathyj.object.ReturnObject;
+import me.mathyj.token.Token;
+import me.mathyj.token.TokenType;
 
 public class ForStatement extends Statement {
+    private static final Token token = Token.build(TokenType.FOR);
     private LetStatement initial;
     private Expression condition;
     private Expression last;
@@ -61,9 +64,9 @@ public class ForStatement extends Statement {
     @Override
     public String toString() {
         return """
-                for (%s %s; %s) {
+                %s (%s %s; %s) {
                 \t%s
                 }
-                """.formatted(ifNull(initial), ifNull(condition), ifNull(last), ifNull(block));
+                """.formatted(token, ifNull(initial), ifNull(condition), ifNull(last), ifNull(block));
     }
 }

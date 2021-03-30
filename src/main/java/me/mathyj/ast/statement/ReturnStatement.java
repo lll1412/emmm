@@ -5,9 +5,10 @@ import me.mathyj.object.Environment;
 import me.mathyj.object.Object;
 import me.mathyj.object.ReturnObject;
 import me.mathyj.token.Token;
+import me.mathyj.token.TokenType;
 
 public class ReturnStatement extends Statement {
-    private static final Token token = Token.RETURN;
+    private static final Token token = Token.build(TokenType.RETURN);
     public final Expression returnValue;
 
     public ReturnStatement(Expression returnValue) {

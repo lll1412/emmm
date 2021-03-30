@@ -32,9 +32,6 @@ public class FunctionLiteral extends Expression {
         this.params = params;
     }
 
-    public FunctionLiteral(BlockStatement body) {
-        this.body = body;
-    }
 
     public FunctionLiteral() {
     }

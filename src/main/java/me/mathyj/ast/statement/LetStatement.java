@@ -5,9 +5,10 @@ import me.mathyj.ast.expression.Identifier;
 import me.mathyj.object.Environment;
 import me.mathyj.object.Object;
 import me.mathyj.token.Token;
+import me.mathyj.token.TokenType;
 
 public class LetStatement extends Statement {
-    private static final Token token = Token.LET;
+    private static final Token token = Token.build(TokenType.LET);
     public final Identifier name;
     public final Expression value;
 
