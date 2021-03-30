@@ -49,8 +49,30 @@ public class Parser {
         return switch (curToken.type()) {
             case LET -> parseLetStatement();
             case RETURN -> parseReturnStatement();
+            case FOR -> parseForStatement();
             default -> parseExpressionStatement();
         };
+    }
+
+    private ForStatement parseForStatement() {
+        var forStatement = new ForStatement();
+        // cur: for
+        nextToken();
+        if (peekTokenIs(TokenType.LET)) {
+            nextToken();
+            forStatement.setInitial(parseLetStatement());
+        }
+        // cur: ';'
+        if (peekTokenNot(TokenType.SEMICOLON)) {
+            nextToken();
+            forStatement.setCondition(parseExpression());
+        }
+        expectPeekIs(TokenType.SEMICOLON);
+        if (peekTokenNot(TokenType.RPAREN)) {
+            nextToken();
+            forStatement.setLast(parseExpression());
+        }
+        return forStatement;
     }
 
     private ExpressionStatement parseExpressionStatement() {
@@ -291,10 +313,17 @@ public class Parser {
     private Function<Expression, Expression> binaryFn() {
         return switch (curToken.type()) {
             case PLUS, MINUS, ASTERISK, SLASH, EQ, NE, LT, GT -> this::parseBinaryExpression;
+            case ASSIGN -> this::parseAssignExpression;
             case LPAREN -> this::parseCallExpression;
             case LBRACKET -> this::parseIndexExpression;
             default -> throw new NoBinaryParseException(curToken);
         };
+    }
+
+    private BinaryExpression parseAssignExpression(Expression left) {
+        nextToken();
+        var right = parseExpression();
+        return new BinaryExpression(left, BinaryOperator.ASSIGN, right);
     }
 
     private IndexExpression parseIndexExpression(Expression left) {

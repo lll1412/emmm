@@ -211,6 +211,25 @@ class ParserTest {
     }
 
     /**
+     * for循环表达式测试
+     */
+    @Test
+    void forExpression() {
+        var tests = Map.of(
+                """
+                        for(let i = 0; i < 1; i=i+1) {
+                            return i;
+                        }
+                        """, new ForStatement()
+                        .setInitial(new LetStatement(new Identifier("i"), new IntegerLiteral(0)))
+                        .setCondition(new BinaryExpression(new Identifier("i"), BinaryOperator.LESS_THEN, new IntegerLiteral(1)))
+                        .setLast(new BinaryExpression(new Identifier("i"), BinaryOperator.ASSIGN, new BinaryExpression(new IntegerLiteral(1), BinaryOperator.ADD, new IntegerLiteral(1))))
+                        .setBlock(new BlockStatement(List.of(new ReturnStatement(new Identifier("i")))))
+        );
+        check(tests);
+    }
+
+    /**
      * 函数表达式测试
      */
     @Test

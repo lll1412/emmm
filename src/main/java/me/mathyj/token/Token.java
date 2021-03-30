@@ -10,6 +10,7 @@ public record Token(TokenType type, String literal) {
     public static final Token FUNCTION = build(TokenType.FUNCTION);
     public static final Token IF = build(TokenType.IF);
     public static final Token ELSE = build(TokenType.ELSE);
+    public static final Token FOR = build(TokenType.FOR);
     public static final Token TRUE = build(TokenType.TRUE);
     public static final Token FALSE = build(TokenType.FALSE);
     public static final Token RETURN = build(TokenType.RETURN);
@@ -45,6 +46,7 @@ public record Token(TokenType type, String literal) {
         put("true", TRUE);
         put("false", FALSE);
         put("return", RETURN);
+        put("for", FOR);
     }};
 
     /*

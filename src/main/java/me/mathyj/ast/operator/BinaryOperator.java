@@ -12,7 +12,8 @@ public enum BinaryOperator {
     LESS_THEN("<"),
     EQUALS("=="),
     NOT_EQUALS("!="),
-    ;
+    ASSIGN("=");
+
     final String literal;
 
     BinaryOperator(String literal) {
@@ -30,6 +31,7 @@ public enum BinaryOperator {
             case GT -> GREATER_THEN;
             case EQ -> EQUALS;
             case NE -> NOT_EQUALS;
+            case ASSIGN -> ASSIGN;
             default -> throw new UnsupportedBinaryOperator(token);
         };
     }

@@ -44,6 +44,7 @@ public enum TokenType {
     TRUE("true"),
     FALSE("false"),
     RETURN("return"),
+    FOR("for"),
 
     ;
 
