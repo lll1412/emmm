@@ -6,8 +6,6 @@ import me.mathyj.object.FunctionObject;
 import me.mathyj.object.Object;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * fn identifier(params...) { body }
@@ -52,6 +50,8 @@ public class FunctionLiteral extends Expression {
 
     @Override
     public Object eval(Environment env) {
-        return new FunctionObject(params, body, env);
+        var fn = new FunctionObject(params, body, env);
+        if (identifier != null) env.set(identifier.identifier, fn);
+        return fn;
     }
 }
