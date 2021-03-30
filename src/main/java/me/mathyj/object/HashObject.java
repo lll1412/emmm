@@ -1,6 +1,7 @@
 package me.mathyj.object;
 
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class HashObject implements Object {
@@ -27,5 +28,18 @@ public class HashObject implements Object {
 
     public Object get(Object indexObj) {
         return hash.getOrDefault(indexObj, Object.NULL);
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HashObject that = (HashObject) o;
+        return Objects.equals(hash, that.hash);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hash);
     }
 }

@@ -2,6 +2,7 @@ package me.mathyj.object;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ArrayObject implements Object {
     private final List<Object> elements;
@@ -36,5 +37,18 @@ public class ArrayObject implements Object {
     public Object add(Object arg) {
         elements.add(arg);
         return this;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ArrayObject that = (ArrayObject) o;
+        return Objects.equals(elements, that.elements);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(elements);
     }
 }

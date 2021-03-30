@@ -1,5 +1,7 @@
 package me.mathyj.object;
 
+import java.util.Objects;
+
 public class StringObject implements Object {
     private final String val;
 
@@ -24,5 +26,18 @@ public class StringObject implements Object {
     @Override
     public String toString() {
         return value();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StringObject that = (StringObject) o;
+        return Objects.equals(val, that.val);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(val);
     }
 }

@@ -1,5 +1,7 @@
 package me.mathyj.object;
 
+import java.util.Objects;
+
 public class IntegerObject implements Object {
     // 常用整数缓存，防止每次都新建对象
     private static final IntegerObject[] INTEGER_CACHE;
@@ -37,5 +39,18 @@ public class IntegerObject implements Object {
     @Override
     public String toString() {
         return String.valueOf(this.value);
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IntegerObject that = (IntegerObject) o;
+        return value == that.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }
