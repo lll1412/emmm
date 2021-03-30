@@ -7,6 +7,7 @@ import me.mathyj.token.Token;
  */
 public enum Precedence {
     LOWEST,
+    ASSIGN,
     // ==
     EQUALS,
     // > or <
@@ -31,6 +32,7 @@ public enum Precedence {
             case ASTERISK, SLASH -> PRODUCT;
             case LPAREN -> CALL;
             case LBRACKET -> INDEX;
+            case ASSIGN -> ASSIGN;
             default -> LOWEST;
         };
     }

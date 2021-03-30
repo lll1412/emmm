@@ -72,6 +72,11 @@ public class Parser {
             nextToken();
             forStatement.setLast(parseExpression());
         }
+        expectPeekIs(TokenType.RPAREN);
+        // cur: ')'
+        expectPeekIs(TokenType.LBRACE);
+        // cur: '{'
+        forStatement.setBlock(parseBlockStatement());
         return forStatement;
     }
 
@@ -150,6 +155,7 @@ public class Parser {
             default -> throw new NoUnaryParseException(curToken);
         };
     }
+
     // example: {key: val, key2, val2}
     private HashLiteral parseHashLiteral() {
         // cur: '{'

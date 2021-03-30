@@ -175,6 +175,20 @@ class EvaluatorTest {
     }
 
     @Test
+    void forStatement() {
+        var tests = Map.of(
+                """
+                        let sum = 0;
+                        for(let i=0; i< 10; i = i + 1) {
+                            sum = sum + i;
+                        }
+                        sum
+                        """, 45
+        );
+        check(tests);
+    }
+
+    @Test
     void functionExpression() {
         var tests = Map.of(
                 "fn(x){x+2}", new FunctionObject(

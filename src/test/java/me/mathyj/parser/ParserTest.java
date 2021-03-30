@@ -223,7 +223,7 @@ class ParserTest {
                         """, new ForStatement()
                         .setInitial(new LetStatement(new Identifier("i"), new IntegerLiteral(0)))
                         .setCondition(new BinaryExpression(new Identifier("i"), BinaryOperator.LESS_THEN, new IntegerLiteral(1)))
-                        .setLast(new BinaryExpression(new Identifier("i"), BinaryOperator.ASSIGN, new BinaryExpression(new IntegerLiteral(1), BinaryOperator.ADD, new IntegerLiteral(1))))
+                        .setLast(new BinaryExpression(new Identifier("i"), BinaryOperator.ASSIGN, new BinaryExpression(new Identifier("i"), BinaryOperator.ADD, new IntegerLiteral(1))))
                         .setBlock(new BlockStatement(List.of(new ReturnStatement(new Identifier("i")))))
         );
         check(tests);
