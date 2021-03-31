@@ -156,17 +156,20 @@ public class Parser {
         };
     }
 
+    /**
+     * 一元操作符的赋值表达式
+     */
     private AssignExpression parseUnaryAssignExpression() {
         // cur: '++' or '--'
         BinaryOperator op;
         if (curTokenIs(TokenType.INC)) {
-            op = BinaryOperator.ADD;
+            op = BinaryOperator.ADD_ASSIGN;
         } else {
-            op = BinaryOperator.SUBTRACT;
+            op = BinaryOperator.SUB_ASSIGN;
         }
         nextToken();
         var left = parseIdentifier();
-        return new AssignExpression(left, new BinaryExpression(left, op, new IntegerLiteral(1)));
+        return new AssignExpression(left, op, new IntegerLiteral(1));
     }
 
     // example: {key: val, key2, val2}
@@ -333,16 +336,24 @@ public class Parser {
         return switch (curToken.type()) {
             case PLUS, MINUS, ASTERISK, SLASH, EQ, NE, LT, GT -> this::parseBinaryExpression;
             case ASSIGN -> this::parseAssignExpression;
+            case PLUS_ASSIGN, MINUS_ASSIGN, ASTERISK_ASSIGN, SLASH_ASSIGN -> this::parseBinaryAssignExpression;
             case LPAREN -> this::parseCallExpression;
             case LBRACKET -> this::parseIndexExpression;
             default -> throw new NoBinaryParseException(curToken);
         };
     }
 
-    private BinaryExpression parseAssignExpression(Expression left) {
+    private AssignExpression parseBinaryAssignExpression(Expression left) {
+        var op = curToken.type();
         nextToken();
         var right = parseExpression();
-        return new BinaryExpression(left, BinaryOperator.ASSIGN, right);
+        return new AssignExpression((Identifier) left, op, right);
+    }
+
+    private AssignExpression parseAssignExpression(Expression left) {
+        nextToken();
+        var right = parseExpression();
+        return new AssignExpression(((Identifier) left), right);
     }
 
     private IndexExpression parseIndexExpression(Expression left) {

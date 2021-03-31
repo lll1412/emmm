@@ -28,8 +28,8 @@ public enum Precedence {
         return switch (token.type()) {
             case EQ, NE -> EQUALS;
             case LT, GT -> LESS_GRATER;
-            case PLUS, MINUS -> SUM;
-            case ASTERISK, SLASH -> PRODUCT;
+            case PLUS, MINUS,PLUS_ASSIGN,MINUS_ASSIGN -> SUM;
+            case ASTERISK, SLASH,ASTERISK_ASSIGN,SLASH_ASSIGN -> PRODUCT;
             case LPAREN -> CALL;
             case LBRACKET -> INDEX;
             case ASSIGN -> ASSIGN;

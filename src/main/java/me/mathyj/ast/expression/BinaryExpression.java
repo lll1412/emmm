@@ -25,19 +25,19 @@ public class BinaryExpression extends Expression {
 
     @Override
     public Object eval(Environment env) {
-        if (operator == BinaryOperator.ASSIGN) {
-            if (this.left instanceof Identifier) {
-                var ident = (Identifier) this.left;
-                var vararg = env.get(ident.identifier);
-                if (vararg == Object.NULL) throw new UndefinedException(ident.identifier);
-                else {
-                    Object eval = this.right.eval(env);
-                    return env.set(ident.identifier, eval);
-                }
-            } else {
-                throw new RuntimeException("assign statement eval error: %s = %s".formatted(left, right));
-            }
-        } else {
+//        if (operator == BinaryOperator.ASSIGN) {
+//            if (this.left instanceof Identifier) {
+//                var ident = (Identifier) this.left;
+//                var vararg = env.get(ident.identifier);
+//                if (vararg == null) throw new UndefinedException(ident.identifier);
+//                else {
+//                    Object eval = this.right.eval(env);
+//                    return env.set(ident.identifier, eval);
+//                }
+//            } else {
+//                throw new RuntimeException("assign statement eval error: %s = %s".formatted(left, right));
+//            }
+//        } else {
             var left = this.left.eval(env);
             var right = this.right.eval(env);
             if (left.type().equals(ObjectType.INTEGER) && right.type().equals(ObjectType.INTEGER)) {
@@ -69,7 +69,7 @@ public class BinaryExpression extends Expression {
                 }
             }
             throw new TypeMismatchException(left, operator, right);
-        }
+//        }
 //        throw new RuntimeException("unsupported binary expression: %s %s %s".formatted(left, operator, right));
     }
 

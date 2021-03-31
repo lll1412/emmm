@@ -226,18 +226,27 @@ class EvaluatorTest {
         );
         check(tests);
     }
+
     @Test
     void assignStatement() {
         var tests = Map.of(
+//                """
+//                        let i = 10;
+//                        ++i;
+//                        """, 11,
+//                """
+//                        let k = 2;
+//                        --k
+//                        --k
+//                        """, 0,
+                "let a=1; a+=2;", 3,
                 """
-                        let i = 10;
-                        ++i;
-                        """,11,
-                """
-                        let k = 2;
-                        --k
-                        --k
-                        """,0
+                        let sum = 0;
+                        for(let i=0;i<10;++i) {
+                            sum+=i
+                        }
+                        sum
+                        """, 45
         );
         check(tests);
     }
@@ -248,6 +257,8 @@ class EvaluatorTest {
     private <T> void check(Map<String, T> tests) {
         tests.forEach((input, expected) -> {
             var program = new Parser(input).parseProgram();
+            if (program.hasErrors())
+                System.out.println(program.getErrors());
             try {
                 var env = new Environment();
                 var evalResult = program.eval(env);

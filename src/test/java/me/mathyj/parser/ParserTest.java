@@ -154,6 +154,7 @@ class ParserTest {
                 "5!=5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.NOT_EQUALS, new IntegerLiteral(5)),
                 "true==true", new BinaryExpression(BooleanLiteral.TRUE, BinaryOperator.EQUALS, BooleanLiteral.TRUE),
                 "true!=false", new BinaryExpression(BooleanLiteral.TRUE, BinaryOperator.NOT_EQUALS, BooleanLiteral.FALSE)
+//                "a+=2", new AssignExpression(new Identifier("a"), )
         );
         check(tests);
     }
@@ -224,7 +225,7 @@ class ParserTest {
                         """, new ForStatement()
                         .setInitial(new LetStatement(new Identifier("i"), new IntegerLiteral(0)))
                         .setCondition(new BinaryExpression(new Identifier("i"), BinaryOperator.LESS_THEN, new IntegerLiteral(1)))
-                        .setLast(new BinaryExpression(new Identifier("i"), BinaryOperator.ASSIGN, new BinaryExpression(new Identifier("i"), BinaryOperator.ADD, new IntegerLiteral(1))))
+                        .setLast(new AssignExpression(new Identifier("i"), new BinaryExpression(new Identifier("i"),BinaryOperator.ADD, new IntegerLiteral(1))))
                         .setBlock(new BlockStatement(List.of(new ReturnStatement(new Identifier("i")))))
         );
         check(tests);
