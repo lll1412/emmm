@@ -7,6 +7,7 @@ import me.mathyj.ast.operator.UnaryOperator;
 import me.mathyj.ast.statement.BlockStatement;
 import me.mathyj.ast.statement.LetStatement;
 import me.mathyj.ast.statement.ReturnStatement;
+import me.mathyj.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -155,10 +156,14 @@ class ParserTest {
                 "5!=5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.NOT_EQUALS, new IntegerLiteral(5)),
                 "5>=5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.GREATER_EQ, new IntegerLiteral(5)),
                 "5<=5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.LESS_EQ, new IntegerLiteral(5)),
+                "true && false", new BinaryExpression(BooleanLiteral.TRUE, BinaryOperator.AND, BooleanLiteral.FALSE),
                 "true==true", new BinaryExpression(BooleanLiteral.TRUE, BinaryOperator.EQUALS, BooleanLiteral.TRUE),
-                "true!=false", new BinaryExpression(BooleanLiteral.TRUE, BinaryOperator.NOT_EQUALS, BooleanLiteral.FALSE)
-//                "a+=2", new AssignExpression(new Identifier("a"), )
+                "true!=false", new BinaryExpression(BooleanLiteral.TRUE, BinaryOperator.NOT_EQUALS, BooleanLiteral.FALSE),
+                "a+=2", new AssignExpression(new Identifier("a"), TokenType.PLUS_ASSIGN, new IntegerLiteral(2)),
+                "a&&b", new BinaryExpression(new Identifier("a"), BinaryOperator.AND, new Identifier("b")),
+                "a||b", new BinaryExpression(new Identifier("a"), BinaryOperator.OR, new Identifier("b"))
         );
+
         check(tests);
     }
 

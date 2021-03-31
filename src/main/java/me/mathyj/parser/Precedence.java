@@ -16,6 +16,7 @@ public enum Precedence {
     SUM,
     // * /
     PRODUCT,
+    LOGIC,
     // !x or -x
     PREFIX,
     // myFunction(x)
@@ -26,12 +27,13 @@ public enum Precedence {
 
     public static Precedence from(Token token) {
         return switch (token.type()) {
-            case EQ, NE -> EQUALS;
-            case LT, LE, GT, GE -> LESS_GRATER;
-            case PLUS, MINUS, PLUS_ASSIGN, MINUS_ASSIGN -> SUM;
-            case ASTERISK, SLASH, ASTERISK_ASSIGN, SLASH_ASSIGN -> PRODUCT;
-            case LPAREN -> CALL;
             case LBRACKET -> INDEX;
+            case LPAREN -> CALL;
+            case AND,OR -> LOGIC;
+            case ASTERISK, SLASH, ASTERISK_ASSIGN, SLASH_ASSIGN -> PRODUCT;
+            case PLUS, MINUS, PLUS_ASSIGN, MINUS_ASSIGN -> SUM;
+            case LT, LE, GT, GE -> LESS_GRATER;
+            case EQ, NE -> EQUALS;
             case ASSIGN -> ASSIGN;
             default -> LOWEST;
         };

@@ -115,6 +115,8 @@ class EvaluatorTest {
                 "5!=5", Object.FALSE,
                 "5>=5", true,
                 "5<=5", true,
+                "(2>1) && false", false,
+                "false || (2>1)", true,
                 "(1 < 2) == true", Object.TRUE,
                 "(1 > 2) != false", Object.FALSE,
                 "'hello'+' world'", new StringObject("hello world"),
@@ -248,7 +250,8 @@ class EvaluatorTest {
                             sum+=i
                         }
                         sum
-                        """, 45
+                        """, 45,
+                "let a = 2>1; a =a&& false; a", false
         );
         check(tests);
     }

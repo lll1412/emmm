@@ -45,9 +45,13 @@ public class BinaryExpression extends Expression {
             };
         } else if (left.type().equals(ObjectType.BOOLEAN) && right.type().equals(ObjectType.BOOLEAN)) {
             var eq = left.equals(right);
+            var leftBool = left.equals(Object.TRUE);
+            var rightBool = right.equals(Object.TRUE);
             return switch (operator) {
                 case EQUALS -> BooleanObject.valueOf(eq);
                 case NOT_EQUALS -> BooleanObject.valueOf(!eq);
+                case AND -> BooleanObject.valueOf(leftBool && rightBool);
+                case OR -> BooleanObject.valueOf(leftBool || rightBool);
                 default -> throw new UnknownOperatorException(left, operator, right);
             };
         } else if (left.type().equals(ObjectType.STRING)) {

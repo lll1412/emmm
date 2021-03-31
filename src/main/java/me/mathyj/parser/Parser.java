@@ -161,15 +161,10 @@ public class Parser {
      */
     private AssignExpression parseUnaryAssignExpression() {
         // cur: '++' or '--'
-        BinaryOperator op;
-        if (curTokenIs(TokenType.INC)) {
-            op = BinaryOperator.ADD_ASSIGN;
-        } else {
-            op = BinaryOperator.SUB_ASSIGN;
-        }
+        var op = curToken.type();
         nextToken();
-        var left = parseIdentifier();
-        return new AssignExpression(left, op, new IntegerLiteral(1));
+        var expr = parseIdentifier();
+        return op == TokenType.INC ? AssignExpression.INC(expr) : AssignExpression.DEC(expr);
     }
 
     // example: {key: val, key2, val2}
@@ -334,9 +329,9 @@ public class Parser {
     // 二元函数（二个操作数）
     private Function<Expression, Expression> binaryFn() {
         return switch (curToken.type()) {
-            case PLUS, MINUS, ASTERISK, SLASH, EQ, NE, LT, GT, LE, GE -> this::parseBinaryExpression;
+            case PLUS, MINUS, ASTERISK, SLASH, EQ, NE, LT, GT, LE, GE, AND, OR -> this::parseBinaryExpression;
             case ASSIGN -> this::parseAssignExpression;
-            case PLUS_ASSIGN, MINUS_ASSIGN, ASTERISK_ASSIGN, SLASH_ASSIGN -> this::parseBinaryAssignExpression;
+            case PLUS_ASSIGN, MINUS_ASSIGN, ASTERISK_ASSIGN, SLASH_ASSIGN-> this::parseBinaryAssignExpression;
             case LPAREN -> this::parseCallExpression;
             case LBRACKET -> this::parseIndexExpression;
             default -> throw new NoBinaryParseException(curToken);

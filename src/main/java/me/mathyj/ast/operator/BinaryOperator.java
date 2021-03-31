@@ -7,22 +7,33 @@ import me.mathyj.token.TokenType;
 import static me.mathyj.token.TokenType.ASTERISK_ASSIGN;
 
 public enum BinaryOperator {
+    // 四则运算
     ADD("+"),
     SUBTRACT("-"),
     MULTIPLY("*"),
     DIVIDE("/"),
+
+    // 比较
     GREATER_THEN(">"),
     GREATER_EQ(">="),
     LESS_THEN("<"),
     LESS_EQ("<="),
     EQUALS("=="),
     NOT_EQUALS("!="),
+    AND("&&"),
+    OR("||"),
+
+
+    // 赋值
     ASSIGN("="),
 
     ADD_ASSIGN("+="),
     SUB_ASSIGN("-="),
     MUL_ASSIGN("*="),
     DIV_ASSIGN("/="),
+
+    AND_ASSIGN("&&="),
+    OR_ASSIGN("||="),
     ;
 
     final String literal;
@@ -45,18 +56,9 @@ public enum BinaryOperator {
             case EQ -> EQUALS;
             case NE -> NOT_EQUALS;
             case ASSIGN -> ASSIGN;
+            case AND -> AND;
+            case OR -> OR;
             default -> throw new UnsupportedBinaryOperator(token);
-        };
-    }
-
-    public static BinaryOperator assignFrom(BinaryOperator assignOp) {
-        return switch (assignOp) {
-            case ADD_ASSIGN -> ADD;
-            case SUB_ASSIGN -> SUBTRACT;
-            case MUL_ASSIGN -> MULTIPLY;
-            case DIV_ASSIGN -> DIVIDE;
-            case ASSIGN -> ASSIGN;
-            default -> assignOp;
         };
     }
 

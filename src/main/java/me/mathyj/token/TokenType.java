@@ -24,6 +24,7 @@ public enum TokenType {
     BANG("!"),
     BIT_AND("&"),
     BIT_OR("|"),
+//    X_OR("^"),
     AND("&&"),
     OR("||"),
 
