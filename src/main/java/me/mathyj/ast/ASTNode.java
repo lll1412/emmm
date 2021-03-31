@@ -1,7 +1,6 @@
 package me.mathyj.ast;
 
 import me.mathyj.ast.expression.Expression;
-import me.mathyj.exception.UnimplementedException;
 import me.mathyj.object.Environment;
 import me.mathyj.object.Object;
 
@@ -9,11 +8,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public interface Node {
+public interface ASTNode {
 
-    default Object eval(Environment env) {
-        throw new UnimplementedException(getClass().getName());
-    }
+    Object eval(Environment env);
 
     default String ifNull(java.lang.Object o) {
         if (o == null) return "";

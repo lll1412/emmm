@@ -9,7 +9,7 @@ import me.mathyj.object.ObjectType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Program implements Node {
+public class Program implements ASTNode {
     public final List<Statement> statements;
     private final List<String> errors;
 
