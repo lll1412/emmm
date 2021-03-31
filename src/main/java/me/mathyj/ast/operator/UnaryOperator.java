@@ -5,7 +5,10 @@ import me.mathyj.token.Token;
 
 public enum UnaryOperator {
     BANG("!"),
-    MINUS("-");
+    MINUS("-"),
+//    INC("++"),
+//    DEC("--")
+    ;
 
     private final String literal;
 
@@ -17,6 +20,8 @@ public enum UnaryOperator {
         return switch (token.type()) {
             case BANG -> UnaryOperator.BANG;
             case MINUS -> UnaryOperator.MINUS;
+//            case INC -> UnaryOperator.INC;
+//            case DEC -> UnaryOperator.DEC;
             default -> throw new UnsupportedUnaryException(token);
         };
     }

@@ -13,12 +13,12 @@ class LexerTest {
     @Test
     void nextToken() {
         var input = """
-                build(TokenType.LET) five = 5;
-                build(TokenType.LET) ten = 10;
-                build(TokenType.LET) add = fn(x, y) {
+                let five = 5;
+                let ten = 10;
+                let add = fn(x, y) {
                     x + y;
                 };
-                build(TokenType.LET) resubuild(TokenType.LT) = add(five, ten);
+                let result = add(five, ten);
                 !-/*5;
                 5 < 10 > 5;
                 if (5 < 10) {
@@ -33,6 +33,7 @@ class LexerTest {
                 [1, 2]
                 {"a":1, 2:true}
                 for
+                += -= *= /= & | && || >= <=
                 """;
         var expectedTokenList = List.of(
                 build(TokenType.LET), IDENT("five"), build(TokenType.ASSIGN), INT(5), build(TokenType.SEMICOLON),
@@ -49,6 +50,7 @@ class LexerTest {
                 build(TokenType.LBRACKET), INT(1), build(TokenType.COMMA), INT(2), build(TokenType.RBRACKET),
                 build(TokenType.LBRACE), STRING("a"), build(TokenType.COLON), INT(1), build(TokenType.COMMA), INT(2), build(TokenType.COLON), build(TokenType.TRUE), build(TokenType.RBRACE),
                 build(TokenType.FOR),
+                build(TokenType.PLUS_ASSIGN), build(TokenType.MINUS_ASSIGN), build(TokenType.ASTERISK_ASSIGN), build(TokenType.SLASH_ASSIGN), build(TokenType.BIT_AND),build(TokenType.BIT_OR),build(TokenType.AND),build(TokenType.OR),build(TokenType.GE),build(TokenType.LE),
                 build(TokenType.EOF)
         );
         var lexer = new Lexer(input);

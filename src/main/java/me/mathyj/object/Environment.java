@@ -19,7 +19,7 @@ public class Environment {
 
     public Object get(String name) {
         // 先从当前环境查询，再去父环境递归查询
-        return store.getOrDefault(name, parent == null ? builtins.getOrDefault(name, Object.NULL) : parent.get(name));
+        return store.getOrDefault(name, parent == null ? builtins.get(name) : parent.get(name));
     }
 
     public Object set(String name, Object val) {

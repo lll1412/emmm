@@ -145,6 +145,7 @@ public class Parser {
             case INT -> this::parseIntegerLiteral;
             case STRING -> this::parseStringLiteral;
             case BANG, MINUS -> this::parseUnaryExpression;
+            case INC, DEC -> this::parseUnaryAssignExpression;
             case TRUE, FALSE -> this::parseBooleanLiteral;
             case LPAREN -> this::parseGroupExpression;
             case LBRACKET -> this::parseArrayLiteral;
@@ -153,6 +154,19 @@ public class Parser {
             case FUNCTION -> this::parseFunctionLiteral;
             default -> throw new NoUnaryParseException(curToken);
         };
+    }
+
+    private AssignExpression parseUnaryAssignExpression() {
+        // cur: '++' or '--'
+        BinaryOperator op;
+        if (curTokenIs(TokenType.INC)) {
+            op = BinaryOperator.ADD;
+        } else {
+            op = BinaryOperator.SUBTRACT;
+        }
+        nextToken();
+        var left = parseIdentifier();
+        return new AssignExpression(left, new BinaryExpression(left, op, new IntegerLiteral(1)));
     }
 
     // example: {key: val, key2, val2}

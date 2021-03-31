@@ -11,6 +11,10 @@ public enum TokenType {
 
     // 操作符
     ASSIGN("="),
+    PLUS_ASSIGN("+="),
+    MINUS_ASSIGN("-="),
+    ASTERISK_ASSIGN("*="),
+    SLASH_ASSIGN("/="),
 
     PLUS("+"),
     MINUS("-"),
@@ -18,9 +22,18 @@ public enum TokenType {
     SLASH("/"),
 
     BANG("!"),
+    BIT_AND("&"),
+    BIT_OR("|"),
+    AND("&&"),
+    OR("||"),
+
+    INC("++"),
+    DEC("--"),
 
     LT("<"),
     GT(">"),
+    LE("<="),
+    GE(">="),
     EQ("=="),
     NE("!="),
 

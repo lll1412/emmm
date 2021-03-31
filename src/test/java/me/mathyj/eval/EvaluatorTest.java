@@ -226,6 +226,21 @@ class EvaluatorTest {
         );
         check(tests);
     }
+    @Test
+    void assignStatement() {
+        var tests = Map.of(
+                """
+                        let i = 10;
+                        ++i;
+                        """,11,
+                """
+                        let k = 2;
+                        --k
+                        --k
+                        """,0
+        );
+        check(tests);
+    }
 
     /**
      * 辅助方法

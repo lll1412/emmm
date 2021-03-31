@@ -46,22 +46,74 @@ public class Lexer {
                 }
                 break;
             case '+':
-                token = Token.build(TokenType.PLUS);
+                if (peekChar('+')) {
+                    readChar();
+                    token = Token.build(TokenType.INC);
+                } else if (peekChar('=')) {
+                    readChar();
+                    token = Token.build(TokenType.PLUS_ASSIGN);
+                } else {
+                    token = Token.build(TokenType.PLUS);
+                }
                 break;
             case '-':
-                token = Token.build(TokenType.MINUS);
+                if (peekChar('-')) {
+                    readChar();
+                    token = Token.build(TokenType.DEC);
+                } else if (peekChar('=')) {
+                    readChar();
+                    token = Token.build(TokenType.MINUS_ASSIGN);
+                } else {
+                    token = Token.build(TokenType.MINUS);
+                }
                 break;
             case '*':
-                token = Token.build(TokenType.ASTERISK);
+                if (peekChar('=')) {
+                    readChar();
+                    token = Token.build(TokenType.ASTERISK_ASSIGN);
+                } else {
+                    token = Token.build(TokenType.ASTERISK);
+                }
                 break;
             case '/':
-                token = Token.build(TokenType.SLASH);
+                if (peekChar('=')) {
+                    readChar();
+                    token = Token.build(TokenType.SLASH_ASSIGN);
+                } else {
+                    token = Token.build(TokenType.SLASH);
+                }
                 break;
             case '>':
-                token = Token.build(TokenType.GT);
+                if (peekChar('=')) {
+                    readChar();
+                    token = Token.build(TokenType.GE);
+                } else {
+                    token = Token.build(TokenType.GT);
+                }
                 break;
             case '<':
-                token = Token.build(TokenType.LT);
+                if (peekChar('=')) {
+                    readChar();
+                    token = Token.build(TokenType.LE);
+                } else {
+                    token = Token.build(TokenType.LT);
+                }
+                break;
+            case '&':
+                if (peekChar('&')) {
+                    readChar();
+                    token = Token.build(TokenType.AND);
+                } else {
+                    token = Token.build(TokenType.BIT_AND);
+                }
+                break;
+            case '|':
+                if (peekChar('|')) {
+                    readChar();
+                    token = Token.build(TokenType.OR);
+                } else {
+                    token = Token.build(TokenType.BIT_OR);
+                }
                 break;
             case ';':
                 token = Token.build(TokenType.SEMICOLON);
