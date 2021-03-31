@@ -12,7 +12,9 @@ public enum BinaryOperator {
     MULTIPLY("*"),
     DIVIDE("/"),
     GREATER_THEN(">"),
+    GREATER_EQ(">="),
     LESS_THEN("<"),
+    LESS_EQ("<="),
     EQUALS("=="),
     NOT_EQUALS("!="),
     ASSIGN("="),
@@ -37,7 +39,9 @@ public enum BinaryOperator {
             case ASTERISK -> MULTIPLY;
             case SLASH -> DIVIDE;
             case LT -> LESS_THEN;
+            case LE -> LESS_EQ;
             case GT -> GREATER_THEN;
+            case GE -> GREATER_EQ;
             case EQ -> EQUALS;
             case NE -> NOT_EQUALS;
             case ASSIGN -> ASSIGN;

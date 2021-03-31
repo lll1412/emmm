@@ -334,7 +334,7 @@ public class Parser {
     // 二元函数（二个操作数）
     private Function<Expression, Expression> binaryFn() {
         return switch (curToken.type()) {
-            case PLUS, MINUS, ASTERISK, SLASH, EQ, NE, LT, GT -> this::parseBinaryExpression;
+            case PLUS, MINUS, ASTERISK, SLASH, EQ, NE, LT, GT, LE, GE -> this::parseBinaryExpression;
             case ASSIGN -> this::parseAssignExpression;
             case PLUS_ASSIGN, MINUS_ASSIGN, ASTERISK_ASSIGN, SLASH_ASSIGN -> this::parseBinaryAssignExpression;
             case LPAREN -> this::parseCallExpression;

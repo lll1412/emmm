@@ -113,6 +113,8 @@ class EvaluatorTest {
                 "5<5", Object.FALSE,
                 "5==5", Object.TRUE,
                 "5!=5", Object.FALSE,
+                "5>=5", true,
+                "5<=5", true,
                 "(1 < 2) == true", Object.TRUE,
                 "(1 > 2) != false", Object.FALSE,
                 "'hello'+' world'", new StringObject("hello world"),
@@ -230,15 +232,15 @@ class EvaluatorTest {
     @Test
     void assignStatement() {
         var tests = Map.of(
-//                """
-//                        let i = 10;
-//                        ++i;
-//                        """, 11,
-//                """
-//                        let k = 2;
-//                        --k
-//                        --k
-//                        """, 0,
+                """
+                        let i = 10;
+                        ++i;
+                        """, 11,
+                """
+                        let k = 2;
+                        --k
+                        --k
+                        """, 0,
                 "let a=1; a+=2;", 3,
                 """
                         let sum = 0;

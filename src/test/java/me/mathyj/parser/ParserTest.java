@@ -9,6 +9,7 @@ import me.mathyj.ast.statement.LetStatement;
 import me.mathyj.ast.statement.ReturnStatement;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -143,7 +144,7 @@ class ParserTest {
      */
     @Test
     void parsingBinaryExpression() {
-        var tests = Map.of(
+        var tests = MyMap.of(
                 "5+5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.ADD, new IntegerLiteral(5)),
                 "5-5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.SUBTRACT, new IntegerLiteral(5)),
                 "5*5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.MULTIPLY, new IntegerLiteral(5)),
@@ -152,6 +153,8 @@ class ParserTest {
                 "5>5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.GREATER_THEN, new IntegerLiteral(5)),
                 "5==5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.EQUALS, new IntegerLiteral(5)),
                 "5!=5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.NOT_EQUALS, new IntegerLiteral(5)),
+                "5>=5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.GREATER_EQ, new IntegerLiteral(5)),
+                "5<=5", new BinaryExpression(new IntegerLiteral(5), BinaryOperator.LESS_EQ, new IntegerLiteral(5)),
                 "true==true", new BinaryExpression(BooleanLiteral.TRUE, BinaryOperator.EQUALS, BooleanLiteral.TRUE),
                 "true!=false", new BinaryExpression(BooleanLiteral.TRUE, BinaryOperator.NOT_EQUALS, BooleanLiteral.FALSE)
 //                "a+=2", new AssignExpression(new Identifier("a"), )
@@ -225,7 +228,7 @@ class ParserTest {
                         """, new ForStatement()
                         .setInitial(new LetStatement(new Identifier("i"), new IntegerLiteral(0)))
                         .setCondition(new BinaryExpression(new Identifier("i"), BinaryOperator.LESS_THEN, new IntegerLiteral(1)))
-                        .setLast(new AssignExpression(new Identifier("i"), new BinaryExpression(new Identifier("i"),BinaryOperator.ADD, new IntegerLiteral(1))))
+                        .setLast(new AssignExpression(new Identifier("i"), new BinaryExpression(new Identifier("i"), BinaryOperator.ADD, new IntegerLiteral(1))))
                         .setBlock(new BlockStatement(List.of(new ReturnStatement(new Identifier("i")))))
         );
         check(tests);
@@ -286,6 +289,19 @@ class ParserTest {
             msg.append(m);
         }
         fail(msg.toString());
+    }
+
+
+    // 因为 Map.of(..) 最多只支持10个键值对，所以这里自己封装一下
+    public static class MyMap<V> extends LinkedHashMap<String, V> {
+        public static MyMap<Object> of(java.lang.Object... els) {
+            assert els != null && els.length % 2 == 0;
+            var myMap = new MyMap<>();
+            for (int i = 0; i < els.length; i += 2) {
+                myMap.put(String.valueOf(els[i]), els[i + 1]);
+            }
+            return myMap;
+        }
     }
 
 }

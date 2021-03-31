@@ -7,13 +7,13 @@ import me.mathyj.object.Object;
 import me.mathyj.token.TokenType;
 
 public class AssignExpression extends Expression {
-    public static AssignExpression INC(Identifier identifier) {
-        return new AssignExpression(identifier, BinaryOperator.ADD_ASSIGN, new IntegerLiteral(1));
-    }
-
-    public static AssignExpression DEC(Identifier identifier) {
-        return new AssignExpression(identifier, BinaryOperator.SUB_ASSIGN, new IntegerLiteral(1));
-    }
+//    public static AssignExpression INC(Identifier identifier) {
+//        return new AssignExpression(identifier, BinaryOperator.ADD_ASSIGN, new IntegerLiteral(1));
+//    }
+//
+//    public static AssignExpression DEC(Identifier identifier) {
+//        return new AssignExpression(identifier, BinaryOperator.SUB_ASSIGN, new IntegerLiteral(1));
+//    }
 
     private final Identifier left;
     private final Expression right;
