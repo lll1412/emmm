@@ -16,12 +16,12 @@ class CompilerTest {
     void integerArithmetic() {
 //        byte[][] bytes = ;
         var tests = Map.of(
-                "1 + 2", new Bytecode(new Object[]{IntegerObject.valueOf(1), IntegerObject.valueOf(2)}, Opcode.make(Opcode.CONSTANT), Opcode.make(Opcode.CONSTANT))
+                "1 + 2", new Bytecode(new Object[]{IntegerObject.valueOf(1), IntegerObject.valueOf(2)}, Instructions.make(Opcode.CONSTANT), Instructions.make(Opcode.CONSTANT))
         );
-        check(tests);
+        compileCheck(tests);
     }
 
-    private <T> void check(Map<String, T> tests) {
+    private <T> void compileCheck(Map<String, T> tests) {
         tests.forEach((input, expectedBytecode) -> {
             var program = new Parser(input).parseProgram();
             var compiler = new Compiler();
