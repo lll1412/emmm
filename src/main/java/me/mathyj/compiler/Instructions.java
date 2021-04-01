@@ -2,19 +2,17 @@ package me.mathyj.compiler;
 
 import me.mathyj.code.Opcode;
 
-import java.util.Arrays;
-
 public class Instructions {
-    private final char[] bytes;// byte 是[-128, 127]，但这里需要[0, 255]，所以用char来代替
+    public final char[] bytes;// byte 是[-128, 127]，但这里需要[0, 255]，所以用char来代替
 
     public Instructions(Opcode op, char... bytes) {
-        this.bytes = new char[bytes.length + 1];
-        this.bytes[0] = (char) op.ordinal();
-        System.arraycopy(bytes, 0, this.bytes, 1, bytes.length);
-    }
-
-    private Instructions(Opcode op) {
-        bytes = new char[]{(char) op.ordinal()};
+        if (bytes == null) {
+            this.bytes = new char[]{(char) op.ordinal()};
+        } else {
+            this.bytes = new char[bytes.length + 1];
+            this.bytes[0] = (char) op.ordinal();
+            System.arraycopy(bytes, 0, this.bytes, 1, bytes.length);
+        }
     }
 
     public Instructions() {
@@ -25,25 +23,21 @@ public class Instructions {
         this.bytes = bytes;
     }
 
-    public int size() {
-        return this.bytes.length;
-    }
-
     // 创建指令 格式例： [opcode(2), operand1, operand2]
     public static Instructions make(Opcode op, int... operands) {
         if (op.operandsWidth == null) return new Instructions(op);
-        var instructionLen = 1;// 初始1是操作码本身
+        var instructionLen = 1;// 初始为1是操作码本身占一个长度
         for (var w : op.operandsWidth) {// 加上所有操作数的长度得到指令长度
             instructionLen += w;
         }
         var bytes = new char[instructionLen];
-        bytes[0] = (char) op.ordinal();
+        bytes[0] = op.identity;
         var offset = 1;// 从1开始
         for (var i = 0; i < operands.length; i++) {
             var operand = operands[i];// 第i个操作数的值
             var width = op.operandsWidth[i];// 第i个操作数的宽度
             switch (width) {
-                case 2 -> writeTwoByteBE(bytes, offset, operand);// 将操作数拆为2个字节，以大端的方式设置到数组中
+                case 2 -> writeTwoByteBE(bytes, offset, operand);
             }
             offset += width;
         }
@@ -55,15 +49,18 @@ public class Instructions {
     }
 
     /**
-     * 大端序 写入2字节数据
+     * 大端序 offset位置开始 往后写入2字节数据
      */
-    private static void writeTwoByteBE(char[] bytes, int offset, int operand) {
+    public static void writeTwoByteBE(char[] bytes, int offset, int operand) {
         var high = (char) (operand >> 3 & 0xff);// 获取第[8,15]位
         var low = (char) (operand & 0xff);// 获取第[0,7]位
         bytes[offset] = high;
         bytes[offset + 1] = low;
     }
 
+    /**
+     * 合并多个指令流
+     */
     public static Instructions concat(Instructions... instructions) {
         var len = 0;
         for (var instruction : instructions) {
@@ -79,6 +76,34 @@ public class Instructions {
         return new Instructions(result);
     }
 
+    public static int readTwoByte(Instructions ins, int offset) {
+        var high = ins.bytes[offset];
+        var low = ins.bytes[offset + 1];
+        return high << 8 | low;
+    }
+
+    public int size() {
+        return this.bytes.length;
+    }
+
+    // 从指令中读取操作数
+    public Operands readOperands(Opcode op) {
+        var offset = 0;
+        var operandsWidth = op.operandsWidth;
+        var operands = new int[operandsWidth.length];
+        for (int i = 0; i < operandsWidth.length; i++) {
+            int w = operandsWidth[i];
+            switch (w) {
+                case 2 -> operands[i] = readTwoByte(this, offset);
+            }
+            offset += w;
+        }
+        return new Operands(offset, operands);
+    }
+
+    /**
+     * 指令以16进制输出
+     */
     @Override
     public String toString() {
         var sb = new StringBuilder();
@@ -92,16 +117,26 @@ public class Instructions {
         return sb.toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Instructions that = (Instructions) o;
-        return Arrays.equals(bytes, that.bytes);
+    /**
+     * 将指令打印为字符串
+     */
+    public String print() {
+        var sb = new StringBuilder();
+        for (var offset = 0; offset < bytes.length; ) {
+            var op = Opcode.lookup(bytes[offset]);// 操作码
+            sb.append(String.format("%04d %s ", offset, op));
+            offset++;// 跳过操作码
+            for (int width : op.operandsWidth) {// 操作数的位数, w个字节
+                switch (width) {
+                    case 2 -> sb.append(Instructions.readTwoByte(this, offset));
+                }
+                offset += width;
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(bytes);
+    public static record Operands(int offset, int[] operands) {
     }
 }

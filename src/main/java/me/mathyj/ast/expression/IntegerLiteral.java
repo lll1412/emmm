@@ -5,7 +5,7 @@ import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
 
 public class IntegerLiteral extends Expression {
-    private final int value;
+    public final int value;
 
     public IntegerLiteral(String value) {
         this(Integer.parseInt(value));

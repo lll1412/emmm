@@ -1,9 +1,9 @@
 package me.mathyj.exception.code;
 
 public class OpcodeUndefinedException extends RuntimeException {
-    private final byte op;
+    private final int op;
 
-    public OpcodeUndefinedException(byte op) {
+    public OpcodeUndefinedException(int op) {
         this.op = op;
     }
 

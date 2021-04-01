@@ -2,44 +2,44 @@ package me.mathyj.compiler;
 
 import me.mathyj.object.Object;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Bytecode {
-    public final Instructions instructions;// 生成的字节码指令
-    public final Object[] constantsPool;// 常量池
+    public List<Object> constantsPool;// 常量池
+    public Instructions instructions;// 生成的字节码指令
 
-    public Bytecode(Object[] constantsPool, Instructions... instructions) {
-        this.instructions = Instructions.concat(instructions);
+    public Bytecode(List<Object> constantsPool, Instructions... instructions) {
         this.constantsPool = constantsPool;
+        this.instructions = Instructions.concat(instructions);
     }
 
     public Bytecode() {
+        this.constantsPool = new ArrayList<>();
         this.instructions = new Instructions();
-        this.constantsPool = new Object[]{};
+    }
+
+    /**
+     * 添加常量，并返回在常量池中的索引
+     */
+    public int addConst(Object constant) {
+        constantsPool.add(constant);
+        return constantsPool.size() - 1;
+    }
+
+    /**
+     * 添加指令，并返回添加的位置
+     */
+    public int addInstructions(Instructions ins) {
+        // 添加新指令时的长度，也就是当前指令在指令列表中的位置
+        var posNewInstruction = instructions.size();
+        instructions = Instructions.concat(instructions, ins);
+        return posNewInstruction;
     }
 
     @Override
     public String toString() {
-//        var sb = new StringBuilder();
-//        for (var i = 0; i < instructions.size(); i++) {
-//
-//        }
-        return "instructions=%s, constantsPool=%s".formatted(instructions, Arrays.toString(constantsPool));
-    }
-
-    @Override
-    public boolean equals(java.lang.Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Bytecode bytecode = (Bytecode) o;
-        return Objects.equals(instructions, bytecode.instructions) && Arrays.equals(constantsPool, bytecode.constantsPool);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(instructions);
-        result = 31 * result + Arrays.hashCode(constantsPool);
-        return result;
+        return "constantsPool: %s, \ninstructions:\n%s".formatted(constantsPool, instructions);
     }
 }
