@@ -7,10 +7,10 @@ public class Instructions {
 
     public Instructions(Opcode op, char... bytes) {
         if (bytes == null) {
-            this.bytes = new char[]{(char) op.ordinal()};
+            this.bytes = new char[]{op.identity};
         } else {
             this.bytes = new char[bytes.length + 1];
-            this.bytes[0] = (char) op.ordinal();
+            this.bytes[0] = op.identity;
             System.arraycopy(bytes, 0, this.bytes, 1, bytes.length);
         }
     }
@@ -76,6 +76,9 @@ public class Instructions {
         return new Instructions(result);
     }
 
+    /**
+     * 读取2字节数据
+     */
     public static int readTwoByte(Instructions ins, int offset) {
         var high = ins.bytes[offset];
         var low = ins.bytes[offset + 1];
@@ -84,21 +87,6 @@ public class Instructions {
 
     public int size() {
         return this.bytes.length;
-    }
-
-    // 从指令中读取操作数
-    public Operands readOperands(Opcode op) {
-        var offset = 0;
-        var operandsWidth = op.operandsWidth;
-        var operands = new int[operandsWidth.length];
-        for (int i = 0; i < operandsWidth.length; i++) {
-            int w = operandsWidth[i];
-            switch (w) {
-                case 2 -> operands[i] = readTwoByte(this, offset);
-            }
-            offset += w;
-        }
-        return new Operands(offset, operands);
     }
 
     /**
@@ -123,20 +111,18 @@ public class Instructions {
     public String print() {
         var sb = new StringBuilder();
         for (var offset = 0; offset < bytes.length; ) {
-            var op = Opcode.lookup(bytes[offset]);// 操作码
-            sb.append(String.format("%04d %s ", offset, op));
+            var id = bytes[offset];
+            var op = Opcode.lookup(id);// 操作码
+            sb.append(String.format("%04d %s", offset, op));
             offset++;// 跳过操作码
-            for (int width : op.operandsWidth) {// 操作数的位数, w个字节
+            for (var width : op.operandsWidth) {// 操作数的位数, w个字节
                 switch (width) {
-                    case 2 -> sb.append(Instructions.readTwoByte(this, offset));
+                    case 2 -> sb.append(" ").append(Instructions.readTwoByte(this, offset));
                 }
                 offset += width;
             }
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-    public static record Operands(int offset, int[] operands) {
     }
 }

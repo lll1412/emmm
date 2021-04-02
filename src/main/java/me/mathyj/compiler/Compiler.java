@@ -16,23 +16,25 @@ public class Compiler {
 
     public void compile(ASTNode node) {
         if (node instanceof Program) {
-            for (var statement : ((Program) node).statements) compile(statement);
+            var program = (Program) node;
+            for (var statement : program.statements) {
+                compile(statement);
+            }
         } else if (node instanceof BinaryExpression) {
             var binaryExpression = (BinaryExpression) node;
+            var operator = binaryExpression.operator;
             compile(binaryExpression.left);
             compile(binaryExpression.right);
+            switch (operator) {
+                case ADD -> bytecode.emit(Opcode.ADD);
+            }
         } else if (node instanceof IntegerLiteral) {
-            var integer = IntegerObject.valueOf(((IntegerLiteral) node).value);
-            var index = bytecode.addConst(integer);// 添加到常量池，返回索引
-            emit(Opcode.CONSTANT, index);// 生成指令 操作数是常量的索引
+            var integerLiteral = (IntegerLiteral) node;
+            var integer = IntegerObject.valueOf(integerLiteral.value);
+            bytecode.emitConst(integer);
         }
     }
 
-    private int emit(Opcode op, int... operands) {
-        var ins = Instructions.make(op, operands);
-        var pos = bytecode.addInstructions(ins);
-        return pos;
-    }
 
     // 返回编译出来的字节码
     public Bytecode bytecode() {

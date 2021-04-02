@@ -1,9 +1,10 @@
 package me.mathyj.repl;
 
 import me.mathyj.ast.Program;
-import me.mathyj.exception.eval.EvalException;
+import me.mathyj.compiler.Compiler;
 import me.mathyj.object.Environment;
 import me.mathyj.parser.Parser;
+import me.mathyj.vm.Vm;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,12 +47,24 @@ public class Repl {
     }
 
     private static void printProgram(PrintStream out, Program program, Environment env) {
+//        try {
+//            var eval = program.eval(env);
+//            out.println(eval.value());
+//        } catch (RuntimeException e) {
+//            out.println("  eval errors:");
+//            out.println("  \t"+e.getMessage());
+//        }
         try {
-            var eval = program.eval(env);
-            out.println(eval.value());
+            var compiler = new Compiler();
+            compiler.compile(program);
+            var bytecode = compiler.bytecode();
+            var vm = new Vm(bytecode);
+            vm.run();
+            var val = vm.stackPop();
+            out.println(val);
         } catch (RuntimeException e) {
             out.println("  eval errors:");
-            out.println("  \t"+e.getMessage());
+            out.println("  \t" + e.getMessage());
         }
     }
 }

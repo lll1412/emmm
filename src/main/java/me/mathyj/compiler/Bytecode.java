@@ -1,10 +1,10 @@
 package me.mathyj.compiler;
 
+import me.mathyj.code.Opcode;
 import me.mathyj.object.Object;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Bytecode {
     public List<Object> constantsPool;// 常量池
@@ -23,7 +23,7 @@ public class Bytecode {
     /**
      * 添加常量，并返回在常量池中的索引
      */
-    public int addConst(Object constant) {
+    private int addConst(Object constant) {
         constantsPool.add(constant);
         return constantsPool.size() - 1;
     }
@@ -31,11 +31,26 @@ public class Bytecode {
     /**
      * 添加指令，并返回添加的位置
      */
-    public int addInstructions(Instructions ins) {
+    private int addInstructions(Instructions ins) {
         // 添加新指令时的长度，也就是当前指令在指令列表中的位置
         var posNewInstruction = instructions.size();
         instructions = Instructions.concat(instructions, ins);
         return posNewInstruction;
+    }
+
+    // 生成指令
+    public int emit(Opcode op, int... operands) {
+        var ins = Instructions.make(op, operands);
+        var pos = this.addInstructions(ins);
+        return pos;
+    }
+
+    // 生成常量指令
+    public int emitConst(Object obj) {
+        var index = addConst(obj);
+        var ins = Instructions.make(Opcode.CONSTANT, index);// 添加到常量池，返回索引
+        var pos = this.addInstructions(ins);
+        return pos;
     }
 
     @Override

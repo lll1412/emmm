@@ -12,6 +12,8 @@ public interface ASTNode {
 
     Object eval(Environment env);
 
+//    Bytecode compile();
+
     default String ifNull(java.lang.Object o) {
         if (o == null) return "";
         return o.toString();
