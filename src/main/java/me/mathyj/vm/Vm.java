@@ -3,6 +3,7 @@ package me.mathyj.vm;
 import me.mathyj.code.Opcode;
 import me.mathyj.compiler.Bytecode;
 import me.mathyj.compiler.Instructions;
+import me.mathyj.exception.runtime.UnsupportedBinaryOperation;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
 
@@ -15,7 +16,7 @@ public class Vm {
     public Vm(Bytecode bytecode) {
         this.bytecode = bytecode;
         this.stack = new Object[STACK_SIZE];
-        sp = 0;
+        this.sp = 0;
     }
 
     public void run() {
@@ -36,20 +37,35 @@ public class Vm {
                     pushStack(constObject);
                     ip += operands.offset();
                 }
-                case ADD -> {
-                    var obj2 = popStack();
-                    var obj1 = popStack();
-                    if (obj1 instanceof IntegerObject && obj2 instanceof IntegerObject) {
-                        var val1 = ((IntegerObject) obj1).value;
-                        var val2 = ((IntegerObject) obj2).value;
-                        var r = IntegerObject.valueOf(val1 + val2);
-                        pushStack(r);
-                    } else {
-                        // Exception
-                    }
-                }
+                case ADD, SUB, MUL, DIV -> executeBinaryOperation(opcode);
+                case POP -> popStack();
             }
         }
+    }
+
+    // 二元算术运算
+    private void executeBinaryOperation(Opcode opcode) {
+        var right = popStack();
+        var left = popStack();
+        if (left instanceof IntegerObject && right instanceof IntegerObject) {
+            executeBinaryIntegerOperation((IntegerObject) left, (IntegerObject) right, opcode);
+        } else {
+            // Exception
+            throw new UnsupportedBinaryOperation(left, right, opcode);
+        }
+    }
+
+    private void executeBinaryIntegerOperation(IntegerObject left, IntegerObject right, Opcode opcode) {
+        var leftVal = left.value;
+        var rightVal = right.value;
+        var r = switch (opcode) {
+            case ADD -> IntegerObject.valueOf(leftVal + rightVal);
+            case SUB -> IntegerObject.valueOf(leftVal - rightVal);
+            case MUL -> IntegerObject.valueOf(leftVal * rightVal);
+            case DIV -> IntegerObject.valueOf(leftVal / rightVal);
+            default -> throw new UnsupportedBinaryOperation(left, right, opcode);
+        };
+        pushStack(r);
     }
 
     /**
@@ -61,7 +77,9 @@ public class Vm {
         return opcode;
     }
 
-    // 从指令中读取操作数
+    /**
+     * 从指令中读取操作数
+     */
     private Operands readOperands(Opcode op, Instructions ins, int start) {
         var offset = 0;
         var operandsWidth = op.operandsWidth;
@@ -77,12 +95,15 @@ public class Vm {
     }
 
     /**
-     * 栈相关操作
+     * 最后一次出栈的元素
      */
-    public Object stackPop() {
-        return peekStack();
+    public Object lastPopped() {
+        return stack[sp];
     }
 
+    /**
+     * 栈相关操作
+     */
     private void pushStack(Object obj) {
         stack[sp++] = obj;
     }

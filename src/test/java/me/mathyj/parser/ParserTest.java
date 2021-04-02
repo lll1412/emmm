@@ -1,5 +1,6 @@
 package me.mathyj.parser;
 
+import me.mathyj.MyMap;
 import me.mathyj.ast.Program;
 import me.mathyj.ast.expression.*;
 import me.mathyj.ast.operator.BinaryOperator;
@@ -10,7 +11,6 @@ import me.mathyj.ast.statement.ReturnStatement;
 import me.mathyj.token.TokenType;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -296,17 +296,5 @@ class ParserTest {
         fail(msg.toString());
     }
 
-
-    // 因为 Map.of(..) 最多只支持10个键值对，所以这里自己封装一下
-    public static class MyMap<V> extends LinkedHashMap<String, V> {
-        public static MyMap<Object> of(java.lang.Object... els) {
-            assert els != null && els.length % 2 == 0;
-            var myMap = new MyMap<>();
-            for (int i = 0; i < els.length; i += 2) {
-                myMap.put(String.valueOf(els[i]), els[i + 1]);
-            }
-            return myMap;
-        }
-    }
 
 }

@@ -48,6 +48,10 @@ public class Instructions {
         return make(Opcode.CONSTANT, constant);
     }
 
+    public static Instructions makePop() {
+        return make(Opcode.POP);
+    }
+
     /**
      * 大端序 offset位置开始 往后写入2字节数据
      */

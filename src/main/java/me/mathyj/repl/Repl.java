@@ -60,7 +60,7 @@ public class Repl {
             var bytecode = compiler.bytecode();
             var vm = new Vm(bytecode);
             vm.run();
-            var val = vm.stackPop();
+            var val = vm.lastPopped();
             out.println(val);
         } catch (RuntimeException e) {
             out.println("  eval errors:");

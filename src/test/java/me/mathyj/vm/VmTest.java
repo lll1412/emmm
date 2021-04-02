@@ -1,5 +1,6 @@
 package me.mathyj.vm;
 
+import me.mathyj.MyMap;
 import me.mathyj.compiler.Compiler;
 import me.mathyj.object.Object;
 import me.mathyj.parser.Parser;
@@ -14,10 +15,15 @@ public class VmTest {
     // 虚拟机引擎执行算数运算
     @Test
     void integerArithmetic() {
-        var tests = Map.of(
+        var tests = MyMap.of(
                 "1", 1,
                 "2", 2,
-                "1+2", 3
+                "1+2", 3,
+                "1-2", -1,
+                "2 * 2", 4,
+                "2 / 2", 1,
+                "50/2*2+10-5", 55,
+                "5*(2+10)", 60
         );
         vmRunCheck(tests);
     }
@@ -32,7 +38,7 @@ public class VmTest {
             compiler.compile(program);
             var vm = new Vm(compiler.bytecode());
             vm.run();
-            var result = vm.stackPop();
+            var result = vm.lastPopped();
             if (expected instanceof Object)
                 assertEquals(expected, result, input);
             else

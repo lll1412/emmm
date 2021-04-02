@@ -5,6 +5,7 @@ import me.mathyj.ast.Program;
 import me.mathyj.ast.expression.BinaryExpression;
 import me.mathyj.ast.expression.IntegerLiteral;
 import me.mathyj.code.Opcode;
+import me.mathyj.exception.compile.UnknownOperatorException;
 import me.mathyj.object.IntegerObject;
 
 public class Compiler {
@@ -20,6 +21,7 @@ public class Compiler {
             for (var statement : program.statements) {
                 compile(statement);
             }
+            bytecode.emit(Opcode.POP);
         } else if (node instanceof BinaryExpression) {
             var binaryExpression = (BinaryExpression) node;
             var operator = binaryExpression.operator;
@@ -27,6 +29,10 @@ public class Compiler {
             compile(binaryExpression.right);
             switch (operator) {
                 case ADD -> bytecode.emit(Opcode.ADD);
+                case SUBTRACT -> bytecode.emit(Opcode.SUB);
+                case MULTIPLY -> bytecode.emit(Opcode.MUL);
+                case DIVIDE -> bytecode.emit(Opcode.DIV);
+                default -> throw new UnknownOperatorException(operator);
             }
         } else if (node instanceof IntegerLiteral) {
             var integerLiteral = (IntegerLiteral) node;

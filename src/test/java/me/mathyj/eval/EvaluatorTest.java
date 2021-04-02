@@ -1,5 +1,6 @@
 package me.mathyj.eval;
 
+import me.mathyj.MyMap;
 import me.mathyj.ast.expression.BinaryExpression;
 import me.mathyj.ast.expression.Identifier;
 import me.mathyj.ast.expression.IntegerLiteral;
@@ -280,17 +281,5 @@ class EvaluatorTest {
                 }
             }
         });
-    }
-
-    // 因为 Map.of(..) 最多只支持10个键值对，所以这里自己封装一下
-    private static class MyMap<V> extends LinkedHashMap<String, V> {
-        public static MyMap<java.lang.Object> of(java.lang.Object... els) {
-            assert els != null && els.length % 2 == 0;
-            var myMap = new MyMap<>();
-            for (int i = 0; i < els.length; i += 2) {
-                myMap.put(String.valueOf(els[i]), els[i + 1]);
-            }
-            return myMap;
-        }
     }
 }

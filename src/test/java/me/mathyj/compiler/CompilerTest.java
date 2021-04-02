@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static me.mathyj.compiler.Instructions.make;
-import static me.mathyj.compiler.Instructions.makeConst;
+import static me.mathyj.compiler.Instructions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CompilerTest {
@@ -18,7 +17,15 @@ class CompilerTest {
     void integerArithmetic() {
 //        byte[][] bytes = ;
         var tests = Map.of(
-                "1 + 2", new Bytecode(List.of(IntegerObject.valueOf(1), IntegerObject.valueOf(2)), makeConst(0), makeConst(1), make(Opcode.ADD))
+                "1 + 2", new Bytecode(List.of(IntegerObject.valueOf(1), IntegerObject.valueOf(2)),
+                        makeConst(0), makeConst(1), make(Opcode.ADD), make(Opcode.POP)
+                ),
+                "1-2", new Bytecode(List.of(IntegerObject.valueOf(1), IntegerObject.valueOf(2)),
+                        makeConst(0), makeConst(1), make(Opcode.SUB), makePop()
+                ),
+                "2/2", new Bytecode(List.of(IntegerObject.valueOf(2), IntegerObject.valueOf(2)),
+                        makeConst(0), makeConst(1), make(Opcode.DIV), makePop()
+                )
         );
         compileCheck(tests);
     }
