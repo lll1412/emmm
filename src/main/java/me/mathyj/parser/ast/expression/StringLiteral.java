@@ -5,7 +5,7 @@ import me.mathyj.object.Object;
 import me.mathyj.object.StringObject;
 
 public class StringLiteral extends Expression {
-    private final String val;
+    public final String val;
 
     public StringLiteral(String val) {
         this.val = val;

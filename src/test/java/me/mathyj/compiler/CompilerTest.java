@@ -2,6 +2,7 @@ package me.mathyj.compiler;
 
 import me.mathyj.MyMap;
 import me.mathyj.object.IntegerObject;
+import me.mathyj.object.StringObject;
 import me.mathyj.parser.Parser;
 import org.junit.jupiter.api.Test;
 
@@ -132,6 +133,15 @@ class CompilerTest {
                         make(Opcode.GET_GLOBAL, 1),
                         makePop()
                 )
+        );
+        compileCheck(tests);
+    }
+
+    @Test
+    void stringExpression() {
+        var tests = MyMap.of(
+                "'hello'", new Bytecode(List.of(StringObject.valueOf("hello")), makeConst(0), makePop()),
+                "'hello' + 'world'", new Bytecode(List.of(StringObject.valueOf("hello"), StringObject.valueOf("world")), makeConst(0), makeConst(1), make(Opcode.ADD), makePop())
         );
         compileCheck(tests);
     }

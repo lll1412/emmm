@@ -9,6 +9,7 @@ import me.mathyj.exception.runtime.UnsupportedUnaryOperation;
 import me.mathyj.object.BooleanObject;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
+import me.mathyj.object.StringObject;
 
 public class Vm {
     public static final int STACK_SIZE = 2048;
@@ -125,6 +126,8 @@ public class Vm {
             val = executeBinaryIntegerOperation((IntegerObject) left, (IntegerObject) right, opcode);
         } else if (left instanceof BooleanObject && right instanceof BooleanObject) {
             val = executeBinaryBooleanOperation(((BooleanObject) left), ((BooleanObject) right), opcode);
+        } else if (left instanceof StringObject && opcode.equals(Opcode.ADD)) {
+            val = StringObject.valueOf(left.value() + right.toString());
         } else {
             throw new UnsupportedBinaryOperation(left, right, opcode);
         }

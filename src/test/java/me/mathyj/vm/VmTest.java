@@ -83,6 +83,15 @@ public class VmTest {
         vmRunCheck(tests);
     }
 
+    // 字符串执行测试
+    @Test
+    void stringExpression() {
+        vmRunCheck(MyMap.of(
+                "'hello'", "hello",
+                "'hello' + 123 + 'world'", "hello123world"
+        ));
+    }
+
     private <T> void vmRunCheck(Map<String, T> tests) {
         tests.forEach((input, expected) -> {
             var program = new Parser(input).parseProgram();

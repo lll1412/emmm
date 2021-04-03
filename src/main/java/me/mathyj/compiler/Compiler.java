@@ -3,6 +3,7 @@ package me.mathyj.compiler;
 import me.mathyj.exception.runtime.UndefinedVariable;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
+import me.mathyj.object.StringObject;
 import me.mathyj.parser.ast.Program;
 import me.mathyj.parser.ast.expression.*;
 import me.mathyj.parser.ast.statement.BlockStatement;
@@ -95,6 +96,10 @@ public class Compiler {
             var symbol = symbolTable.resolve(value);
             if (symbol == null) throw new UndefinedVariable(value);
             bytecode.emit(Opcode.GET_GLOBAL, symbol.index());
+        } else if (node instanceof StringLiteral) {
+            var stringLiteral = (StringLiteral) node;
+            var value = StringObject.valueOf(stringLiteral.val);
+            bytecode.emitConst(value);
         }
     }
 
