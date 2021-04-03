@@ -42,4 +42,9 @@ public class HashObject implements Object {
     public int hashCode() {
         return Objects.hash(hash);
     }
+
+    @Override
+    public String toString() {
+        return hash.toString();
+    }
 }

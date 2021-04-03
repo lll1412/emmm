@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class HashLiteral extends Expression {
-    private final List<Pair> pairs;
+    public final List<Pair> pairs;
 
     public HashLiteral(List<Pair> pairs) {
         this.pairs = pairs;

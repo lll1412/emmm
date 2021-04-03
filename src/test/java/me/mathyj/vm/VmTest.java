@@ -3,9 +3,11 @@ package me.mathyj.vm;
 import me.mathyj.MyMap;
 import me.mathyj.compiler.Compiler;
 import me.mathyj.object.Object;
+import me.mathyj.object.*;
 import me.mathyj.parser.Parser;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,8 +97,19 @@ public class VmTest {
     @Test
     void arrayLiteral() {
         vmRunCheck(MyMap.of(
-                "[]", "[]",
-                "[1 + 1, 2 + 3, 3 + 5]", "[2, 5, 8]"
+                "[]", new ArrayObject(),
+                "[1 + 1, 2 + 3, 3 + 5]", new ArrayObject(IntegerObject.valueOf(2), IntegerObject.valueOf(5), IntegerObject.valueOf(8))
+        ));
+    }
+
+    @Test
+    void hashLiteral() {
+        vmRunCheck(MyMap.of(
+                "{}", new HashObject(),
+                "{'name':'ljz','age': 25}", new HashObject(new LinkedHashMap<>() {{
+                    put(StringObject.valueOf("name"), StringObject.valueOf("ljz"));
+                    put(StringObject.valueOf("age"), IntegerObject.valueOf(25));
+                }})
         ));
     }
 

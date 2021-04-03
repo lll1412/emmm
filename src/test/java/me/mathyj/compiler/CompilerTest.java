@@ -161,6 +161,22 @@ class CompilerTest {
         ));
     }
 
+    @Test
+    void hashLiteral() {
+        compileCheck(MyMap.of(
+                "{}", new Bytecode(List.of(), makeHash(0), makePop()),
+                "{'name':'ljz','age': 25}", new Bytecode(
+                        List.of(StringObject.valueOf("name"), StringObject.valueOf("ljz"), StringObject.valueOf("age"), IntegerObject.valueOf(25)),
+                        makeConst(0),
+                        makeConst(1),
+                        makeConst(2),
+                        makeConst(3),
+                        makeHash(2),
+                        makePop()
+                )
+        ));
+    }
+
     private <T> void compileCheck(Map<String, T> tests) {
         tests.forEach((input, expectedBytecode) -> {
             var program = new Parser(input).parseProgram();

@@ -10,6 +10,7 @@ import me.mathyj.object.Object;
 import me.mathyj.object.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class Vm {
     public static final int STACK_SIZE = 2048;
@@ -86,9 +87,24 @@ public class Vm {
                     pushStack(array);
                     ip += operands.offset();
                 }
+                case HASH -> {
+                    var hashLength = operands.first();
+                    var hash = buildHash(sp - hashLength * 2, sp);
+                    sp -= hashLength * 2;
+                    pushStack(hash);
+                    ip += operands.offset();
+                }
                 default -> throw new UnsupportedOpcode(opcode);
             }
         }
+    }
+
+    private HashObject buildHash(int start, int end) {
+        var hash = new LinkedHashMap<Object, Object>();
+        for (int i = start; i < end; i += 2) {
+            hash.put(getFromStack(i), getFromStack(i + 1));
+        }
+        return new HashObject(hash);
     }
 
     private ArrayObject buildArray(int start, int end) {

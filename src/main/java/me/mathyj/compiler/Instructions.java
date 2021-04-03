@@ -55,6 +55,10 @@ public class Instructions {
         return make(Opcode.ARRAY, length);
     }
 
+    public static Instructions makeHash(int length) {
+        return make(Opcode.HASH, length);
+    }
+
     /**
      * 大端序 offset位置开始 往后写入2字节数据
      */

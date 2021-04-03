@@ -106,6 +106,13 @@ public class Compiler {
                 compile(element);
             }
             bytecode.emit(Opcode.ARRAY, arrayLiteral.elements.size());
+        } else if (node instanceof HashLiteral) {
+            var hashLiteral = (HashLiteral) node;
+            for (var pair : hashLiteral.pairs) {
+                compile(pair.key);
+                compile(pair.val);
+            }
+            bytecode.emit(Opcode.HASH, hashLiteral.pairs.size());
         }
     }
 
