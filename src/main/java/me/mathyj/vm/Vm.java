@@ -1,7 +1,6 @@
 package me.mathyj.vm;
 
 import me.mathyj.compiler.Bytecode;
-import me.mathyj.compiler.Instructions;
 import me.mathyj.compiler.Opcode;
 import me.mathyj.exception.runtime.UnsupportedBinaryOperation;
 import me.mathyj.exception.runtime.UnsupportedIndexOpcode;
@@ -37,20 +36,18 @@ public class Vm {
     }
 
     public void run() {
-        var instructions = bytecode.instructions;
-        var constantsPool = bytecode.constantsPool;
         var ip = 0;// instruction pointer
-        while (ip < instructions.size()) {
+        while (ip < bytecode.instructionsSize()) {
             // 取指令
-            var opcode = fetchOpcode(ip);
+            var opcode = bytecode.fetchOpcode(ip);
             ip++;
             // 读操作数
-            var operands = readOperands(opcode, instructions, ip);
+            var operands = bytecode.readOperands(opcode, ip);
             // 执行
             switch (opcode) {
                 case CONSTANT -> {
                     var constIndex = operands.first();
-                    var constObject = constantsPool.get(constIndex);
+                    var constObject = bytecode.getConst(constIndex);
                     pushStack(constObject);
                     ip += operands.offset();
                 }
@@ -217,32 +214,6 @@ public class Vm {
     }
 
     /**
-     * 取指令
-     */
-    private Opcode fetchOpcode(int ip) {
-        var c = bytecode.instructions.bytes[ip];
-        var opcode = Opcode.lookup(c);
-        return opcode;
-    }
-
-    /**
-     * 从指令中读取操作数
-     */
-    private Operands readOperands(Opcode op, Instructions ins, int start) {
-        var offset = 0;
-        var operandsWidth = op.operandsWidth;
-        var operands = new int[operandsWidth.length];
-        for (int i = 0; i < operandsWidth.length; i++) {
-            int w = operandsWidth[i];
-            switch (w) {
-                case 2 -> operands[i] = Instructions.readTwoByte(ins, start);
-            }
-            offset += w;
-        }
-        return new Operands(offset, operands);
-    }
-
-    /**
      * 最后一次出栈的元素
      */
     public Object lastPopped() {
@@ -279,12 +250,4 @@ public class Vm {
                && !obj.equals(Object.FALSE);
     }
 
-    /**
-     * 操作数的一个封装，offset 是操作数占用的字节数, operands是操作数数组
-     */
-    private record Operands(int offset, int... operands) {
-        int first() {
-            return operands[0];
-        }
-    }
 }

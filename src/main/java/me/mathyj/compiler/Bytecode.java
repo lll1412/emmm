@@ -30,6 +30,35 @@ public class Bytecode {
         replaceInstruction(pos, newIns);
     }
 
+    public Object getConst(int index) {
+        return constantsPool.get(index);
+    }
+
+    /**
+     * 取指令
+     */
+    public Opcode fetchOpcode(int ip) {
+        var c = instructions.bytes[ip];
+        var opcode = Opcode.lookup(c);
+        return opcode;
+    }
+
+    /**
+     * 从指令中读取操作数
+     */
+    public Operands readOperands(Opcode op, int start) {
+        var offset = 0;
+        var operandsWidth = op.operandsWidth;
+        var operands = new int[operandsWidth.length];
+        for (int i = 0; i < operandsWidth.length; i++) {
+            int w = operandsWidth[i];
+            switch (w) {
+                case 2 -> operands[i] = Instructions.readTwoByte(instructions, start);
+            }
+            offset += w;
+        }
+        return new Operands(offset, operands);
+    }
 
     // 生成指令
     public int emit(Opcode op, int... operands) {
@@ -40,14 +69,14 @@ public class Bytecode {
     }
 
     // 生成常量指令
-    public int emitConst(Object obj) {
+    public void emitConst(Object obj) {
         var index = addConst(obj);// 添加到常量池，返回索引
-        return emit(Opcode.CONSTANT, index);
+        emit(Opcode.CONSTANT, index);
     }
 
     // 生成pop指令
-    public int emitPop() {
-        return emit(Opcode.POP);
+    public void emitPop() {
+        emit(Opcode.POP);
     }
 
     @Override
@@ -109,5 +138,14 @@ public class Bytecode {
 
     // 用来表示每次生成的指令，保存着指令操作码和指令位置
     public record EmittedInstruction(Opcode opcode, int position) {
+    }
+
+    /**
+     * 操作数的一个封装，offset 是操作数占用的字节数, operands是操作数数组
+     */
+    public record Operands(int offset, int... operands) {
+        public int first() {
+            return operands[0];
+        }
     }
 }
