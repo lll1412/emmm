@@ -28,6 +28,16 @@ public class VmTest {
         vmRunCheck(tests);
     }
 
+    // 布尔表达式执行
+    @Test
+    void booleanExpression() {
+        var tests = Map.of(
+                "true", Object.TRUE,
+                "false", false
+        );
+        vmRunCheck(tests);
+    }
+
     private <T> void vmRunCheck(Map<String, T> tests) {
         tests.forEach((input, expected) -> {
             var program = new Parser(input).parseProgram();

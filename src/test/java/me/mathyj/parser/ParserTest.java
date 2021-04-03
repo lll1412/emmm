@@ -82,8 +82,8 @@ class ParserTest {
     @Test
     void booleanExpression() {
         var tests = Map.of(
-                "true", new BooleanLiteral(true),
-                "false;", new BooleanLiteral(false)
+                "true", BooleanLiteral.TRUE,
+                "false;", BooleanLiteral.FALSE
         );
         check(tests);
     }

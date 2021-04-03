@@ -38,6 +38,8 @@ public class Vm {
                     ip += operands.offset();
                 }
                 case ADD, SUB, MUL, DIV -> executeBinaryOperation(opcode);
+                case TRUE -> pushStack(Object.TRUE);
+                case FALSE -> pushStack(Object.FALSE);
                 case POP -> popStack();
             }
         }
@@ -50,7 +52,6 @@ public class Vm {
         if (left instanceof IntegerObject && right instanceof IntegerObject) {
             executeBinaryIntegerOperation((IntegerObject) left, (IntegerObject) right, opcode);
         } else {
-            // Exception
             throw new UnsupportedBinaryOperation(left, right, opcode);
         }
     }

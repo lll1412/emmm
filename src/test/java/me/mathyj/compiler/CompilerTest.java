@@ -29,6 +29,15 @@ class CompilerTest {
         );
         compileCheck(tests);
     }
+    // 布尔值编译测试
+    @Test
+    void booleanExpression() {
+        var tests = Map.of(
+                "true", new Bytecode(List.of(), make(Opcode.TRUE), makePop()),
+                "false", new Bytecode(List.of(), make(Opcode.FALSE), makePop())
+        );
+        compileCheck(tests);
+    }
 
     /**
      * 指令 字符串格式打印 测试

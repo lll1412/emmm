@@ -10,6 +10,9 @@ public enum Opcode {
     SUB,
     MUL,
     DIV,
+    // 布尔值
+    TRUE,
+    FALSE,
     // 出栈
     POP,
 

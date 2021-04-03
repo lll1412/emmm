@@ -11,12 +11,16 @@ public class BooleanLiteral extends Expression {
     public static final BooleanLiteral FALSE = new BooleanLiteral(false);
     private final boolean bool;
 
-    public BooleanLiteral(boolean bool) {
+    private BooleanLiteral(boolean bool) {
         this.bool = bool;
     }
 
-    public BooleanLiteral(Token token) {
-        this.bool = token.type().equals(TokenType.TRUE);
+    public static BooleanLiteral valueOf(boolean bool) {
+        return bool ? TRUE : FALSE;
+    }
+
+    public static BooleanLiteral valueOf(Token token) {
+        return token.type().equals(TokenType.TRUE) ? BooleanLiteral.TRUE : BooleanLiteral.FALSE;
     }
 
     @Override

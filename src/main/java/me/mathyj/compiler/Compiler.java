@@ -3,6 +3,7 @@ package me.mathyj.compiler;
 import me.mathyj.ast.ASTNode;
 import me.mathyj.ast.Program;
 import me.mathyj.ast.expression.BinaryExpression;
+import me.mathyj.ast.expression.BooleanLiteral;
 import me.mathyj.ast.expression.IntegerLiteral;
 import me.mathyj.code.Opcode;
 import me.mathyj.exception.compile.UnknownOperatorException;
@@ -38,6 +39,13 @@ public class Compiler {
             var integerLiteral = (IntegerLiteral) node;
             var integer = IntegerObject.valueOf(integerLiteral.value);
             bytecode.emitConst(integer);
+        } else if (node instanceof BooleanLiteral) {
+            var booleanLiteral = (BooleanLiteral) node;
+            if (booleanLiteral.equals(BooleanLiteral.TRUE)) {
+                bytecode.emit(Opcode.TRUE);
+            } else {
+                bytecode.emit(Opcode.FALSE);
+            }
         }
     }
 

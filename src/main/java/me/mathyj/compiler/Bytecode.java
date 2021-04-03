@@ -55,6 +55,6 @@ public class Bytecode {
 
     @Override
     public String toString() {
-        return "constantsPool: %s, \ninstructions:\n%s".formatted(constantsPool, instructions);
+        return "constantsPool: %s, \ninstructions:\n%s".formatted(constantsPool, instructions.print());
     }
 }

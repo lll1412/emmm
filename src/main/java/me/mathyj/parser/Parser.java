@@ -307,7 +307,7 @@ public class Parser {
     }
 
     private BooleanLiteral parseBooleanLiteral() {
-        return new BooleanLiteral(curToken);
+        return BooleanLiteral.valueOf(curToken);
     }
 
     private StringLiteral parseStringLiteral() {
