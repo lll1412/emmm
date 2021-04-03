@@ -8,7 +8,7 @@ import me.mathyj.exception.compile.UnknownOperatorException;
 
 public enum Opcode {
     // 常量 操作2字节的操作数  例如：const 0xaa 0xbb
-    CONSTANT((char) 2),
+    CONSTANT(2),
 
     /* 二元运算 */
 
@@ -43,20 +43,27 @@ public enum Opcode {
     // <
     LT,
 
+    /* 跳转指令 */
+    // 条件跳转
+    JUMP_IF_NOT_TRUTHY(2),
+    // 无条件跳转
+    JUMP_ALWAYS(2),
     // 出栈
     POP,
+    // 空值
+    NULL,
 
     ;
-    public final char[] operandsWidth;// 指令每个操作数的宽度
+    public final int[] operandsWidth;// 指令每个操作数的宽度
 
     // 下面这两个虽然可以直接调用方法获取 ，但不确定要用现在的方式，可能会改
     public final char identity;// 操作码的唯一标识符, 暂时用ordinal()
 //    public final String name;// 打印时显示的名字，暂时用name()
 
-    Opcode(char... operandsWidth) {
+    Opcode(int... operandsWidth) {
         this.identity = (char) ordinal();
 //        this.name = name();
-        this.operandsWidth = operandsWidth == null ? new char[0] : operandsWidth;
+        this.operandsWidth = operandsWidth == null ? new int[0] : operandsWidth;
     }
 
     /**

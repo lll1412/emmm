@@ -11,13 +11,9 @@ public class IfExpression extends Expression {
     // } else {
     //    alternative
     // }
-    private final Expression condition;
-    private final BlockStatement consequence;
-    private final BlockStatement alternative;
-
-    public IfExpression(Expression condition, BlockStatement consequence) {
-        this(condition, consequence, null);
-    }
+    public final Expression condition;
+    public final BlockStatement consequence;
+    public final BlockStatement alternative;
 
     public IfExpression(Expression condition, BlockStatement consequence, BlockStatement alternative) {
         this.condition = condition;
@@ -60,6 +56,7 @@ public class IfExpression extends Expression {
 
     private boolean isTruthy(Object obj) {
         return obj != null
+               && obj != Object.NULL
                && !obj.equals(IntegerObject.valueOf(0))
                && !obj.equals(Object.FALSE);
     }

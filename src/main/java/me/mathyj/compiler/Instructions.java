@@ -3,7 +3,7 @@ package me.mathyj.compiler;
 import me.mathyj.code.Opcode;
 
 public class Instructions {
-    public final char[] bytes;// byte 是[-128, 127]，但这里需要[0, 255]，所以用char来代替
+    public char[] bytes;// byte 是[-128, 127]，但这里需要[0, 255]，所以用char来代替
 
     public Instructions(Opcode op, char... bytes) {
         if (bytes == null) {
@@ -22,7 +22,7 @@ public class Instructions {
     public Instructions(char... bytes) {
         this.bytes = bytes;
     }
-
+//    public void
     // 创建指令 格式例： [opcode(2), operand1, operand2]
     public static Instructions make(Opcode op, int... operands) {
         if (op.operandsWidth == null) return new Instructions(op);
@@ -56,7 +56,7 @@ public class Instructions {
      * 大端序 offset位置开始 往后写入2字节数据
      */
     public static void writeTwoByteBE(char[] bytes, int offset, int operand) {
-        var high = (char) (operand >> 3 & 0xff);// 获取第[8,15]位
+        var high = (char) (operand >> 8 & 0xff);// 获取第[8,15]位
         var low = (char) (operand & 0xff);// 获取第[0,7]位
         bytes[offset] = high;
         bytes[offset + 1] = low;

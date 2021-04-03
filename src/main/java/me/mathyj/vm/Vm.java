@@ -4,6 +4,7 @@ import me.mathyj.code.Opcode;
 import me.mathyj.compiler.Bytecode;
 import me.mathyj.compiler.Instructions;
 import me.mathyj.exception.runtime.UnsupportedBinaryOperation;
+import me.mathyj.exception.runtime.UnsupportedOpcode;
 import me.mathyj.exception.runtime.UnsupportedUnaryOperation;
 import me.mathyj.object.BooleanObject;
 import me.mathyj.object.IntegerObject;
@@ -44,6 +45,19 @@ public class Vm {
                 case FALSE -> pushStack(Object.FALSE);
                 case NOT, NEG -> executeUnaryOperation(opcode);
                 case POP -> popStack();
+                case JUMP_IF_NOT_TRUTHY -> {
+                    var cond = popStack();
+                    if (cond.equals(Object.FALSE)) {
+                        // 跳转
+                        ip = operands.operands()[0];
+                    } else {
+                        // 正常执行
+                        ip += operands.offset();
+                    }
+                }
+                case JUMP_ALWAYS -> ip = operands.operands()[0];
+                case NULL -> pushStack(Object.NULL);
+                default -> throw new UnsupportedOpcode(opcode);
             }
         }
     }

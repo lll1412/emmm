@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class VmTest {
-    // 虚拟机引擎执行算数运算
+    // 虚拟机引擎执行算数运算测试
     @Test
     void integerArithmetic() {
         var tests = MyMap.of(
@@ -31,7 +31,7 @@ public class VmTest {
         vmRunCheck(tests);
     }
 
-    // 布尔表达式执行
+    // 布尔表达式执行测试
     @Test
     void booleanExpression() {
         var tests = MyMap.of(
@@ -54,6 +54,22 @@ public class VmTest {
         vmRunCheck(tests);
     }
 
+    // 条件表达式执行测试
+    @Test
+    void conditionExpression() {
+        var tests = Map.of(
+                "if (true) { 10 }", 10,
+                "if (true) { 10 } else { 20 }", 10,
+                "if (false) { 10 } else { 20 }", 20,
+                "if (1) { 10 } else { 20 }", 10,
+                "if (1 < 2) { 10 } else { 20 }", 10,
+                "if (1 > 2) { 10 } else { 20 }", 20,
+                "if(false){10}", Object.NULL
+
+        );
+        vmRunCheck(tests);
+    }
+
     private <T> void vmRunCheck(Map<String, T> tests) {
         tests.forEach((input, expected) -> {
             var program = new Parser(input).parseProgram();
@@ -62,7 +78,9 @@ public class VmTest {
             }
             var compiler = new Compiler();
             compiler.compile(program);
-            var vm = new Vm(compiler.bytecode());
+            var bytecode = compiler.bytecode();
+            System.out.println(bytecode.toString());
+            var vm = new Vm(bytecode);
             vm.run();
             var result = vm.lastPopped();
             if (expected instanceof Object)

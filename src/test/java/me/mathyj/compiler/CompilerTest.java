@@ -66,6 +66,44 @@ class CompilerTest {
 
     }
 
+    /**
+     * 条件表达式编译测试
+     */
+    @Test
+    void conditionExpression() {
+        var tests = Map.of(
+
+                "if(true){ 10 }", new Bytecode(List.of(IntegerObject.valueOf(10)),
+                        // 0000
+                        make(Opcode.TRUE),
+                        // 0001
+                        make(Opcode.JUMP_IF_NOT_TRUTHY, 10),
+                        // 0004
+                        makeConst(0),
+                        // 0007
+                        make(Opcode.JUMP_ALWAYS, 11),
+                        // 00010
+                        make(Opcode.NULL),
+                        // 0011
+                        makePop()),
+                "if(true){ 10 } else { 20 }", new Bytecode(List.of(IntegerObject.valueOf(10), IntegerObject.valueOf(20)),
+                        // 0000
+                        make(Opcode.TRUE),
+                        // 0001
+                        make(Opcode.JUMP_IF_NOT_TRUTHY, 10),
+                        // 0004
+                        makeConst(0),
+                        // 0007
+                        make(Opcode.JUMP_ALWAYS, 13),
+                        // 00010
+                        makeConst(1),
+                        // 0013
+                        makePop()
+                )
+        );
+        compileCheck(tests);
+    }
+
     private <T> void compileCheck(Map<String, T> tests) {
         tests.forEach((input, expectedBytecode) -> {
             var program = new Parser(input).parseProgram();
