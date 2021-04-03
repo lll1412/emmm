@@ -132,8 +132,8 @@ class ParserTest {
     @Test
     void parsingUnaryExpression() {
         var tests = Map.of(
-                "!5", new UnaryExpression(UnaryOperator.BANG, new IntegerLiteral(5)),
-                "-15", new UnaryExpression(UnaryOperator.MINUS, new IntegerLiteral(15)),
+                "!5", new UnaryExpression(UnaryOperator.NOT, new IntegerLiteral(5)),
+                "-15", new UnaryExpression(UnaryOperator.NEG, new IntegerLiteral(15)),
                 "++i", new AssignExpression(new Identifier("i"), new BinaryExpression(new Identifier("i"), BinaryOperator.ADD, new IntegerLiteral(1))),
                 "--i", new AssignExpression(new Identifier("i"), new BinaryExpression(new Identifier("i"), BinaryOperator.SUBTRACT, new IntegerLiteral(1)))
         );

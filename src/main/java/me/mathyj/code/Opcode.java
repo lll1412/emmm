@@ -10,7 +10,7 @@ public enum Opcode {
     // 常量 操作2字节的操作数  例如：const 0xaa 0xbb
     CONSTANT((char) 2),
 
-    // 二元运算
+    /* 二元运算 */
 
     // +
     ADD,
@@ -20,14 +20,19 @@ public enum Opcode {
     MUL,
     // /
     DIV,
-    // 布尔值
+    /* 一元运算 */
+    // !x
+    NOT,
+    // -x
+    NEG,
+    /* 布尔值 */
 
     // true
     TRUE,
     // false
     FALSE,
 
-    // 布尔运算
+    /* 布尔运算 */
 
     // ==
     EQ,
@@ -37,6 +42,7 @@ public enum Opcode {
     GT,
     // <
     LT,
+
     // 出栈
     POP,
 
@@ -84,7 +90,9 @@ public enum Opcode {
     }
 
     public static Opcode from(UnaryOperator unOp) {
-        // todo
-        return null;
+        return switch (unOp) {
+            case NOT -> Opcode.NOT;
+            case NEG -> Opcode.NEG;
+        };
     }
 }

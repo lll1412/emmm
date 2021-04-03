@@ -8,8 +8,8 @@ import me.mathyj.object.Object;
 import me.mathyj.object.ObjectType;
 
 public class UnaryExpression extends Expression {
-    private final UnaryOperator operator;
-    private final Expression right;
+    public final UnaryOperator operator;
+    public final Expression right;
 
     public UnaryExpression(UnaryOperator operator, Expression right) {
         this.operator = operator;
@@ -25,13 +25,13 @@ public class UnaryExpression extends Expression {
     public Object eval(Environment env) {
         var eval = right.eval(env);
         return switch (operator) {
-            case BANG -> switch (eval.type()) {
+            case NOT -> switch (eval.type()) {
                 case BOOLEAN -> eval.equals(Object.TRUE) ? Object.FALSE : Object.TRUE;
                 case NULL -> Object.TRUE;
                 default -> Object.FALSE;
 //                default -> throw new UnsupportedUnaryException(operator, eval);
             };
-            case MINUS -> {
+            case NEG -> {
                 if (eval.type() == ObjectType.INTEGER) yield IntegerObject.valueOf(-Integer.parseInt(eval.value()));
                 else throw new UnknownOperatorException(operator, eval);
             }

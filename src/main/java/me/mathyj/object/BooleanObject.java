@@ -6,7 +6,7 @@ public class BooleanObject implements Object {
     public static final BooleanObject TRUE = new BooleanObject(true);
     public static final BooleanObject FALSE = new BooleanObject(false);
     public final boolean value;
-    public final String valueStr;
+    private final String valueStr;
 
     private BooleanObject(boolean value) {
         this.value = value;

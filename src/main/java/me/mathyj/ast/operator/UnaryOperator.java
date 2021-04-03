@@ -4,8 +4,8 @@ import me.mathyj.exception.parse.UnsupportedUnaryException;
 import me.mathyj.token.Token;
 
 public enum UnaryOperator {
-    BANG("!"),
-    MINUS("-"),
+    NOT("!"),
+    NEG("-"),
 //    INC("++"),
 //    DEC("--")
     ;
@@ -18,8 +18,8 @@ public enum UnaryOperator {
 
     public static UnaryOperator from(Token token) {
         return switch (token.type()) {
-            case BANG -> UnaryOperator.BANG;
-            case MINUS -> UnaryOperator.MINUS;
+            case BANG -> UnaryOperator.NOT;
+            case MINUS -> UnaryOperator.NEG;
 //            case INC -> UnaryOperator.INC;
 //            case DEC -> UnaryOperator.DEC;
             default -> throw new UnsupportedUnaryException(token);

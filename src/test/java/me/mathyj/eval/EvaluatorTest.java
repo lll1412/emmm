@@ -160,7 +160,7 @@ class EvaluatorTest {
     void testExceptionHandle() {
         var tests = MyMap.of(
                 "5+true;5", new TypeMismatchException(IntegerObject.valueOf(5), BinaryOperator.ADD, Object.TRUE),
-                "-true", new UnknownOperatorException(UnaryOperator.MINUS, Object.TRUE),
+                "-true", new UnknownOperatorException(UnaryOperator.NEG, Object.TRUE),
                 "if(1<2) {true+false}", new UnknownOperatorException(Object.TRUE, BinaryOperator.ADD, Object.FALSE)
         );
         check(tests);

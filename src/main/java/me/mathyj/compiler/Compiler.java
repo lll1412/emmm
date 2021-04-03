@@ -5,6 +5,7 @@ import me.mathyj.ast.Program;
 import me.mathyj.ast.expression.BinaryExpression;
 import me.mathyj.ast.expression.BooleanLiteral;
 import me.mathyj.ast.expression.IntegerLiteral;
+import me.mathyj.ast.expression.UnaryExpression;
 import me.mathyj.code.Opcode;
 import me.mathyj.object.IntegerObject;
 
@@ -36,6 +37,12 @@ public class Compiler {
         } else if (node instanceof BooleanLiteral) {
             var booleanLiteral = (BooleanLiteral) node;
             var op = Opcode.from(booleanLiteral);
+            bytecode.emit(op);
+        } else if (node instanceof UnaryExpression) {
+            var unaryExpression = (UnaryExpression) node;
+            var operator = unaryExpression.operator;
+            compile(unaryExpression.right);
+            var op = Opcode.from(operator);
             bytecode.emit(op);
         }
     }

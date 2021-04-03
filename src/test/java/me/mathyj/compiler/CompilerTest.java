@@ -2,7 +2,6 @@ package me.mathyj.compiler;
 
 import me.mathyj.code.Opcode;
 import me.mathyj.object.IntegerObject;
-import me.mathyj.object.Object;
 import me.mathyj.parser.Parser;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +25,8 @@ class CompilerTest {
                 ),
                 "2/2", new Bytecode(List.of(IntegerObject.valueOf(2), IntegerObject.valueOf(2)),
                         makeConst(0), makeConst(1), make(Opcode.DIV), makePop()
-                )
+                ),
+                "-2", new Bytecode(List.of(IntegerObject.valueOf(2)), makeConst(0), make(Opcode.NEG), makePop())
         );
         compileCheck(tests);
     }
@@ -41,7 +41,8 @@ class CompilerTest {
                 "2==1", new Bytecode(List.of(IntegerObject.valueOf(2), IntegerObject.valueOf(1)), makeConst(0), makeConst(1), make(Opcode.EQ), makePop()),
                 "2!=1", new Bytecode(List.of(IntegerObject.valueOf(2), IntegerObject.valueOf(1)), makeConst(0), makeConst(1), make(Opcode.NE), makePop()),
                 "true == false", new Bytecode(List.of(), make(Opcode.TRUE), make(Opcode.FALSE), make(Opcode.EQ), makePop()),
-                "true != false", new Bytecode(List.of(), make(Opcode.TRUE), make(Opcode.FALSE), make(Opcode.NE), makePop())
+                "true != false", new Bytecode(List.of(), make(Opcode.TRUE), make(Opcode.FALSE), make(Opcode.NE), makePop()),
+                "!true", new Bytecode(List.of(), make(Opcode.TRUE), make(Opcode.NOT), makePop())
         );
         compileCheck(tests);
     }

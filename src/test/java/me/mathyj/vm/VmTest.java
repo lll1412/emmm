@@ -23,7 +23,10 @@ public class VmTest {
                 "2 * 2", 4,
                 "2 / 2", 1,
                 "50/2*2+10-5", 55,
-                "5*(2+10)", 60
+                "5*(2+10)", 60,
+                "-5", -5,
+                "2+-3", -1,
+                "-20+15+-5", -10
         );
         vmRunCheck(tests);
     }
@@ -42,7 +45,11 @@ public class VmTest {
                 "(1<2) == true", true,
                 "(1<2) == false", false,
                 "(1>2) == true", false,
-                "(1>2) == false", true
+                "(1>2) == false", true,
+                "!true", false,
+                "!!true", true,
+                "!5", false,
+                "!!5", true
         );
         vmRunCheck(tests);
     }

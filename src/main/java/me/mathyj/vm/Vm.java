@@ -4,6 +4,7 @@ import me.mathyj.code.Opcode;
 import me.mathyj.compiler.Bytecode;
 import me.mathyj.compiler.Instructions;
 import me.mathyj.exception.runtime.UnsupportedBinaryOperation;
+import me.mathyj.exception.runtime.UnsupportedUnaryOperation;
 import me.mathyj.object.BooleanObject;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
@@ -41,9 +42,40 @@ public class Vm {
                 case ADD, SUB, MUL, DIV, EQ, NE, GT, LT -> executeBinaryOperation(opcode);
                 case TRUE -> pushStack(Object.TRUE);
                 case FALSE -> pushStack(Object.FALSE);
+                case NOT, NEG -> executeUnaryOperation(opcode);
                 case POP -> popStack();
             }
         }
+    }
+
+    private void executeUnaryOperation(Opcode opcode) {
+        var right = popStack();
+        var val = switch (opcode) {
+            case NOT -> executeUnaryNotOperation(right);
+            case NEG -> executeUnaryNegOperation(right);
+            default -> throw new UnsupportedUnaryOperation(right, opcode);
+        };
+        pushStack(val);
+    }
+
+    private Object executeUnaryNegOperation(Object right) {
+        if (right instanceof IntegerObject) {
+            var value = ((IntegerObject) right).value;
+            return IntegerObject.valueOf(-value);
+        } else {
+            throw new UnsupportedUnaryOperation(right, Opcode.NEG);
+        }
+    }
+
+    private Object executeUnaryNotOperation(Object right) {
+        if (right instanceof IntegerObject) {
+            var value = ((IntegerObject) right).value != 0;
+            return BooleanObject.valueOf(!value);
+        } else if (right instanceof BooleanObject) {
+            var value = ((BooleanObject) right).value;
+            return BooleanObject.valueOf(!value);
+        }
+        return null;
     }
 
     /**
@@ -52,36 +84,37 @@ public class Vm {
     private void executeBinaryOperation(Opcode opcode) {
         var right = popStack();
         var left = popStack();
+        Object val;
         if (left instanceof IntegerObject && right instanceof IntegerObject) {
-            executeBinaryIntegerOperation((IntegerObject) left, (IntegerObject) right, opcode);
+            val = executeBinaryIntegerOperation((IntegerObject) left, (IntegerObject) right, opcode);
         } else if (left instanceof BooleanObject && right instanceof BooleanObject) {
-            executeBinaryBooleanOperation(((BooleanObject) left), ((BooleanObject) right), opcode);
+            val = executeBinaryBooleanOperation(((BooleanObject) left), ((BooleanObject) right), opcode);
         } else {
             throw new UnsupportedBinaryOperation(left, right, opcode);
         }
+        pushStack(val);
     }
 
     /**
      * 布尔值二元运算
      */
-    private void executeBinaryBooleanOperation(BooleanObject left, BooleanObject right, Opcode opcode) {
+    private Object executeBinaryBooleanOperation(BooleanObject left, BooleanObject right, Opcode opcode) {
         var leftVal = left.value;
         var rightVal = right.value;
-        var r = switch (opcode) {
+        return switch (opcode) {
             case EQ -> BooleanObject.valueOf(leftVal == rightVal);
             case NE -> BooleanObject.valueOf(leftVal != rightVal);
             default -> throw new UnsupportedBinaryOperation(left, right, opcode);
         };
-        pushStack(r);
     }
 
     /**
      * 整数二元运算
      */
-    private void executeBinaryIntegerOperation(IntegerObject left, IntegerObject right, Opcode opcode) {
+    private Object executeBinaryIntegerOperation(IntegerObject left, IntegerObject right, Opcode opcode) {
         var leftVal = left.value;
         var rightVal = right.value;
-        var r = switch (opcode) {
+        return switch (opcode) {
             case ADD -> IntegerObject.valueOf(leftVal + rightVal);
             case SUB -> IntegerObject.valueOf(leftVal - rightVal);
             case MUL -> IntegerObject.valueOf(leftVal * rightVal);
@@ -92,7 +125,6 @@ public class Vm {
             case LT -> BooleanObject.valueOf(leftVal < rightVal);
             default -> throw new UnsupportedBinaryOperation(left, right, opcode);
         };
-        pushStack(r);
     }
 
     /**
