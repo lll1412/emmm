@@ -2,6 +2,7 @@ package me.mathyj.object;
 
 import me.mathyj.exception.UnsupportedArgumentException;
 import me.mathyj.exception.WrongArgumentsCount;
+import me.mathyj.parser.Parser;
 
 import java.util.List;
 import java.util.Map;
@@ -15,17 +16,33 @@ public class BuiltinObject implements Object {
     private static final BuiltinObject last = new BuiltinObject(lastFn());
     private static final BuiltinObject push = new BuiltinObject(pushFn());
     private static final BuiltinObject print = new BuiltinObject(printFn());
+    private static final BuiltinObject eval = new BuiltinObject(evalFn());
     public static Map<String, Object> builtins = Map.of(
             "len", len,
             "first", first,
             "last", last,
             "push", push,
-            "print", print
+            "print", print,
+            "eval", eval
     );
     private final Function<List<Object>, Object> fn;
 
     private BuiltinObject(Function<List<Object>, Object> fn) {
         this.fn = fn;
+    }
+
+    private static Function<List<Object>, Object> evalFn() {
+        return args -> {
+            assertArgCount(1, args.size(), "eval");
+            var arg = args.get(0);
+            if (arg instanceof StringObject) {
+                var value = arg.value();
+                // todo 每次调用eval都会新建一个环境，多次eval之间没有关系，不确定是否正确，后面再看怎么优化, 可能需要传入一个环境对象作为eval参数
+                var env = new Environment();
+                return new Parser(value).parseProgram().eval(env);
+            }
+            throw new UnsupportedArgumentException(arg.type(), "last");
+        };
     }
 
     private static Function<List<Object>, Object> printFn() {
