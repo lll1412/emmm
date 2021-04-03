@@ -64,7 +64,8 @@ public class VmTest {
                 "if (1) { 10 } else { 20 }", 10,
                 "if (1 < 2) { 10 } else { 20 }", 10,
                 "if (1 > 2) { 10 } else { 20 }", 20,
-                "if(false){10}", Object.NULL
+                "if(false){10}", Object.NULL,
+                "if(if(false){10}) {10} else {20}", 20
 
         );
         vmRunCheck(tests);
@@ -79,7 +80,7 @@ public class VmTest {
             var compiler = new Compiler();
             compiler.compile(program);
             var bytecode = compiler.bytecode();
-            System.out.println(bytecode.toString());
+//            System.out.println(bytecode.toString());
             var vm = new Vm(bytecode);
             vm.run();
             var result = vm.lastPopped();

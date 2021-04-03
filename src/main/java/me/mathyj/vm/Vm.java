@@ -47,7 +47,7 @@ public class Vm {
                 case POP -> popStack();
                 case JUMP_IF_NOT_TRUTHY -> {
                     var cond = popStack();
-                    if (cond.equals(Object.FALSE)) {
+                    if (!isTruthy(cond)) {
                         // 跳转
                         ip = operands.operands()[0];
                     } else {
@@ -82,14 +82,15 @@ public class Vm {
     }
 
     private Object executeUnaryNotOperation(Object right) {
-        if (right instanceof IntegerObject) {
-            var value = ((IntegerObject) right).value != 0;
-            return BooleanObject.valueOf(!value);
-        } else if (right instanceof BooleanObject) {
-            var value = ((BooleanObject) right).value;
-            return BooleanObject.valueOf(!value);
+        if (right.equals(Object.TRUE)) {
+            return Object.FALSE;
+        } else if (right.equals(Object.FALSE)) {
+            return Object.TRUE;
+        } else if (right.equals(Object.NULL)) {
+            return Object.TRUE;
+        } else {
+            return Object.FALSE;
         }
-        return null;
     }
 
     /**
@@ -191,6 +192,13 @@ public class Vm {
 
     private Object getFromStack(int index) {
         return stack[index];
+    }
+
+    private boolean isTruthy(Object obj) {
+        return obj != null
+               && obj != Object.NULL
+               && !obj.equals(IntegerObject.valueOf(0))
+               && !obj.equals(Object.FALSE);
     }
 
     /**
