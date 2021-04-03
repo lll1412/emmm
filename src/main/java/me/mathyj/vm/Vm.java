@@ -6,10 +6,10 @@ import me.mathyj.compiler.Opcode;
 import me.mathyj.exception.runtime.UnsupportedBinaryOperation;
 import me.mathyj.exception.runtime.UnsupportedOpcode;
 import me.mathyj.exception.runtime.UnsupportedUnaryOperation;
-import me.mathyj.object.BooleanObject;
-import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
-import me.mathyj.object.StringObject;
+import me.mathyj.object.*;
+
+import java.util.ArrayList;
 
 public class Vm {
     public static final int STACK_SIZE = 2048;
@@ -47,7 +47,7 @@ public class Vm {
             // 执行
             switch (opcode) {
                 case CONSTANT -> {
-                    var constIndex = operands.operands()[0];
+                    var constIndex = operands.first();
                     var constObject = constantsPool.get(constIndex);
                     pushStack(constObject);
                     ip += operands.offset();
@@ -62,26 +62,41 @@ public class Vm {
                     var cond = popStack();
                     if (!isTruthy(cond)) {
                         // 跳转
-                        ip = operands.operands()[0];
+                        ip = operands.first();
                     } else {
                         // 正常执行
                         ip += operands.offset();
                     }
                 }
-                case JUMP_ALWAYS -> ip = operands.operands()[0];
+                case JUMP_ALWAYS -> ip = operands.first();
                 case SET_GLOBAL -> {
-                    var globalIndex = operands.operands()[0];
-                    ip += operands.offset();
+                    var globalIndex = operands.first();
                     globals[globalIndex] = popStack();
+                    ip += operands.offset();
                 }
                 case GET_GLOBAL -> {
-                    var globalIndex = operands.operands()[0];
-                    ip += operands.offset();
+                    var globalIndex = operands.first();
                     pushStack(globals[globalIndex]);
+                    ip += operands.offset();
+                }
+                case ARRAY -> {
+                    var arrayLength = operands.first();
+                    var array = buildArray(sp - arrayLength, sp);
+                    sp -= arrayLength;
+                    pushStack(array);
+                    ip += operands.offset();
                 }
                 default -> throw new UnsupportedOpcode(opcode);
             }
         }
+    }
+
+    private ArrayObject buildArray(int start, int end) {
+        var list = new ArrayList<Object>(end - start);
+        for (int i = start; i < end; i++) {
+            list.add(getFromStack(i));
+        }
+        return new ArrayObject(list);
     }
 
     private void executeUnaryOperation(Opcode opcode) {
@@ -210,6 +225,10 @@ public class Vm {
         return stack[sp - 1];
     }
 
+    private void putStack(int index, Object el) {
+        stack[index] = el;
+    }
+
     private Object popStack() {
         return stack[--sp];
     }
@@ -229,5 +248,8 @@ public class Vm {
      * 操作数的一个封装，offset 是操作数占用的字节数, operands是操作数数组
      */
     private record Operands(int offset, int... operands) {
+        int first() {
+            return operands[0];
+        }
     }
 }

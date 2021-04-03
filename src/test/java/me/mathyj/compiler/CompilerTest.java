@@ -138,12 +138,27 @@ class CompilerTest {
     }
 
     @Test
-    void stringExpression() {
+    void stringLiteral() {
         var tests = MyMap.of(
                 "'hello'", new Bytecode(List.of(StringObject.valueOf("hello")), makeConst(0), makePop()),
                 "'hello' + 'world'", new Bytecode(List.of(StringObject.valueOf("hello"), StringObject.valueOf("world")), makeConst(0), makeConst(1), make(Opcode.ADD), makePop())
         );
         compileCheck(tests);
+    }
+
+    @Test
+    void arrayLiteral() {
+        compileCheck(MyMap.of(
+                "[]", new Bytecode(List.of(), makeArray(0), makePop()),
+                "[1, 2, 3]", new Bytecode(
+                        List.of(IntegerObject.valueOf(1), IntegerObject.valueOf(2), IntegerObject.valueOf(3)),
+                        makeConst(0),
+                        makeConst(1),
+                        makeConst(2),
+                        makeArray(3),
+                        makePop()
+                )
+        ));
     }
 
     private <T> void compileCheck(Map<String, T> tests) {

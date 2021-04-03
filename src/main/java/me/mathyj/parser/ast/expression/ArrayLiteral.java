@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class ArrayLiteral extends Expression {
 
-    private final List<Expression> elements;
+    public final List<Expression> elements;
 
     public ArrayLiteral(Expression... elements) {
         this.elements = Arrays.asList(elements);

@@ -100,6 +100,12 @@ public class Compiler {
             var stringLiteral = (StringLiteral) node;
             var value = StringObject.valueOf(stringLiteral.val);
             bytecode.emitConst(value);
+        } else if (node instanceof ArrayLiteral) {
+            var arrayLiteral = (ArrayLiteral) node;
+            for (var element : arrayLiteral.elements) {
+                compile(element);
+            }
+            bytecode.emit(Opcode.ARRAY, arrayLiteral.elements.size());
         }
     }
 

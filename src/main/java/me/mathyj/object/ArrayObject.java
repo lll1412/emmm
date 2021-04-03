@@ -51,4 +51,9 @@ public class ArrayObject implements Object {
     public int hashCode() {
         return Objects.hash(elements);
     }
+
+    @Override
+    public String toString() {
+        return elements.toString();
+    }
 }

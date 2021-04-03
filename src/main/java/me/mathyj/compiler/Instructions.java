@@ -51,6 +51,10 @@ public class Instructions {
         return make(Opcode.POP);
     }
 
+    public static Instructions makeArray(int length) {
+        return make(Opcode.ARRAY, length);
+    }
+
     /**
      * 大端序 offset位置开始 往后写入2字节数据
      */

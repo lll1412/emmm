@@ -52,6 +52,8 @@ public enum Opcode {
     POP,
     // 空值
     NULL,
+    // 数组
+    ARRAY(2),
 
     SET_GLOBAL(2),
     GET_GLOBAL(2),

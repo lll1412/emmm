@@ -85,10 +85,18 @@ public class VmTest {
 
     // 字符串执行测试
     @Test
-    void stringExpression() {
+    void stringLiteral() {
         vmRunCheck(MyMap.of(
                 "'hello'", "hello",
                 "'hello' + 123 + 'world'", "hello123world"
+        ));
+    }
+
+    @Test
+    void arrayLiteral() {
+        vmRunCheck(MyMap.of(
+                "[]", "[]",
+                "[1 + 1, 2 + 3, 3 + 5]", "[2, 5, 8]"
         ));
     }
 
