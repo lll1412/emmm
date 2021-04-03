@@ -1,5 +1,6 @@
 package me.mathyj.compiler;
 
+import me.mathyj.MyMap;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.parser.Parser;
 import org.junit.jupiter.api.Test;
@@ -103,13 +104,45 @@ class CompilerTest {
         compileCheck(tests);
     }
 
+    /**
+     * let语句变量绑定编译测试
+     */
+    @Test
+    void globalLetStatement() {
+        var tests = MyMap.of(
+                "let one = 1;", new Bytecode(List.of(IntegerObject.valueOf(1)), makeConst(0), make(Opcode.SET_GLOBAL)),
+                "let one = 1;let two = 2", new Bytecode(
+                        List.of(IntegerObject.valueOf(1), IntegerObject.valueOf(2)),
+                        makeConst(0),
+                        make(Opcode.SET_GLOBAL, 0),
+                        makeConst(1),
+                        make(Opcode.SET_GLOBAL, 1)
+                ),
+                "let one=1;one", new Bytecode(List.of(IntegerObject.valueOf(1)),
+                        makeConst(0),
+                        make(Opcode.SET_GLOBAL, 0),
+                        make(Opcode.GET_GLOBAL, 0),
+                        makePop()
+                ),
+                "let one=1;let two = one; two;", new Bytecode(List.of(IntegerObject.valueOf(1)),
+                        makeConst(0),
+                        make(Opcode.SET_GLOBAL, 0),
+                        make(Opcode.GET_GLOBAL, 0),
+                        make(Opcode.SET_GLOBAL, 1),
+                        make(Opcode.GET_GLOBAL, 1),
+                        makePop()
+                )
+        );
+        compileCheck(tests);
+    }
+
     private <T> void compileCheck(Map<String, T> tests) {
         tests.forEach((input, expectedBytecode) -> {
             var program = new Parser(input).parseProgram();
             var compiler = new Compiler();
             compiler.compile(program);
             var actualBytecode = compiler.bytecode();
-            assertEquals(expectedBytecode.toString(), actualBytecode.toString());
+            assertEquals(expectedBytecode.toString(), actualBytecode.toString(), input);
         });
     }
 }

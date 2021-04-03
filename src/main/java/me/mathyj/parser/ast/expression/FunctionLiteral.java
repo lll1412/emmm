@@ -48,7 +48,7 @@ public class FunctionLiteral extends Expression {
     @Override
     public Object eval(Environment env) {
         var fn = new FunctionObject(params, body, env);
-        if (identifier != null) env.set(identifier.identifier, fn);
+        if (identifier != null) env.set(identifier.value, fn);
         return fn;
     }
 }

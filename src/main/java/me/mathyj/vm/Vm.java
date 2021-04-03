@@ -1,8 +1,8 @@
 package me.mathyj.vm;
 
-import me.mathyj.compiler.Opcode;
 import me.mathyj.compiler.Bytecode;
 import me.mathyj.compiler.Instructions;
+import me.mathyj.compiler.Opcode;
 import me.mathyj.exception.runtime.UnsupportedBinaryOperation;
 import me.mathyj.exception.runtime.UnsupportedOpcode;
 import me.mathyj.exception.runtime.UnsupportedUnaryOperation;
@@ -11,15 +11,26 @@ import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
 
 public class Vm {
-    private static final int STACK_SIZE = 2048;
+    public static final int STACK_SIZE = 2048;
+    public static final int GLOBALS_SIZE = 65535;
+    // 字节码
     private final Bytecode bytecode;
+    // 虚拟机栈
     private final Object[] stack;
+    // 全局对象
+    private final Object[] globals;
+    // 栈指针
     private int sp;// stack pointer
 
-    public Vm(Bytecode bytecode) {
+    public Vm(Bytecode bytecode, Object[] globals) {
         this.bytecode = bytecode;
         this.stack = new Object[STACK_SIZE];
         this.sp = 0;
+        this.globals = globals;
+    }
+
+    public Vm(Bytecode bytecode) {
+        this(bytecode, new Object[GLOBALS_SIZE]);
     }
 
     public void run() {
@@ -45,6 +56,7 @@ public class Vm {
                 case FALSE -> pushStack(Object.FALSE);
                 case NOT, NEG -> executeUnaryOperation(opcode);
                 case POP -> popStack();
+                case NULL -> pushStack(Object.NULL);
                 case JUMP_IF_NOT_TRUTHY -> {
                     var cond = popStack();
                     if (!isTruthy(cond)) {
@@ -56,7 +68,16 @@ public class Vm {
                     }
                 }
                 case JUMP_ALWAYS -> ip = operands.operands()[0];
-                case NULL -> pushStack(Object.NULL);
+                case SET_GLOBAL -> {
+                    var globalIndex = operands.operands()[0];
+                    ip += operands.offset();
+                    globals[globalIndex] = popStack();
+                }
+                case GET_GLOBAL -> {
+                    var globalIndex = operands.operands()[0];
+                    ip += operands.offset();
+                    pushStack(globals[globalIndex]);
+                }
                 default -> throw new UnsupportedOpcode(opcode);
             }
         }

@@ -29,7 +29,7 @@ public class LetStatement extends Statement {
     @Override
     public Object eval(Environment env) {
         var eval = value.eval(env);
-        env.set(name.identifier, eval);
+        env.set(name.value, eval);
         return eval;
     }
 }

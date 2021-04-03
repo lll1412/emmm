@@ -30,11 +30,11 @@ public class AssignExpression extends Expression {
 
     @Override
     public Object eval(Environment env) {
-        var leftObj = env.get(left.identifier);
+        var leftObj = env.get(left.value);
         if (leftObj != null) {
-            return env.set(left.identifier, right.eval(env));
+            return env.set(left.value, right.eval(env));
         } else {
-            throw new UndefinedException(left.identifier);
+            throw new UndefinedException(left.value);
         }
     }
 

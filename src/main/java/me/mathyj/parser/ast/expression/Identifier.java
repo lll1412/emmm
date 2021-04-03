@@ -4,19 +4,19 @@ import me.mathyj.object.Environment;
 import me.mathyj.object.Object;
 
 public class Identifier extends Expression {
-    public final String identifier;
+    public final String value;
 
     public Identifier(String value) {
-        this.identifier = value;
+        this.value = value;
     }
 
     @Override
     public String toString() {
-        return identifier == null ? "" : identifier;
+        return value == null ? "" : value;
     }
 
     @Override
     public Object eval(Environment env) {
-        return env.get(identifier);
+        return env.get(value);
     }
 }

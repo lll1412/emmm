@@ -71,6 +71,18 @@ public class VmTest {
         vmRunCheck(tests);
     }
 
+    // 变量绑定执行测试
+    @Test
+    void letStatement() {
+        var tests = MyMap.of(
+                "let one = 1;", 1,
+                "let one = 1; one", 1,
+                "let one = 1; let two = one; two", 1,
+                "let one = 1; let two = 2; one + two", 3
+        );
+        vmRunCheck(tests);
+    }
+
     private <T> void vmRunCheck(Map<String, T> tests) {
         tests.forEach((input, expected) -> {
             var program = new Parser(input).parseProgram();
@@ -80,7 +92,6 @@ public class VmTest {
             var compiler = new Compiler();
             compiler.compile(program);
             var bytecode = compiler.bytecode();
-//            System.out.println(bytecode.toString());
             var vm = new Vm(bytecode);
             vm.run();
             var result = vm.lastPopped();

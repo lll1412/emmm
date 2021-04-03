@@ -20,7 +20,8 @@ public class Instructions {
     public Instructions(char... bytes) {
         this.bytes = bytes;
     }
-//    public void
+
+    //    public void
     // 创建指令 格式例： [opcode(2), operand1, operand2]
     public static Instructions make(Opcode op, int... operands) {
         if (op.operandsWidth == null) return new Instructions(op);
@@ -64,6 +65,7 @@ public class Instructions {
      * 合并多个指令流
      */
     public static Instructions concat(Instructions... instructions) {
+        if (instructions == null || instructions.length == 0) return new Instructions();
         var len = 0;
         for (var instruction : instructions) {
             len += instruction.bytes.length;

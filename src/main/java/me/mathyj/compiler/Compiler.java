@@ -1,32 +1,51 @@
 package me.mathyj.compiler;
 
-import me.mathyj.parser.ast.ASTNode;
+import me.mathyj.exception.runtime.UndefinedVariable;
+import me.mathyj.object.IntegerObject;
+import me.mathyj.object.Object;
 import me.mathyj.parser.ast.Program;
 import me.mathyj.parser.ast.expression.*;
 import me.mathyj.parser.ast.statement.BlockStatement;
-import me.mathyj.object.IntegerObject;
+import me.mathyj.parser.ast.statement.LetStatement;
+import me.mathyj.parser.ast.statement.Statement;
+
+import java.util.List;
 
 public class Compiler {
     private final Bytecode bytecode;
+    private final SymbolTable symbolTable;
+
+    public Compiler(SymbolTable symbolTable, List<Object> constantsPool) {
+        this.symbolTable = symbolTable;
+        this.bytecode = new Bytecode(constantsPool);
+    }
 
     public Compiler() {
+        this.symbolTable = new SymbolTable();
         this.bytecode = new Bytecode();
     }
 
-    public void compile(ASTNode node) {
-        if (node instanceof Program) {
-            var program = (Program) node;
-            for (var statement : program.statements) {
-                compile(statement);
-                bytecode.emitPop();
-            }
-        } else if (node instanceof BlockStatement) {
+    public void compile(Program program) {
+        compile(program.statements);
+    }
+
+    private void compile(Statement node) {
+        if (node instanceof BlockStatement) {
             var blockStatement = (BlockStatement) node;
-            for (var statement : blockStatement.statements) {
-                compile(statement);
-            }
+            compile(blockStatement);
+        } else if (node instanceof LetStatement) {
+            var letStatement = (LetStatement) node;
+            compile(letStatement.value);
+            var symbol = symbolTable.define(letStatement.name());
+            bytecode.emit(Opcode.SET_GLOBAL, symbol.index());
+        } else if (node instanceof Expression) {
+            compile(((Expression) node));
             bytecode.emitPop();
-        } else if (node instanceof BinaryExpression) {
+        }
+    }
+
+    private void compile(Expression node) {
+        if (node instanceof BinaryExpression) {
             var binaryExpression = (BinaryExpression) node;
             var operator = binaryExpression.operator;
             compile(binaryExpression.left);
@@ -70,7 +89,24 @@ public class Compiler {
             // 矫正jump_always指令的跳转位置
             var afterAlternative = bytecode.instructionsSize();
             bytecode.changeOperand(jumpAlwaysOpPos, afterAlternative);// 调整为正确的跳转地址
+        } else if (node instanceof Identifier) {
+            var identifier = (Identifier) node;
+            var value = identifier.value;
+            var symbol = symbolTable.resolve(value);
+            if (symbol == null) throw new UndefinedVariable(value);
+            bytecode.emit(Opcode.GET_GLOBAL, symbol.index());
         }
+    }
+
+    private void compile(List<Statement> statements) {
+        for (var statement : statements) {
+            compile(statement);
+        }
+    }
+
+    private void compile(BlockStatement blockStatement) {
+        if (blockStatement == null) return;
+        compile(blockStatement.statements);
     }
 
     // 返回编译出来的字节码

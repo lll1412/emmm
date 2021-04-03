@@ -1,10 +1,10 @@
 package me.mathyj.compiler;
 
+import me.mathyj.exception.code.OpcodeUndefinedException;
+import me.mathyj.exception.compile.UnknownOperatorException;
 import me.mathyj.parser.ast.expression.BooleanLiteral;
 import me.mathyj.parser.ast.operator.BinaryOperator;
 import me.mathyj.parser.ast.operator.UnaryOperator;
-import me.mathyj.exception.code.OpcodeUndefinedException;
-import me.mathyj.exception.compile.UnknownOperatorException;
 
 public enum Opcode {
     // 常量 操作2字节的操作数  例如：const 0xaa 0xbb
@@ -53,6 +53,8 @@ public enum Opcode {
     // 空值
     NULL,
 
+    SET_GLOBAL(2),
+    GET_GLOBAL(2),
     ;
     public final int[] operandsWidth;// 指令每个操作数的宽度
 
