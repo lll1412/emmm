@@ -113,6 +113,11 @@ public class Compiler {
                 compile(pair.val);
             }
             bytecode.emit(Opcode.HASH, hashLiteral.pairs.size());
+        } else if (node instanceof IndexExpression) {
+            var indexExpression = (IndexExpression) node;
+            compile(indexExpression.left);
+            compile(indexExpression.index);
+            bytecode.emit(Opcode.INDEX);
         }
     }
 

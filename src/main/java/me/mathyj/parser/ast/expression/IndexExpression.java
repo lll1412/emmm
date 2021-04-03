@@ -8,8 +8,8 @@ import me.mathyj.object.*;
  * arr[i]
  */
 public class IndexExpression extends Expression {
-    private final Expression left;
-    private final Expression index;
+    public final Expression left;
+    public final Expression index;
 
     public IndexExpression(Expression left, Expression index) {
         this.left = left;

@@ -4,6 +4,7 @@ import me.mathyj.compiler.Bytecode;
 import me.mathyj.compiler.Instructions;
 import me.mathyj.compiler.Opcode;
 import me.mathyj.exception.runtime.UnsupportedBinaryOperation;
+import me.mathyj.exception.runtime.UnsupportedIndexOpcode;
 import me.mathyj.exception.runtime.UnsupportedOpcode;
 import me.mathyj.exception.runtime.UnsupportedUnaryOperation;
 import me.mathyj.object.Object;
@@ -94,8 +95,26 @@ public class Vm {
                     pushStack(hash);
                     ip += operands.offset();
                 }
+                case INDEX -> {
+                    executeIndexOperation();
+                }
                 default -> throw new UnsupportedOpcode(opcode);
             }
+        }
+    }
+
+    private void executeIndexOperation() {
+        var indexObj = popStack();
+        var object = popStack();
+        if (object instanceof ArrayObject && indexObj instanceof IntegerObject) {
+            var arrayObject = (ArrayObject) object;
+            var index = (IntegerObject) indexObj;
+            pushStack(arrayObject.get(index.value));
+        } else if (object instanceof HashObject) {
+            var hashObject = (HashObject) object;
+            pushStack(hashObject.get(indexObj));
+        } else {
+            throw new UnsupportedIndexOpcode(object, indexObj);
         }
     }
 

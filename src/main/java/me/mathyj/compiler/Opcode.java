@@ -56,6 +56,8 @@ public enum Opcode {
     ARRAY(2),
     // 散列表
     HASH(2),
+    // 索引
+    INDEX,
 
     SET_GLOBAL(2),
     GET_GLOBAL(2),

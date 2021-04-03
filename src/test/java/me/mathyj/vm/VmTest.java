@@ -113,6 +113,19 @@ public class VmTest {
         ));
     }
 
+    @Test
+    void indexExpression() {
+        vmRunCheck(Map.of(
+                "[1,2][1]", 2,
+                "{'name':'ljz','age': 25}['age']", 25,
+                """
+                        let arr = [1,2,3]
+                        let map = {"name": "Tom", "arr": arr}
+                        map['arr']
+                        """, "[1, 2, 3]"
+        ));
+    }
+
     private <T> void vmRunCheck(Map<String, T> tests) {
         tests.forEach((input, expected) -> {
             var program = new Parser(input).parseProgram();

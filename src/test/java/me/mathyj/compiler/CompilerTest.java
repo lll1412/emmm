@@ -137,6 +137,7 @@ class CompilerTest {
         compileCheck(tests);
     }
 
+    // 字符串字面量编译测试
     @Test
     void stringLiteral() {
         var tests = MyMap.of(
@@ -146,6 +147,7 @@ class CompilerTest {
         compileCheck(tests);
     }
 
+    // 数组字面量编译测试
     @Test
     void arrayLiteral() {
         compileCheck(MyMap.of(
@@ -161,6 +163,7 @@ class CompilerTest {
         ));
     }
 
+    // hash字面量编译测试
     @Test
     void hashLiteral() {
         compileCheck(MyMap.of(
@@ -172,6 +175,33 @@ class CompilerTest {
                         makeConst(2),
                         makeConst(3),
                         makeHash(2),
+                        makePop()
+                )
+        ));
+    }
+
+    // 索引 编译测试
+    @Test
+    void indexExpression() {
+        compileCheck(Map.of(
+                "[1,2][1]", new Bytecode(
+                        List.of(IntegerObject.valueOf(1), IntegerObject.valueOf(2), IntegerObject.valueOf(1)),
+                        makeConst(0),
+                        makeConst(1),
+                        makeArray(2),
+                        makeConst(2),
+                        make(Opcode.INDEX),
+                        makePop()
+                ),
+                "{'name':'ljz','age': 25}['age']", new Bytecode(
+                        List.of(StringObject.valueOf("name"), StringObject.valueOf("ljz"), StringObject.valueOf("age"), IntegerObject.valueOf(25), StringObject.valueOf("age")),
+                        makeConst(0),
+                        makeConst(1),
+                        makeConst(2),
+                        makeConst(3),
+                        makeHash(2),
+                        makeConst(4),
+                        make(Opcode.INDEX),
                         makePop()
                 )
         ));
