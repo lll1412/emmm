@@ -1,7 +1,7 @@
 package me.mathyj.exception.parse;
 
-import me.mathyj.token.Token;
-import me.mathyj.token.TokenType;
+import me.mathyj.parser.token.Token;
+import me.mathyj.parser.token.TokenType;
 
 public class UnexpectedTokenException extends ParseException {
     private final TokenType expected;

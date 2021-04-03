@@ -1,7 +1,5 @@
 package me.mathyj.compiler;
 
-import me.mathyj.code.Opcode;
-
 public class Instructions {
     public char[] bytes;// byte 是[-128, 127]，但这里需要[0, 255]，所以用char来代替
 

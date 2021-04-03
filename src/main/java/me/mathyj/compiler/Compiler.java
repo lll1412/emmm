@@ -1,10 +1,9 @@
 package me.mathyj.compiler;
 
-import me.mathyj.ast.ASTNode;
-import me.mathyj.ast.Program;
-import me.mathyj.ast.expression.*;
-import me.mathyj.ast.statement.BlockStatement;
-import me.mathyj.code.Opcode;
+import me.mathyj.parser.ast.ASTNode;
+import me.mathyj.parser.ast.Program;
+import me.mathyj.parser.ast.expression.*;
+import me.mathyj.parser.ast.statement.BlockStatement;
 import me.mathyj.object.IntegerObject;
 
 public class Compiler {

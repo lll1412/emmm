@@ -1,6 +1,7 @@
 package me.mathyj.code;
 
 import me.mathyj.compiler.Instructions;
+import me.mathyj.compiler.Opcode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -14,7 +15,7 @@ class OpcodeTest {
         };
         for (var t : tests) {
             var actualInstruction = Instructions.make(t.op, t.operands);
-            assertEquals(t.expected, actualInstruction);
+            assertEquals(t.expected.toString(), actualInstruction.toString());
         }
     }
 

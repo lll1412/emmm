@@ -1,6 +1,6 @@
 package me.mathyj.parser;
 
-import me.mathyj.token.Token;
+import me.mathyj.parser.token.Token;
 
 /**
  * 优先级

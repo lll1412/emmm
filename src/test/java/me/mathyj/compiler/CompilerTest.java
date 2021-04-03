@@ -1,6 +1,5 @@
 package me.mathyj.compiler;
 
-import me.mathyj.code.Opcode;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.parser.Parser;
 import org.junit.jupiter.api.Test;

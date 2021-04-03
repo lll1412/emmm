@@ -1,6 +1,6 @@
 package me.mathyj.exception.parse;
 
-import me.mathyj.token.Token;
+import me.mathyj.parser.token.Token;
 
 public class UnSupportedStatementException extends ParseException {
     private final Token token;

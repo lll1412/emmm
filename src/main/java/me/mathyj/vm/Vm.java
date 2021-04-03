@@ -1,6 +1,6 @@
 package me.mathyj.vm;
 
-import me.mathyj.code.Opcode;
+import me.mathyj.compiler.Opcode;
 import me.mathyj.compiler.Bytecode;
 import me.mathyj.compiler.Instructions;
 import me.mathyj.exception.runtime.UnsupportedBinaryOperation;

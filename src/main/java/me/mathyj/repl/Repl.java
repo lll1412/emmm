@@ -1,6 +1,6 @@
 package me.mathyj.repl;
 
-import me.mathyj.ast.Program;
+import me.mathyj.parser.ast.Program;
 import me.mathyj.compiler.Compiler;
 import me.mathyj.object.Environment;
 import me.mathyj.parser.Parser;

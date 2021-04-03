@@ -1,12 +1,12 @@
 package me.mathyj.eval;
 
 import me.mathyj.MyMap;
-import me.mathyj.ast.expression.BinaryExpression;
-import me.mathyj.ast.expression.Identifier;
-import me.mathyj.ast.expression.IntegerLiteral;
-import me.mathyj.ast.operator.BinaryOperator;
-import me.mathyj.ast.operator.UnaryOperator;
-import me.mathyj.ast.statement.BlockStatement;
+import me.mathyj.parser.ast.expression.BinaryExpression;
+import me.mathyj.parser.ast.expression.Identifier;
+import me.mathyj.parser.ast.expression.IntegerLiteral;
+import me.mathyj.parser.ast.operator.BinaryOperator;
+import me.mathyj.parser.ast.operator.UnaryOperator;
+import me.mathyj.parser.ast.statement.BlockStatement;
 import me.mathyj.exception.UnsupportedArgumentException;
 import me.mathyj.exception.WrongArgumentsCount;
 import me.mathyj.exception.eval.TypeMismatchException;

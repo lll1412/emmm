@@ -1,17 +1,17 @@
 package me.mathyj.parser;
 
-import me.mathyj.ast.Program;
-import me.mathyj.ast.expression.*;
-import me.mathyj.ast.operator.BinaryOperator;
-import me.mathyj.ast.operator.UnaryOperator;
-import me.mathyj.ast.statement.*;
+import me.mathyj.parser.ast.Program;
+import me.mathyj.parser.ast.expression.*;
+import me.mathyj.parser.ast.operator.BinaryOperator;
+import me.mathyj.parser.ast.operator.UnaryOperator;
+import me.mathyj.parser.ast.statement.*;
 import me.mathyj.exception.parse.NoBinaryParseException;
 import me.mathyj.exception.parse.NoUnaryParseException;
 import me.mathyj.exception.parse.ParseException;
 import me.mathyj.exception.parse.UnexpectedTokenException;
-import me.mathyj.lexer.Lexer;
-import me.mathyj.token.Token;
-import me.mathyj.token.TokenType;
+import me.mathyj.parser.lexer.Lexer;
+import me.mathyj.parser.token.Token;
+import me.mathyj.parser.token.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;

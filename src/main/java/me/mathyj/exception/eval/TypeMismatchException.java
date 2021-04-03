@@ -1,6 +1,6 @@
 package me.mathyj.exception.eval;
 
-import me.mathyj.ast.operator.BinaryOperator;
+import me.mathyj.parser.ast.operator.BinaryOperator;
 import me.mathyj.object.Object;
 
 public class TypeMismatchException extends EvalException {

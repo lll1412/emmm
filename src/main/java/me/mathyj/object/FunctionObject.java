@@ -1,8 +1,8 @@
 package me.mathyj.object;
 
-import me.mathyj.ast.expression.Expression;
-import me.mathyj.ast.expression.Identifier;
-import me.mathyj.ast.statement.BlockStatement;
+import me.mathyj.parser.ast.expression.Expression;
+import me.mathyj.parser.ast.expression.Identifier;
+import me.mathyj.parser.ast.statement.BlockStatement;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +19,6 @@ public class FunctionObject implements Object {
         this.localEnv = new Environment(parent);
         this.params = params;
         this.body = body;
-    }
-
-    public FunctionObject(Environment parent) {
-        this(List.of(), BlockStatement.emptyBlock(), parent);
     }
 
     public FunctionObject() {

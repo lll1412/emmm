@@ -1,6 +1,6 @@
 package me.mathyj.exception.runtime;
 
-import me.mathyj.code.Opcode;
+import me.mathyj.compiler.Opcode;
 import me.mathyj.object.Object;
 
 public class UnsupportedUnaryOperation extends RuntimeException {

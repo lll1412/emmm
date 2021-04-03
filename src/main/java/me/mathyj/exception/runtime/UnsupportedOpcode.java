@@ -1,6 +1,6 @@
 package me.mathyj.exception.runtime;
 
-import me.mathyj.code.Opcode;
+import me.mathyj.compiler.Opcode;
 
 public class UnsupportedOpcode extends RuntimeException {
     private final Opcode opcode;

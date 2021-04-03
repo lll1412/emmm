@@ -1,14 +1,14 @@
 package me.mathyj.parser;
 
 import me.mathyj.MyMap;
-import me.mathyj.ast.Program;
-import me.mathyj.ast.expression.*;
-import me.mathyj.ast.operator.BinaryOperator;
-import me.mathyj.ast.operator.UnaryOperator;
-import me.mathyj.ast.statement.BlockStatement;
-import me.mathyj.ast.statement.LetStatement;
-import me.mathyj.ast.statement.ReturnStatement;
-import me.mathyj.token.TokenType;
+import me.mathyj.parser.ast.Program;
+import me.mathyj.parser.ast.expression.*;
+import me.mathyj.parser.ast.operator.BinaryOperator;
+import me.mathyj.parser.ast.operator.UnaryOperator;
+import me.mathyj.parser.ast.statement.BlockStatement;
+import me.mathyj.parser.ast.statement.LetStatement;
+import me.mathyj.parser.ast.statement.ReturnStatement;
+import me.mathyj.parser.token.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
