@@ -2,6 +2,7 @@ package me.mathyj.compiler;
 
 import me.mathyj.code.Opcode;
 import me.mathyj.object.IntegerObject;
+import me.mathyj.object.Object;
 import me.mathyj.parser.Parser;
 import org.junit.jupiter.api.Test;
 
@@ -29,12 +30,18 @@ class CompilerTest {
         );
         compileCheck(tests);
     }
-    // 布尔值编译测试
+
+    // 布尔表达式编译测试
     @Test
     void booleanExpression() {
         var tests = Map.of(
                 "true", new Bytecode(List.of(), make(Opcode.TRUE), makePop()),
-                "false", new Bytecode(List.of(), make(Opcode.FALSE), makePop())
+                "false", new Bytecode(List.of(), make(Opcode.FALSE), makePop()),
+                "2>1", new Bytecode(List.of(IntegerObject.valueOf(2), IntegerObject.valueOf(1)), makeConst(0), makeConst(1), make(Opcode.GT), makePop()),
+                "2==1", new Bytecode(List.of(IntegerObject.valueOf(2), IntegerObject.valueOf(1)), makeConst(0), makeConst(1), make(Opcode.EQ), makePop()),
+                "2!=1", new Bytecode(List.of(IntegerObject.valueOf(2), IntegerObject.valueOf(1)), makeConst(0), makeConst(1), make(Opcode.NE), makePop()),
+                "true == false", new Bytecode(List.of(), make(Opcode.TRUE), make(Opcode.FALSE), make(Opcode.EQ), makePop()),
+                "true != false", new Bytecode(List.of(), make(Opcode.TRUE), make(Opcode.FALSE), make(Opcode.NE), makePop())
         );
         compileCheck(tests);
     }

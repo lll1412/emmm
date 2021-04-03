@@ -31,9 +31,18 @@ public class VmTest {
     // 布尔表达式执行
     @Test
     void booleanExpression() {
-        var tests = Map.of(
+        var tests = MyMap.of(
                 "true", Object.TRUE,
-                "false", false
+                "false", false,
+                "2>1", true,
+                "2==1", false,
+                "2!=1", true,
+                "true == false", false,
+                "true!=false", true,
+                "(1<2) == true", true,
+                "(1<2) == false", false,
+                "(1>2) == true", false,
+                "(1>2) == false", true
         );
         vmRunCheck(tests);
     }

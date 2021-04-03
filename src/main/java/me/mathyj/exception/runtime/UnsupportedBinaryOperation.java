@@ -16,6 +16,6 @@ public class UnsupportedBinaryOperation extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return "unsupported type for binary operation: %s %s %s".formatted(left.type(), op, right.type());
+        return "unsupported type for binary operation: %s(%s) %s %s(%s)".formatted(left.type(), left.value(), op, right.type(), right.value());
     }
 }
