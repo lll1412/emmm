@@ -15,15 +15,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Vm {
+    public static final int STACK_SIZE = 2048;
     public static final int MAX_FRAMES = 1024;
     public static final int GLOBALS_SIZE = 65535;
     // 常量池
     private final List<Object> constantsPool;
-
+    // 操作数栈
+    private final Object[] stack;
     // 全局对象
     private final Object[] globals;
     private final Frame[] frames;
-
+    // 栈指针
+    private int sp;// stack pointer
     private int frameIndex;
 
     public Vm(Bytecode bytecode, Object[] globals) {
@@ -37,6 +40,7 @@ public class Vm {
         this.constantsPool = bytecode.constantsPool;
 
         this.globals = globals;
+        this.stack = new Object[STACK_SIZE];
     }
 
     public Vm(Bytecode bytecode) {
@@ -56,17 +60,17 @@ public class Vm {
                 case CONSTANT -> {
                     var constIndex = operands.first();
                     var constObject = constantsPool.get(constIndex);
-                    currentFrame().pushStack(constObject);
+                    pushStack(constObject);
                     currentFrame().ip += operands.offset();
                 }
                 case ADD, SUB, MUL, DIV, EQ, NE, GT, LT -> executeBinaryOperation(opcode);
-                case TRUE -> currentFrame().pushStack(Object.TRUE);
-                case FALSE -> currentFrame().pushStack(Object.FALSE);
+                case TRUE -> pushStack(Object.TRUE);
+                case FALSE -> pushStack(Object.FALSE);
                 case NOT, NEG -> executeUnaryOperation(opcode);
-                case POP -> currentFrame().popStack();
-                case NULL -> currentFrame().pushStack(Object.NULL);
+                case POP -> popStack();
+                case NULL -> pushStack(Object.NULL);
                 case JUMP_IF_NOT_TRUTHY -> {
-                    var cond = currentFrame().popStack();
+                    var cond = popStack();
                     if (!isTruthy(cond)) {
                         // 跳转
                         currentFrame().ip = operands.first();
@@ -78,47 +82,45 @@ public class Vm {
                 case JUMP_ALWAYS -> currentFrame().ip = operands.first();
                 case SET_GLOBAL -> {
                     var globalIndex = operands.first();
-                    globals[globalIndex] = currentFrame().popStack();
+                    globals[globalIndex] = popStack();
                     currentFrame().ip += operands.offset();
                 }
                 case GET_GLOBAL -> {
                     var globalIndex = operands.first();
-                    currentFrame().pushStack(globals[globalIndex]);
+                    pushStack(globals[globalIndex]);
                     currentFrame().ip += operands.offset();
                 }
                 case ARRAY -> {
                     var arrayLength = operands.first();
-                    var array = buildArray(currentFrame().sp - arrayLength, currentFrame().sp);
-                    currentFrame().sp -= arrayLength;
-                    currentFrame().pushStack(array);
+                    var array = buildArray(sp - arrayLength, sp);
+                    sp -= arrayLength;
+                    pushStack(array);
                     currentFrame().ip += operands.offset();
                 }
                 case HASH -> {
                     var hashLength = operands.first();
-                    var hash = buildHash(currentFrame().sp - hashLength * 2, currentFrame().sp);
-                    currentFrame().sp -= hashLength * 2;
-                    currentFrame().pushStack(hash);
+                    var hash = buildHash(sp - hashLength * 2, sp);
+                    sp -= hashLength * 2;
+                    pushStack(hash);
                     currentFrame().ip += operands.offset();
                 }
-                case INDEX -> {
-                    executeIndexOperation();
-                }
+                case INDEX -> executeIndexOperation();
                 case CALL -> {
-                    var fn = currentFrame().popStack();
+                    var fn = popStack();
                     var fnFrame = new Frame(((CompiledFunctionObject) fn));
-                    currentFrame().pushStack(fn);// 当前调用函数入栈
+                    pushStack(fn);// 当前调用函数入栈
                     pushFrame(fnFrame);
                 }
                 case RETURN_VALUE -> {
-                    var retValue = currentFrame().popStack();//弹出函数返回值
+                    var retValue = popStack();//弹出函数返回值
                     popFrame();// 从函数中退出到调用点
-                    currentFrame().popStack();// 当前函数出栈
-                    currentFrame().pushStack(retValue);
+                    popStack();// 当前函数出栈
+                    pushStack(retValue);
                 }
                 case RETURN -> {
                     popFrame();// 从函数中退出到调用点
-                    currentFrame().popStack();// 当前函数出栈
-                    currentFrame().pushStack(Object.NULL);
+                    popStack();// 当前函数出栈
+                    pushStack(Object.NULL);
                 }
                 default -> throw new UnsupportedOpcode(opcode);
             }
@@ -173,15 +175,15 @@ public class Vm {
     }
 
     private void executeIndexOperation() {
-        var indexObj = currentFrame().popStack();
-        var object = currentFrame().popStack();
+        var indexObj = popStack();
+        var object = popStack();
         if (object instanceof ArrayObject && indexObj instanceof IntegerObject) {
             var arrayObject = (ArrayObject) object;
             var index = (IntegerObject) indexObj;
-            currentFrame().pushStack(arrayObject.get(index.value));
+            pushStack(arrayObject.get(index.value));
         } else if (object instanceof HashObject) {
             var hashObject = (HashObject) object;
-            currentFrame().pushStack(hashObject.get(indexObj));
+            pushStack(hashObject.get(indexObj));
         } else {
             throw new UnsupportedIndexOpcode(object, indexObj);
         }
@@ -190,7 +192,7 @@ public class Vm {
     private HashObject buildHash(int start, int end) {
         var hash = new LinkedHashMap<Object, Object>();
         for (int i = start; i < end; i += 2) {
-            hash.put(currentFrame().getFromStack(i), currentFrame().getFromStack(i + 1));
+            hash.put(getFromStack(i), getFromStack(i + 1));
         }
         return new HashObject(hash);
     }
@@ -198,19 +200,19 @@ public class Vm {
     private ArrayObject buildArray(int start, int end) {
         var list = new ArrayList<Object>(end - start);
         for (int i = start; i < end; i++) {
-            list.add(currentFrame().getFromStack(i));
+            list.add(getFromStack(i));
         }
         return new ArrayObject(list);
     }
 
     private void executeUnaryOperation(Opcode opcode) {
-        var right = currentFrame().popStack();
+        var right = popStack();
         var val = switch (opcode) {
             case NOT -> executeUnaryNotOperation(right);
             case NEG -> executeUnaryNegOperation(right);
             default -> throw new UnsupportedUnaryOperation(right, opcode);
         };
-        currentFrame().pushStack(val);
+        pushStack(val);
     }
 
     private Object executeUnaryNegOperation(Object right) {
@@ -238,8 +240,8 @@ public class Vm {
      * 二元算术运算
      */
     private void executeBinaryOperation(Opcode opcode) {
-        var right = currentFrame().popStack();
-        var left = currentFrame().popStack();
+        var right = popStack();
+        var left = popStack();
         Object val;
         if (left instanceof IntegerObject && right instanceof IntegerObject) {
             val = executeBinaryIntegerOperation((IntegerObject) left, (IntegerObject) right, opcode);
@@ -250,7 +252,7 @@ public class Vm {
         } else {
             throw new UnsupportedBinaryOperation(left, right, opcode);
         }
-        currentFrame().pushStack(val);
+        pushStack(val);
     }
 
     /**
@@ -292,8 +294,26 @@ public class Vm {
                && !obj.equals(Object.FALSE);
     }
 
+    /**
+     * 最后一次出栈的元素
+     */
     public Object lastPopped() {
-        return currentFrame().lastPopped();
+        return stack[sp];
+    }
+
+    /**
+     * 栈相关操作
+     */
+    void pushStack(Object obj) {
+        stack[sp++] = obj;
+    }
+
+    Object popStack() {
+        return stack[--sp];
+    }
+
+    Object getFromStack(int index) {
+        return stack[index];
     }
 
     /**
