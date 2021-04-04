@@ -1,6 +1,9 @@
 package me.mathyj.compiler;
 
 import me.mathyj.MyMap;
+import me.mathyj.code.Bytecode;
+import me.mathyj.code.Instructions;
+import me.mathyj.code.Opcode;
 import me.mathyj.object.CompiledFunctionObject;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.object.StringObject;
@@ -10,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static me.mathyj.compiler.Instructions.*;
+import static me.mathyj.code.Instructions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CompilerTest {
@@ -219,7 +222,7 @@ class CompilerTest {
                         makeConst(2),
                         makePop()
                 ),
-                "fn(){return}", new Bytecode(
+                "fn(){}", new Bytecode(
                         List.of(new CompiledFunctionObject(makeReturn())),
                         makeConst(0),
                         makePop()

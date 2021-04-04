@@ -1,7 +1,5 @@
 package me.mathyj.code;
 
-import me.mathyj.compiler.Instructions;
-import me.mathyj.compiler.Opcode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;

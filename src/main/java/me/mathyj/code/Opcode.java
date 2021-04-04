@@ -1,4 +1,4 @@
-package me.mathyj.compiler;
+package me.mathyj.code;
 
 import me.mathyj.exception.code.OpcodeUndefinedException;
 import me.mathyj.exception.compile.UnknownOperatorException;

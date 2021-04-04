@@ -1,9 +1,9 @@
 package me.mathyj.object;
 
-import me.mathyj.compiler.Instructions;
+import me.mathyj.code.Instructions;
 
 public class CompiledFunctionObject implements Object {
-    private final Instructions instructions;
+    public final Instructions instructions;
 
     public CompiledFunctionObject(Instructions... instructions) {
         if (instructions.length == 1) this.instructions = instructions[0];

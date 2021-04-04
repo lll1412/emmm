@@ -130,7 +130,12 @@ public class VmTest {
     void functionLiteral() {
         vmRunCheck(Map.of(
                 "let f = fn(){}; f()", NullObject.NULL,
-                "let r = fn() {1+2};r()", 3
+                "let r = fn() {1+2};r()", 3,
+                """
+                        let f1 = fn() { 1+ 1}
+                        let f2 = fn() { f1 }
+                        f2()()
+                        """, 2
         ));
     }
 

@@ -1,5 +1,7 @@
 package me.mathyj.compiler;
 
+import me.mathyj.code.Bytecode;
+import me.mathyj.code.Opcode;
 import me.mathyj.exception.runtime.UndefinedVariable;
 import me.mathyj.object.CompiledFunctionObject;
 import me.mathyj.object.IntegerObject;
@@ -44,12 +46,7 @@ public class Compiler {
         } else if (node instanceof ReturnStatement) {
             var returnStatement = (ReturnStatement) node;
             var returnValue = returnStatement.returnValue;
-            if (returnValue != null) {
-                compile(returnValue);
-                bytecode.emit(Opcode.RETURN_VALUE);
-            } else {
-                bytecode.emit(Opcode.RETURN);
-            }
+            compile(returnValue);
         } else if (node instanceof Expression) {
             compile(((Expression) node));
             bytecode.emitPop();
@@ -140,6 +137,9 @@ public class Compiler {
             // 如果没有显示声明return，则新增一个
             if (bytecode.lastInsIs(Opcode.POP)) {
                 bytecode.replaceLastPopWithReturn();
+            }
+            if (!bytecode().lastInsIs(Opcode.RETURN_VALUE)) {
+                bytecode.emit(Opcode.RETURN);
             }
             var instructions = bytecode.leaveScope();
             var compiledFunctionObject = new CompiledFunctionObject(instructions);

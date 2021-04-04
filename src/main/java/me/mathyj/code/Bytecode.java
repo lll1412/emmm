@@ -1,4 +1,4 @@
-package me.mathyj.compiler;
+package me.mathyj.code;
 
 import me.mathyj.object.Object;
 
@@ -9,8 +9,9 @@ public class Bytecode {
     // 函数嵌套深度
     public static final int SCOPE_MAX_DEPTH = 2048;
 
-    public List<Object> constantsPool;// 常量池
-    public CompilationScope[] scopes;
+    public final List<Object> constantsPool;// 常量池
+
+    private final CompilationScope[] scopes;
     private int scopeIndex;
 
     public Bytecode(List<Object> constantsPool, Instructions... instructions) {
@@ -52,35 +53,6 @@ public class Bytecode {
         currentScope().replaceInstruction(pos, newIns);
     }
 
-    public Object getConst(int index) {
-        return constantsPool.get(index);
-    }
-
-    /**
-     * 取指令
-     */
-    public Opcode fetchOpcode(int ip) {
-        var c = currentInstructions().bytes[ip];
-        var opcode = Opcode.lookup(c);
-        return opcode;
-    }
-
-    /**
-     * 从指令中读取操作数
-     */
-    public Operands readOperands(Opcode op, int start) {
-        var offset = 0;
-        var operandsWidth = op.operandsWidth;
-        var operands = new int[operandsWidth.length];
-        for (int i = 0; i < operandsWidth.length; i++) {
-            int w = operandsWidth[i];
-            switch (w) {
-                case 2 -> operands[i] = Instructions.readTwoByte(currentInstructions(), start);
-            }
-            offset += w;
-        }
-        return new Operands(offset, operands);
-    }
 
     // 生成指令
     public int emit(Opcode op, int... operands) {
@@ -112,15 +84,6 @@ public class Bytecode {
     }
 
 
-    /**
-     * 添加常量，并返回在常量池中的索引
-     */
-    private int addConst(Object constant) {
-        constantsPool.add(constant);
-        return constantsPool.size() - 1;
-    }
-
-
     public void removeLastInsIfPop() {
         if (lastInsIs(Opcode.POP)) removeLastIns();
     }
@@ -144,21 +107,19 @@ public class Bytecode {
         }
     }
 
+    /**
+     * 添加常量，并返回在常量池中的索引
+     */
+    private int addConst(Object constant) {
+        constantsPool.add(constant);
+        return constantsPool.size() - 1;
+    }
 
     // 用来表示每次生成的指令，保存着指令操作码和指令位置
     private record EmittedInstruction(Opcode opcode, int position) {
     }
 
-    /**
-     * 操作数的一个封装，offset 是操作数占用的字节数, operands是操作数数组
-     */
-    public record Operands(int offset, int... operands) {
-        public int first() {
-            return operands[0];
-        }
-    }
-
-    static class CompilationScope {
+    private static class CompilationScope {
         public Instructions instructions;// 生成的字节码指令
         private EmittedInstruction prevIns;// 上上个生成的指令
         private EmittedInstruction lastIns;// 上一个生成的指令
