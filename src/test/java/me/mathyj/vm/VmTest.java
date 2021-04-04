@@ -126,6 +126,14 @@ public class VmTest {
         ));
     }
 
+    @Test
+    void functionLiteral() {
+        vmRunCheck(Map.of(
+                "let f = fn(){}; f()", NullObject.NULL,
+                "let r = fn() {1+2};r()", 3
+        ));
+    }
+
     private <T> void vmRunCheck(Map<String, T> tests) {
         tests.forEach((input, expected) -> {
             var program = new Parser(input).parseProgram();

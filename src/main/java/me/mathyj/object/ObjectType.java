@@ -10,6 +10,7 @@ public enum ObjectType {
     NULL,
     RETURN,
     FUNCTION,
+    COMPILED_FUNCTION,
 
     BUILTIN,
     ;

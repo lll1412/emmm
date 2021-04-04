@@ -12,9 +12,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CallExpression extends Expression {
-    private final Expression left;
+    public final Expression left;
     // 实参
-    private final List<Expression> arguments;
+    public final List<Expression> arguments;
 
     public CallExpression(Expression left, List<Expression> arguments) {
         this.left = left;

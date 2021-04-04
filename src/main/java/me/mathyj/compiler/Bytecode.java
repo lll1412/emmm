@@ -6,28 +6,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bytecode {
+    // 函数嵌套深度
+    public static final int SCOPE_MAX_DEPTH = 2048;
+
     public List<Object> constantsPool;// 常量池
-    public Instructions instructions;// 生成的字节码指令
-    public EmittedInstruction prevIns;// 上上个生成的指令
-    public EmittedInstruction lastIns;// 上一个生成的指令
+    public CompilationScope[] scopes;
+    private int scopeIndex;
 
     public Bytecode(List<Object> constantsPool, Instructions... instructions) {
+        this.scopes = new CompilationScope[SCOPE_MAX_DEPTH];
         this.constantsPool = constantsPool;
-        this.instructions = Instructions.concat(instructions);
+
+        var mainScope = new CompilationScope(Instructions.concat(instructions));
+        scopes[scopeIndex] = mainScope;
     }
 
     public Bytecode() {
-        this.constantsPool = new ArrayList<>();
-        this.instructions = new Instructions();
+        this(new ArrayList<>(), new Instructions());
+    }
+
+    public CompilationScope currentScope() {
+        return scopes[scopeIndex];
+    }
+
+    public Instructions currentInstructions() {
+        return currentScope().instructions;
+    }
+
+    // 进入到下一层
+    public void enterScope() {
+        scopes[++scopeIndex] = new CompilationScope();
+    }
+
+    // 返回到上一层 并返回该层的指令
+    public Instructions leaveScope() {
+        return scopes[scopeIndex--].instructions;
     }
 
     /**
      * 改变pos处的指令的操作数
      */
     public void changeOperand(int pos, int operand) {
-        var opcode = Opcode.lookup(instructions.bytes[pos]);
+        var opcode = Opcode.lookup(currentInstructions().bytes[pos]);
         var newIns = Instructions.make(opcode, operand);
-        replaceInstruction(pos, newIns);
+        currentScope().replaceInstruction(pos, newIns);
     }
 
     public Object getConst(int index) {
@@ -38,7 +60,7 @@ public class Bytecode {
      * 取指令
      */
     public Opcode fetchOpcode(int ip) {
-        var c = instructions.bytes[ip];
+        var c = currentInstructions().bytes[ip];
         var opcode = Opcode.lookup(c);
         return opcode;
     }
@@ -53,7 +75,7 @@ public class Bytecode {
         for (int i = 0; i < operandsWidth.length; i++) {
             int w = operandsWidth[i];
             switch (w) {
-                case 2 -> operands[i] = Instructions.readTwoByte(instructions, start);
+                case 2 -> operands[i] = Instructions.readTwoByte(currentInstructions(), start);
             }
             offset += w;
         }
@@ -63,8 +85,8 @@ public class Bytecode {
     // 生成指令
     public int emit(Opcode op, int... operands) {
         var ins = Instructions.make(op, operands);// 创建指令，
-        var pos = this.addInstructions(ins);// 添加到指令列表，返回指令地址
-        setLastEmittedIns(op, pos);
+        var pos = currentScope().addInstructions(ins);// 添加到指令列表，返回指令地址
+        currentScope().setLastEmittedIns(op, pos);
         return pos;
     }
 
@@ -81,32 +103,14 @@ public class Bytecode {
 
     @Override
     public String toString() {
-        return "constantsPool: %s, \ninstructions:\n%s".formatted(constantsPool, instructions.print());
+        return "constantsPool: %s, \ninstructions:\n%s".formatted(constantsPool, currentInstructions().print());
     }
 
-
-    public void removeLastInsIfPop() {
-        if (lastIns.opcode() == Opcode.POP) removeLastIns();
-    }
 
     public int instructionsSize() {
-        return instructions.size();
+        return currentInstructions().size();
     }
 
-    private void removeLastIns() {
-        var len = lastIns.position();
-        var newBytes = new char[len];
-        // 舍弃上一条指令位置后面的字节
-        for (var i = 0; i < len; i++) {
-            newBytes[i] = instructions.bytes[i];
-        }
-        instructions.bytes = newBytes;
-    }
-
-    private void setLastEmittedIns(Opcode op, int pos) {
-        prevIns = lastIns;
-        lastIns = new EmittedInstruction(op, pos);
-    }
 
     /**
      * 添加常量，并返回在常量池中的索引
@@ -116,28 +120,33 @@ public class Bytecode {
         return constantsPool.size() - 1;
     }
 
-    /**
-     * 添加指令，并返回添加的位置
-     */
-    private int addInstructions(Instructions ins) {
-        // 添加新指令时的长度，也就是当前指令在指令列表中的位置
-        var posNewInstruction = instructions.size();
-        instructions = Instructions.concat(instructions, ins);
-        return posNewInstruction;
+
+    public void removeLastInsIfPop() {
+        if (lastInsIs(Opcode.POP)) removeLastIns();
     }
 
-    /**
-     * 将pos处的指令零替换为新指令
-     */
-    private void replaceInstruction(int pos, Instructions newIns) {
-        var bytes = newIns.bytes;
-        for (var i = 0; i < bytes.length; i++) {
-            this.instructions.bytes[pos + i] = bytes[i];
+    public void removeLastIns() {
+        currentScope().removeLastIns();
+    }
+
+    public boolean lastInsIs(Opcode op) {
+        return currentScope().lastIns != null && currentScope().lastIns.opcode() == op;
+    }
+
+    public void replaceLastPopWithReturn() {
+        if (lastInsIs(Opcode.POP)) {
+            // 先删除原先的pop，再emit一个return
+            // 但这里只需要改一个字节的操作数，所以直接替换，防止频繁创建数组
+            var lastInsPos = currentScope().lastIns.position();
+            var newIns = Instructions.makeReturnValue();
+            currentScope().replaceInstruction(lastInsPos, newIns);
+            currentScope().lastIns = new EmittedInstruction(Opcode.RETURN_VALUE, lastInsPos);
         }
     }
 
+
     // 用来表示每次生成的指令，保存着指令操作码和指令位置
-    public record EmittedInstruction(Opcode opcode, int position) {
+    private record EmittedInstruction(Opcode opcode, int position) {
     }
 
     /**
@@ -146,6 +155,59 @@ public class Bytecode {
     public record Operands(int offset, int... operands) {
         public int first() {
             return operands[0];
+        }
+    }
+
+    static class CompilationScope {
+        public Instructions instructions;// 生成的字节码指令
+        private EmittedInstruction prevIns;// 上上个生成的指令
+        private EmittedInstruction lastIns;// 上一个生成的指令
+
+        public CompilationScope(Instructions instructions) {
+            this.instructions = instructions;
+        }
+
+        public CompilationScope() {
+            this(new Instructions());
+        }
+
+
+        void removeLastIns() {
+            var len = lastIns.position();
+            var newBytes = new char[len];
+            // 舍弃上一条指令位置后面的字节
+            for (var i = 0; i < len; i++) {
+                newBytes[i] = instructions.bytes[i];
+            }
+
+            instructions.bytes = newBytes;
+            lastIns = prevIns;
+        }
+
+        void setLastEmittedIns(Opcode op, int pos) {
+            prevIns = lastIns;
+            lastIns = new EmittedInstruction(op, pos);
+        }
+
+        /**
+         * 添加指令，并返回添加的位置
+         */
+        int addInstructions(Instructions ins) {
+            // 添加新指令时的长度，也就是当前指令在指令列表中的位置
+            var posNewInstruction = instructions.size();
+            instructions = Instructions.concat(instructions, ins);
+            return posNewInstruction;
+        }
+
+        /**
+         * 将pos处的指令替换为新指令,
+         * 此方法主要是辅助替换操作数，所以指令占用的空间和原来一致，不用担心把后面的指令覆盖或越界
+         */
+        void replaceInstruction(int pos, Instructions newIns) {
+            var bytes = newIns.bytes;
+            for (var i = 0; i < bytes.length; i++) {
+                this.instructions.bytes[pos + i] = bytes[i];
+            }
         }
     }
 }

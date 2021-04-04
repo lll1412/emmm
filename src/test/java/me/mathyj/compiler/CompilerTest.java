@@ -1,6 +1,7 @@
 package me.mathyj.compiler;
 
 import me.mathyj.MyMap;
+import me.mathyj.object.CompiledFunctionObject;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.object.StringObject;
 import me.mathyj.parser.Parser;
@@ -205,6 +206,40 @@ class CompilerTest {
                         makePop()
                 )
         ));
+    }
+
+    // 函数编译测试
+    @Test
+    void functionLiteral() {
+        compileCheck(Map.of(
+                "fn() { 5 + 10 };", new Bytecode(
+                        List.of(IntegerObject.valueOf(5), IntegerObject.valueOf(10),
+                                new CompiledFunctionObject(makeConst(0), makeConst(1), make(Opcode.ADD), makeReturnValue())
+                        ),
+                        makeConst(2),
+                        makePop()
+                ),
+                "fn(){return}", new Bytecode(
+                        List.of(new CompiledFunctionObject(makeReturn())),
+                        makeConst(0),
+                        makePop()
+                ),
+                "fn(){12}()", new Bytecode(
+                        List.of(IntegerObject.valueOf(12), new CompiledFunctionObject(makeConst(0), makeReturnValue())),
+                        makeConst(1),
+                        make(Opcode.CALL),
+                        makePop()
+                ),
+                "let noArg = fn(){24};noArg()", new Bytecode(
+                        List.of(IntegerObject.valueOf(24), new CompiledFunctionObject(makeConst(0), makeReturnValue())),
+                        makeConst(1),
+                        make(Opcode.SET_GLOBAL, 0),
+                        make(Opcode.GET_GLOBAL, 0),
+                        make(Opcode.CALL),
+                        makePop()
+                )
+        ));
+
     }
 
     private <T> void compileCheck(Map<String, T> tests) {

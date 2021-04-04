@@ -94,6 +94,12 @@ public class Parser {
 
     private ReturnStatement parseReturnStatement() {
         // 当前指向 return,
+
+        // 如果下一个是';'或'}',无返回值
+        if (peekTokenIs(TokenType.SEMICOLON) || peekTokenIs(TokenType.RBRACE)) {
+            return new ReturnStatement();
+        }
+        // 跳过return ，指向表达式
         nextToken();
         var retVal = parseExpression();
         // 当前指向 结尾分号

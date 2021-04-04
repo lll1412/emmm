@@ -1,6 +1,7 @@
 package me.mathyj.compiler;
 
 import me.mathyj.exception.runtime.UndefinedVariable;
+import me.mathyj.object.CompiledFunctionObject;
 import me.mathyj.object.IntegerObject;
 import me.mathyj.object.Object;
 import me.mathyj.object.StringObject;
@@ -8,6 +9,7 @@ import me.mathyj.parser.ast.Program;
 import me.mathyj.parser.ast.expression.*;
 import me.mathyj.parser.ast.statement.BlockStatement;
 import me.mathyj.parser.ast.statement.LetStatement;
+import me.mathyj.parser.ast.statement.ReturnStatement;
 import me.mathyj.parser.ast.statement.Statement;
 
 import java.util.List;
@@ -39,6 +41,15 @@ public class Compiler {
             compile(letStatement.value);
             var symbol = symbolTable.define(letStatement.name());
             bytecode.emit(Opcode.SET_GLOBAL, symbol.index());
+        } else if (node instanceof ReturnStatement) {
+            var returnStatement = (ReturnStatement) node;
+            var returnValue = returnStatement.returnValue;
+            if (returnValue != null) {
+                compile(returnValue);
+                bytecode.emit(Opcode.RETURN_VALUE);
+            } else {
+                bytecode.emit(Opcode.RETURN);
+            }
         } else if (node instanceof Expression) {
             compile(((Expression) node));
             bytecode.emitPop();
@@ -118,10 +129,34 @@ public class Compiler {
             compile(indexExpression.left);
             compile(indexExpression.index);
             bytecode.emit(Opcode.INDEX);
+        } else if (node instanceof FunctionLiteral) {
+            var functionLiteral = (FunctionLiteral) node;
+            bytecode.enterScope();
+//            for (var param : functionLiteral.params) {
+//                compile(param);
+//            }
+            compile(functionLiteral.body);
+
+            // 如果没有显示声明return，则新增一个
+            if (bytecode.lastInsIs(Opcode.POP)) {
+                bytecode.replaceLastPopWithReturn();
+            }
+            var instructions = bytecode.leaveScope();
+            var compiledFunctionObject = new CompiledFunctionObject(instructions);
+            bytecode.emitConst(compiledFunctionObject);
+        } else if (node instanceof CallExpression) {
+            var callExpression = (CallExpression) node;
+//            for (Expression argument : callExpression.arguments) {
+//                compile(argument);
+//            }
+            compile(callExpression.left);
+            bytecode.emit(Opcode.CALL);
+
         }
     }
 
     private void compile(List<Statement> statements) {
+        if (statements == null) return;
         for (var statement : statements) {
             compile(statement);
         }

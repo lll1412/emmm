@@ -7,6 +7,8 @@ import me.mathyj.parser.ast.operator.BinaryOperator;
 import me.mathyj.parser.ast.operator.UnaryOperator;
 
 public enum Opcode {
+    // 空值
+    NULL,
     // 常量 操作2字节的操作数  例如：const 0xaa 0xbb
     CONSTANT(2),
 
@@ -48,10 +50,18 @@ public enum Opcode {
     JUMP_IF_NOT_TRUTHY(2),
     // 无条件跳转
     JUMP_ALWAYS(2),
+
     // 出栈
     POP,
-    // 空值
-    NULL,
+
+    // 函数调用
+    CALL,
+    // 无返回值
+    RETURN,
+    // 返回值
+    RETURN_VALUE,
+
+
     // 数组
     ARRAY(2),
     // 散列表

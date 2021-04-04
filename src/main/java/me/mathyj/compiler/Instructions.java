@@ -51,6 +51,14 @@ public class Instructions {
         return make(Opcode.POP);
     }
 
+    public static Instructions makeReturn() {
+        return make(Opcode.RETURN);
+    }
+
+    public static Instructions makeReturnValue() {
+        return make(Opcode.RETURN_VALUE);
+    }
+
     public static Instructions makeArray(int length) {
         return make(Opcode.ARRAY, length);
     }

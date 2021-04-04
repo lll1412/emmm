@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class FunctionLiteral extends Expression {
     private Identifier identifier;
-    private List<Expression> params;
-    private BlockStatement body;
+    public List<Expression> params;
+    public BlockStatement body;
 
     public FunctionLiteral(Identifier identifier, List<Expression> params, BlockStatement body) {
         this.identifier = identifier;
