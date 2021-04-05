@@ -51,8 +51,6 @@ public enum Opcode {
     // 无条件跳转
     JUMP_ALWAYS(2),
 
-    // 出栈
-    POP,
 
     // 函数调用
     CALL,
@@ -68,10 +66,16 @@ public enum Opcode {
     HASH(2),
     // 索引
     INDEX,
-
+    // 全局变量
+    GET_GLOBAL(2),// 最多容纳2字节（2^16个全局变量）,
     SET_GLOBAL(2),
-    GET_GLOBAL(2),
-    ;
+
+    // 局部变量
+    GET_LOCAL(1),// 最多容纳1字节（2^8个局部变量）
+    SET_LOCAL(1),
+
+    // 出栈
+    POP;
     public final int[] operandsWidth;// 指令每个操作数的宽度
 
     // 下面这两个虽然可以直接调用方法获取 ，但不确定要用现在的方式，可能会改

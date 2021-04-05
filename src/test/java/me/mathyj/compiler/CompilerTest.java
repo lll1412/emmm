@@ -141,6 +141,46 @@ class CompilerTest {
         compileCheck(tests);
     }
 
+    @Test
+    void localLetStatement() {
+        var tests = MyMap.of(
+                """
+                        let num = 1;
+                        fn() { num }
+                        """, new Bytecode(
+                        List.of(IntegerObject.valueOf(1), new CompiledFunctionObject(make(Opcode.GET_GLOBAL, 0), makeReturnValue())),
+                        makeConst(0),
+                        make(Opcode.SET_GLOBAL, 0),
+                        makeConst(1),
+                        makePop()
+                ),
+                """
+                        fn() {
+                          let num = 1;
+                          num
+                        }
+                        """, new Bytecode(
+                        List.of(IntegerObject.valueOf(1), new CompiledFunctionObject(makeConst(0), make(Opcode.SET_LOCAL, 0), make(Opcode.GET_LOCAL, 0), make(Opcode.RETURN_VALUE))),
+                        makeConst(1),
+                        makePop()
+                ),
+                """
+                        fn() {
+                          let a = 1;
+                          let b = 2;
+                          a + b
+                        }
+                        """, new Bytecode(
+                        List.of(IntegerObject.valueOf(1), IntegerObject.valueOf(2),
+                                new CompiledFunctionObject(makeConst(0), make(Opcode.SET_LOCAL, 0), makeConst(1), make(Opcode.SET_LOCAL, 1), make(Opcode.GET_LOCAL, 0), make(Opcode.GET_LOCAL, 1), make(Opcode.ADD), makeReturnValue())
+                        ),
+                        makeConst(2),
+                        makePop()
+                )
+        );
+        compileCheck(tests);
+    }
+
     // 字符串字面量编译测试
     @Test
     void stringLiteral() {

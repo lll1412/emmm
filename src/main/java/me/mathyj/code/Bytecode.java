@@ -1,5 +1,7 @@
 package me.mathyj.code;
 
+import me.mathyj.compiler.Symbol;
+import me.mathyj.compiler.SymbolTable;
 import me.mathyj.object.Object;
 
 import java.util.ArrayList;
@@ -12,18 +14,27 @@ public class Bytecode {
     public final List<Object> constantsPool;// 常量池
 
     private final CompilationScope[] scopes;
+    // 局部变量符号表
+    public SymbolTable symbolTable;
     private int scopeIndex;
 
+
+    public Bytecode() {
+        this(new ArrayList<>(), new SymbolTable(), new Instructions());
+    }
+
     public Bytecode(List<Object> constantsPool, Instructions... instructions) {
+        this(constantsPool, new SymbolTable(), instructions);
+    }
+
+    public Bytecode(List<Object> constantsPool, SymbolTable mainSymbolTable, Instructions... instructions) {
         this.scopes = new CompilationScope[SCOPE_MAX_DEPTH];
         this.constantsPool = constantsPool;
 
         var mainScope = new CompilationScope(Instructions.concat(instructions));
-        scopes[scopeIndex] = mainScope;
-    }
+        this.scopes[scopeIndex] = mainScope;
 
-    public Bytecode() {
-        this(new ArrayList<>(), new Instructions());
+        this.symbolTable = mainSymbolTable;
     }
 
     public CompilationScope currentScope() {
@@ -36,12 +47,15 @@ public class Bytecode {
 
     // 进入到下一层
     public void enterScope() {
-        scopes[++scopeIndex] = new CompilationScope();
+        this.scopes[++scopeIndex] = new CompilationScope();
+        this.symbolTable = new SymbolTable(symbolTable);
     }
 
     // 返回到上一层 并返回该层的指令
     public Instructions leaveScope() {
-        return scopes[scopeIndex--].instructions;
+        var instructions = scopes[scopeIndex--].instructions;
+        this.symbolTable = symbolTable.parent;
+        return instructions;
     }
 
     /**
@@ -64,7 +78,8 @@ public class Bytecode {
 
     // 生成常量指令
     public void emitConst(Object obj) {
-        var index = addConst(obj);// 添加到常量池，返回索引
+        constantsPool.add(obj);
+        var index = constantsPool.size() - 1;// 添加到常量池，返回索引
         emit(Opcode.CONSTANT, index);
     }
 
@@ -73,11 +88,27 @@ public class Bytecode {
         emit(Opcode.POP);
     }
 
+    // 生成变量设置指令
+    public void emitVarSet(Symbol symbol) {
+        if (symbol.scope() == Symbol.Scope.GLOBAL) {
+            emit(Opcode.SET_GLOBAL, symbol.index());
+        } else {
+            emit(Opcode.SET_LOCAL, symbol.index());
+        }
+    }
+
+    public void emitVarGet(Symbol symbol) {
+        if (symbol.scope() == Symbol.Scope.GLOBAL) {
+            emit(Opcode.GET_GLOBAL, symbol.index());
+        } else {
+            emit(Opcode.GET_LOCAL, symbol.index());
+        }
+    }
+
     @Override
     public String toString() {
         return "constantsPool: %s, \ninstructions:\n%s".formatted(constantsPool, currentInstructions().print());
     }
-
 
     public int instructionsSize() {
         return currentInstructions().size();
@@ -98,7 +129,7 @@ public class Bytecode {
 
     public void replaceLastPopWithReturn() {
         if (lastInsIs(Opcode.POP)) {
-            // 先删除原先的pop，再emit一个return
+            // 可以先删除原先的pop，再emit一个return
             // 但这里只需要改一个字节的操作数，所以直接替换，防止频繁创建数组
             var lastInsPos = currentScope().lastIns.position();
             var newIns = Instructions.makeReturnValue();
@@ -107,13 +138,6 @@ public class Bytecode {
         }
     }
 
-    /**
-     * 添加常量，并返回在常量池中的索引
-     */
-    private int addConst(Object constant) {
-        constantsPool.add(constant);
-        return constantsPool.size() - 1;
-    }
 
     // 用来表示每次生成的指令，保存着指令操作码和指令位置
     private record EmittedInstruction(Opcode opcode, int position) {
@@ -124,11 +148,11 @@ public class Bytecode {
         private EmittedInstruction prevIns;// 上上个生成的指令
         private EmittedInstruction lastIns;// 上一个生成的指令
 
-        public CompilationScope(Instructions instructions) {
+        CompilationScope(Instructions instructions) {
             this.instructions = instructions;
         }
 
-        public CompilationScope() {
+        CompilationScope() {
             this(new Instructions());
         }
 
@@ -162,7 +186,7 @@ public class Bytecode {
 
         /**
          * 将pos处的指令替换为新指令,
-         * 此方法主要是辅助替换操作数，所以指令占用的空间和原来一致，不用担心把后面的指令覆盖或越界
+         * 此方法主要是辅助替换操作数/指令码，所以指令占用的空间和原来一致，不用担心把后面的指令覆盖或越界
          */
         void replaceInstruction(int pos, Instructions newIns) {
             var bytes = newIns.bytes;

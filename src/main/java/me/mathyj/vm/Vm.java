@@ -162,9 +162,11 @@ public class Vm {
         var operands = new int[operandsWidth.length];
         for (int i = 0; i < operandsWidth.length; i++) {
             int w = operandsWidth[i];
-            switch (w) {
-                case 2 -> operands[i] = Instructions.readTwoByte(currentInstructions(), start);
-            }
+            operands[i] = switch (w) {
+                case 2 -> currentInstructions().readTwoByte(start);
+                case 1 -> currentInstructions().readOneByte(start);
+                default -> throw new IllegalStateException("Unexpected value: " + w);
+            };
             offset += w;
         }
         return new Operands(offset, operands);

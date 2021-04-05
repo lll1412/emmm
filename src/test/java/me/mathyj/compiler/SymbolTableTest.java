@@ -40,5 +40,29 @@ class SymbolTableTest {
         });
     }
 
+    @Test
+    void resolveLocal() {
+        var global = new SymbolTable();
+        global.define("a");
+        global.define("b");
+
+        var firstLocal = new SymbolTable(global);
+        firstLocal.define("c");
+        firstLocal.define("d");
+
+        var secondLocal = new SymbolTable(firstLocal);
+        secondLocal.define("e");
+        secondLocal.define("f");
+        var tests = List.of(
+                new Symbol("a", Symbol.Scope.GLOBAL, 0),
+                new Symbol("b", Symbol.Scope.GLOBAL, 1),
+//                new Symbol("c", Symbol.Scope.LOCAL, 0),
+//                new Symbol("d", Symbol.Scope.LOCAL, 1),
+                new Symbol("e", Symbol.Scope.LOCAL, 0),
+                new Symbol("f", Symbol.Scope.LOCAL, 1)
+        );
+        tests.forEach(symbol -> assertEquals(secondLocal.resolve(symbol.name()), symbol));
+    }
+
 
 }

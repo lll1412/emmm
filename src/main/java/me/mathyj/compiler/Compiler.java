@@ -18,15 +18,15 @@ import java.util.List;
 
 public class Compiler {
     private final Bytecode bytecode;
-    private final SymbolTable symbolTable;
+    // 全局变量符号表
+//    private final SymbolTable symbolTable;
 
     public Compiler(SymbolTable symbolTable, List<Object> constantsPool) {
-        this.symbolTable = symbolTable;
-        this.bytecode = new Bytecode(constantsPool);
+//        this.symbolTable = symbolTable;
+        this.bytecode = new Bytecode(constantsPool, symbolTable);
     }
 
     public Compiler() {
-        this.symbolTable = new SymbolTable();
         this.bytecode = new Bytecode();
     }
 
@@ -41,8 +41,8 @@ public class Compiler {
         } else if (node instanceof LetStatement) {
             var letStatement = (LetStatement) node;
             compile(letStatement.value);
-            var symbol = symbolTable.define(letStatement.name());
-            bytecode.emit(Opcode.SET_GLOBAL, symbol.index());
+            var symbol = bytecode.symbolTable.define(letStatement.name());
+            bytecode.emitVarSet(symbol);
         } else if (node instanceof ReturnStatement) {
             var returnStatement = (ReturnStatement) node;
             var returnValue = returnStatement.returnValue;
@@ -101,9 +101,9 @@ public class Compiler {
         } else if (node instanceof Identifier) {
             var identifier = (Identifier) node;
             var value = identifier.value;
-            var symbol = symbolTable.resolve(value);
+            var symbol = bytecode.symbolTable.resolve(value);
             if (symbol == null) throw new UndefinedVariable(value);
-            bytecode.emit(Opcode.GET_GLOBAL, symbol.index());
+            bytecode.emitVarGet(symbol);
         } else if (node instanceof StringLiteral) {
             var stringLiteral = (StringLiteral) node;
             var value = StringObject.valueOf(stringLiteral.val);

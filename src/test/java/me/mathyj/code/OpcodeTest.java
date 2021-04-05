@@ -2,7 +2,6 @@ package me.mathyj.code;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OpcodeTest {
@@ -10,6 +9,7 @@ class OpcodeTest {
     void make() {
         var tests = new T[]{
                 T.of(Opcode.CONSTANT, new int[]{0xFFFE}, new Instructions(Opcode.CONSTANT, (char) 0xFF, (char) 0xFE)),
+                T.of(Opcode.GET_LOCAL, new int[]{0xFF}, new Instructions(Opcode.GET_LOCAL, (char) 0xFF)),
         };
         for (var t : tests) {
             var actualInstruction = Instructions.make(t.op, t.operands);

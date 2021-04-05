@@ -37,6 +37,7 @@ public class Instructions {
             var width = op.operandsWidth[i];// 第i个操作数的宽度
             switch (width) {
                 case 2 -> writeTwoByteBE(bytes, offset, operand);
+                case 1 -> writeOneByteBE(bytes, offset, operand);
             }
             offset += width;
         }
@@ -77,6 +78,12 @@ public class Instructions {
         bytes[offset + 1] = low;
     }
 
+    // 写入一字节操作数
+    private static void writeOneByteBE(char[] bytes, int offset, int operand) {
+        var value = (char) (operand & 0xff);
+        bytes[offset] = value;
+    }
+
     /**
      * 合并多个指令流
      */
@@ -99,10 +106,14 @@ public class Instructions {
     /**
      * 读取2字节数据
      */
-    public static int readTwoByte(Instructions ins, int offset) {
-        var high = ins.bytes[offset];
-        var low = ins.bytes[offset + 1];
+    public int readTwoByte(int offset) {
+        var high = this.bytes[offset];
+        var low = this.bytes[offset + 1];
         return high << 8 | low;
+    }
+
+    public int readOneByte(int start) {
+        return this.bytes[start];
     }
 
     public int size() {
@@ -126,7 +137,7 @@ public class Instructions {
     }
 
     /**
-     * 将指令打印为字符串
+     * 将指令反编译打印
      */
     public String print() {
         var sb = new StringBuilder();
@@ -137,7 +148,8 @@ public class Instructions {
             offset++;// 跳过操作码
             for (var width : op.operandsWidth) {// 操作数的位数, w个字节
                 switch (width) {
-                    case 2 -> sb.append(" ").append(Instructions.readTwoByte(this, offset));
+                    case 2 -> sb.append(" ").append(this.readTwoByte( offset));
+                    case 1 -> sb.append(" ").append(this.readOneByte( offset));
                 }
                 offset += width;
             }
