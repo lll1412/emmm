@@ -90,6 +90,16 @@ public class Vm {
                     pushStack(globals[globalIndex]);
                     currentFrame().ip += operands.offset();
                 }
+                case SET_LOCAL -> {
+                    var localIndex = operands.first();
+                    currentFrame().locals[localIndex] = popStack();
+                    currentFrame().ip += operands.offset();
+                }
+                case GET_LOCAL -> {
+                    var localIndex = operands.first();
+                    pushStack(currentFrame().locals[localIndex]);
+                    currentFrame().ip += operands.offset();
+                }
                 case ARRAY -> {
                     var arrayLength = operands.first();
                     var array = buildArray(sp - arrayLength, sp);

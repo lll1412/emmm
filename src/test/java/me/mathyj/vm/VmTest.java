@@ -80,7 +80,21 @@ public class VmTest {
                 "let one = 1;", 1,
                 "let one = 1; one", 1,
                 "let one = 1; let two = one; two", 1,
-                "let one = 1; let two = 2; one + two", 3
+                "let one = 1; let two = 2; one + two", 3,
+                """
+                        let num = 3;
+                        fn() { num * 2 }()
+                        """, 6,
+                """
+                        let global= 10;
+                        let f = fn() {
+                          let a = 1;
+                          let b = 2;
+                          a + b + global
+                        }
+                        f()
+                        """, 13
+
         );
         vmRunCheck(tests);
     }
