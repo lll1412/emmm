@@ -134,29 +134,29 @@ public class VmTest {
     @Test
     void functionLiteral() {
         vmRunCheck(Map.of(
-//                "let f = fn(){}; f()", Object.NULL,
-//                "let r = fn() {1+2};r()", 3,
-//                """
-//                        let f1 = fn() { 1+ 1}
-//                        let f2 = fn() { f1 }
-//                        f2()()
-//                        """, 2,
-//                "let oneArg = fn(a) {}; oneArg(1)", Object.NULL,
-//                """
-//                        let add = fn(a,b) {
-//                            a + b
-//                        }
-//                        add(1, 3)
-//                        """, 4,
-//                """
-//                        let global= 10;
-//                        let f = fn() {
-//                          let a = 1;
-//                          let b = 2;
-//                          a + b + global
-//                        }
-//                        f()
-//                        """, 13,
+                "let f = fn(){}; f()", Object.NULL,
+                "let r = fn() {1+2};r()", 3,
+                """
+                        let f1 = fn() { 1+ 1}
+                        let f2 = fn() { f1 }
+                        f2()()
+                        """, 2,
+                "let oneArg = fn(a) {}; oneArg(1)", Object.NULL,
+                """
+                        let add = fn(a,b) {
+                            a + b
+                        }
+                        add(1, 3)
+                        """, 4,
+                """
+                        let global= 10;
+                        let f = fn() {
+                          let a = 1;
+                          let b = 2;
+                          a + b + global
+                        }
+                        f()
+                        """, 13,
                 """
                         let global = 10;
                         let f1 = fn(a) {
@@ -167,6 +167,14 @@ public class VmTest {
                         }
                         f2(1, 2)
                         """, 28
+        ));
+    }
+
+    @Test
+    void builtinFunction() {
+        vmRunCheck(Map.of(
+                "len([])",0,
+                "push([], 1, 2)","[1, 2]"
         ));
     }
 

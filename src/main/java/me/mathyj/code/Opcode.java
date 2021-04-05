@@ -74,6 +74,9 @@ public enum Opcode {
     GET_LOCAL(1),// 最多容纳1字节（2^8个局部变量）
     SET_LOCAL(1),
 
+    // 内置函数
+    GET_BUILTIN(1),
+
     // 出栈
     POP;
     public final int[] operandsWidth;// 指令每个操作数的宽度

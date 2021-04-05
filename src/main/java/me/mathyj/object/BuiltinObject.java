@@ -4,27 +4,26 @@ import me.mathyj.exception.UnsupportedArgumentException;
 import me.mathyj.exception.WrongArgumentsCount;
 import me.mathyj.parser.Parser;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class BuiltinObject implements Object {
-    private static final BuiltinObject len = new BuiltinObject(lenFn());
-    private static final BuiltinObject first = new BuiltinObject(firstFn());
-    private static final BuiltinObject last = new BuiltinObject(lastFn());
-    private static final BuiltinObject push = new BuiltinObject(pushFn());
-    private static final BuiltinObject print = new BuiltinObject(printFn());
-    private static final BuiltinObject eval = new BuiltinObject(evalFn());
-    public static Map<String, Object> builtins = Map.of(
-            "len", len,
-            "first", first,
-            "last", last,
-            "push", push,
-            "print", print,
-            "eval", eval
-    );
+    public static final List<Object> builtins;
+    public static Map<String, Object> builtinMap = new LinkedHashMap<>() {{
+        put("len", new BuiltinObject(lenFn()));
+        put("first", new BuiltinObject(firstFn()));
+        put("last", new BuiltinObject(lastFn()));
+        put("push", new BuiltinObject(pushFn()));
+        put("print", new BuiltinObject(printFn()));
+        put("eval", new BuiltinObject(evalFn()));
+    }};
+
+    static {
+        builtins = new ArrayList<>(builtinMap.size());
+        builtinMap.forEach((k, v) -> builtins.add(v));
+    }
+
     private final Function<List<Object>, Object> fn;
 
     private BuiltinObject(Function<List<Object>, Object> fn) {
@@ -97,13 +96,19 @@ public class BuiltinObject implements Object {
 
     private static Function<List<Object>, Object> pushFn() {
         return args -> {
-            assertArgCount(2, args.size(), "push");
+            if (args.size() == 0) return Object.NULL;
+            else if (args.size() == 1) return args.get(0);
+//            assertArgCount(2, args.size(), "push");
             var arr = args.get(0);
-            var arg = args.get(1);
             if (arr instanceof ArrayObject) {
-                return ((ArrayObject) arr).add(arg);
+                var array = ((ArrayObject) arr);
+                for (int i = 1; i < args.size(); i++) {
+                    var arg = args.get(i);
+                    array.add(arg);
+                }
+                return array;
             }
-            throw new UnsupportedArgumentException(arg.type(), "push");
+            throw new UnsupportedArgumentException(arr.type(), "push");
         };
     }
 

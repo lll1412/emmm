@@ -1,9 +1,21 @@
 package me.mathyj.compiler;
 
+import me.mathyj.object.BuiltinObject;
+
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SymbolTable {
+    private static final Map<String, Symbol> builtins;
+
+    static {
+        builtins = new LinkedHashMap<>(BuiltinObject.builtinMap.size());
+        var i = new AtomicInteger();
+        BuiltinObject.builtinMap.forEach((name, obj) -> builtins.put(name, new Symbol(name, Symbol.Scope.BUILTIN, i.getAndIncrement())));
+    }
+
     public final SymbolTable parent;
     private final Map<String, Symbol> store;
     private int numDefinitions;
@@ -27,7 +39,7 @@ public class SymbolTable {
     }
 
     public Symbol resolve(String name) {
-        return store.getOrDefault(name, parent == null ? null : parent.resolve(name));
+        return store.getOrDefault(name, parent != null ? parent.resolve(name) : builtins.get(name));
     }
 
     public int numDefinitions() {

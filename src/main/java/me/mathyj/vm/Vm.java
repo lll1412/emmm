@@ -3,7 +3,6 @@ package me.mathyj.vm;
 import me.mathyj.code.Bytecode;
 import me.mathyj.code.Instructions;
 import me.mathyj.code.Opcode;
-import me.mathyj.exception.WrongArgumentsCount;
 import me.mathyj.exception.runtime.*;
 import me.mathyj.object.Object;
 import me.mathyj.object.*;
@@ -105,6 +104,13 @@ public class Vm {
                     var index = currentFrame().bp + offset;
                     pushStack(stack[index]);
                 }
+                case GET_BUILTIN -> {
+                    var builtinIndex = operands.first();
+                    currentFrame().ip += operands.offset();
+
+                    var builtinFn = BuiltinObject.builtins.get(builtinIndex);
+                    pushStack(builtinFn);
+                }
                 case ARRAY -> {
                     var arrayLength = operands.first();
                     currentFrame().ip += operands.offset();
@@ -122,16 +128,7 @@ public class Vm {
                     pushStack(hash);
                 }
                 case INDEX -> executeIndexOperation();
-                case CALL -> {
-                    var argNums = operands.first();
-                    currentFrame().ip += operands.offset();
-
-                    var fn = (CompiledFunctionObject) stack[sp - 1 - argNums];// 跳过参数找到函数
-                    if (argNums != fn.numParams) throw new WrongArgumentsNumber(fn.numParams, argNums);
-                    var fnFrame = new Frame(fn, sp - argNums);// bp 指向stack中函数的上面
-                    pushFrame(fnFrame);
-                    sp = fnFrame.bp + fn.numLocals;
-                }
+                case CALL -> executeFunctionCall(operands);
                 case RETURN_VALUE -> {
                     var retValue = popStack();//弹出函数返回值
                     // 从函数中退出到调用点
@@ -148,6 +145,30 @@ public class Vm {
                     pushStack(Object.NULL);
                 }
                 default -> throw new UnsupportedOpcode(opcode);
+            }
+        }
+    }
+    // 函数调用
+    private void executeFunctionCall(Operands operands) {
+        var argNums = operands.first();
+        currentFrame().ip += operands.offset();
+
+        var fnObject = stack[sp - 1 - argNums];
+        switch (fnObject.type()) {
+            case BUILTIN -> {
+                var list = new ArrayList<Object>(argNums);
+                for (int i = sp - argNums; i < sp; i++) {
+                    list.add(stack[i]);
+                }
+                var result = ((BuiltinObject) fnObject).apply(list);
+                pushStack(result);
+            }
+            case COMPILED_FUNCTION -> {
+                var fn = (CompiledFunctionObject) fnObject;// 跳过参数找到函数
+                if (argNums != fn.numParams) throw new WrongArgumentsNumber(fn.numParams, argNums);
+                var fnFrame = new Frame(fn, sp - argNums);// bp 指向stack中函数的上面
+                pushFrame(fnFrame);
+                sp = fnFrame.bp + fn.numLocals;
             }
         }
     }

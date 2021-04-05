@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Environment {
-    private static final Map<String, Object> builtins = BuiltinObject.builtins;
+    private static final Map<String, Object> builtins = BuiltinObject.builtinMap;
     private final Map<String, Object> store;
     private Environment parent;
 

@@ -42,7 +42,7 @@ public class Compiler {
             var letStatement = (LetStatement) node;
             compile(letStatement.value);
             var symbol = bytecode.symbolTable.define(letStatement.name());
-            bytecode.emitVarSet(symbol);
+            bytecode.storeSymbol(symbol);
         } else if (node instanceof ReturnStatement) {
             var returnStatement = (ReturnStatement) node;
             var returnValue = returnStatement.returnValue;
@@ -103,7 +103,7 @@ public class Compiler {
             var value = identifier.value;
             var symbol = bytecode.symbolTable.resolve(value);
             if (symbol == null) throw new UndefinedVariable(value);
-            bytecode.emitVarGet(symbol);
+            bytecode.loadSymbol(symbol);
         } else if (node instanceof StringLiteral) {
             var stringLiteral = (StringLiteral) node;
             var value = StringObject.valueOf(stringLiteral.val);

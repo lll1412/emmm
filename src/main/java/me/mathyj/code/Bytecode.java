@@ -89,7 +89,7 @@ public class Bytecode {
     }
 
     // 生成变量设置指令
-    public void emitVarSet(Symbol symbol) {
+    public void storeSymbol(Symbol symbol) {
         if (symbol.scope() == Symbol.Scope.GLOBAL) {
             emit(Opcode.SET_GLOBAL, symbol.index());
         } else {
@@ -97,11 +97,12 @@ public class Bytecode {
         }
     }
 
-    public void emitVarGet(Symbol symbol) {
-        if (symbol.scope() == Symbol.Scope.GLOBAL) {
-            emit(Opcode.GET_GLOBAL, symbol.index());
-        } else {
-            emit(Opcode.GET_LOCAL, symbol.index());
+    public void loadSymbol(Symbol symbol) {
+        var index = symbol.index();
+        switch (symbol.scope()) {
+            case GLOBAL -> emit(Opcode.GET_GLOBAL, index);
+            case LOCAL -> emit(Opcode.GET_LOCAL, index);
+            case BUILTIN -> emit(Opcode.GET_BUILTIN, index);
         }
     }
 

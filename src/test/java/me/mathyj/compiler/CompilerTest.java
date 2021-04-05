@@ -304,6 +304,18 @@ class CompilerTest {
 
     }
 
+    @Test
+    void testBuiltin() {
+        compileCheck(Map.of(
+                "len([])", new Bytecode(List.of(),
+                        make(Opcode.GET_BUILTIN, 0),
+                        makeArray(0),
+                        makeCall(1),
+                        makePop()
+                )
+        ));
+    }
+
     private <T> void compileCheck(Map<String, T> tests) {
         tests.forEach((input, expectedBytecode) -> {
             var program = new Parser(input).parseProgram();
