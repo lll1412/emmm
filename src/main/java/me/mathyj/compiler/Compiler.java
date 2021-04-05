@@ -129,7 +129,8 @@ public class Compiler {
         } else if (node instanceof FunctionLiteral) {
             var functionLiteral = (FunctionLiteral) node;
             bytecode.enterScope();
-            for (var param : functionLiteral.params) {
+            var params = functionLiteral.params;
+            for (var param : params) {
                 bytecode.symbolTable.define(param.value);
             }
 
@@ -144,7 +145,7 @@ public class Compiler {
             }
             var numLocals = bytecode.symbolTable.numDefinitions();
             var instructions = bytecode.leaveScope();
-            var compiledFunctionObject = new CompiledFunctionObject(numLocals, instructions);
+            var compiledFunctionObject = new CompiledFunctionObject(numLocals, params.size(), instructions);
             bytecode.emitConst(compiledFunctionObject);
         } else if (node instanceof CallExpression) {
             var callExpression = (CallExpression) node;

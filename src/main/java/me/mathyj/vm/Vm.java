@@ -3,10 +3,8 @@ package me.mathyj.vm;
 import me.mathyj.code.Bytecode;
 import me.mathyj.code.Instructions;
 import me.mathyj.code.Opcode;
-import me.mathyj.exception.runtime.UnsupportedBinaryOperation;
-import me.mathyj.exception.runtime.UnsupportedIndexOpcode;
-import me.mathyj.exception.runtime.UnsupportedOpcode;
-import me.mathyj.exception.runtime.UnsupportedUnaryOperation;
+import me.mathyj.exception.WrongArgumentsCount;
+import me.mathyj.exception.runtime.*;
 import me.mathyj.object.Object;
 import me.mathyj.object.*;
 
@@ -59,9 +57,10 @@ public class Vm {
             switch (opcode) {
                 case CONSTANT -> {
                     var constIndex = operands.first();
+                    currentFrame().ip += operands.offset();
+
                     var constObject = constantsPool.get(constIndex);
                     pushStack(constObject);
-                    currentFrame().ip += operands.offset();
                 }
                 case ADD, SUB, MUL, DIV, EQ, NE, GT, LT -> executeBinaryOperation(opcode);
                 case TRUE -> pushStack(Object.TRUE);
@@ -82,13 +81,15 @@ public class Vm {
                 case JUMP_ALWAYS -> currentFrame().ip = operands.first();
                 case SET_GLOBAL -> {
                     var globalIndex = operands.first();
-                    globals[globalIndex] = popStack();
                     currentFrame().ip += operands.offset();
+
+                    globals[globalIndex] = popStack();
                 }
                 case GET_GLOBAL -> {
                     var globalIndex = operands.first();
-                    pushStack(globals[globalIndex]);
                     currentFrame().ip += operands.offset();
+
+                    pushStack(globals[globalIndex]);
                 }
                 case SET_LOCAL -> {
                     var offset = operands.first();
@@ -106,17 +107,19 @@ public class Vm {
                 }
                 case ARRAY -> {
                     var arrayLength = operands.first();
+                    currentFrame().ip += operands.offset();
+
                     var array = buildArray(sp - arrayLength, sp);
                     sp -= arrayLength;
                     pushStack(array);
-                    currentFrame().ip += operands.offset();
                 }
                 case HASH -> {
                     var hashLength = operands.first();
+                    currentFrame().ip += operands.offset();
+
                     var hash = buildHash(sp - hashLength * 2, sp);
                     sp -= hashLength * 2;
                     pushStack(hash);
-                    currentFrame().ip += operands.offset();
                 }
                 case INDEX -> executeIndexOperation();
                 case CALL -> {
@@ -124,7 +127,8 @@ public class Vm {
                     currentFrame().ip += operands.offset();
 
                     var fn = (CompiledFunctionObject) stack[sp - 1 - argNums];// 跳过参数找到函数
-                    var fnFrame = new Frame(fn, sp - argNums);// bp 指向函数上面
+                    if (argNums != fn.numParams) throw new WrongArgumentsNumber(fn.numParams, argNums);
+                    var fnFrame = new Frame(fn, sp - argNums);// bp 指向stack中函数的上面
                     pushFrame(fnFrame);
                     sp = fnFrame.bp + fn.numLocals;
                 }
