@@ -19,7 +19,7 @@ public interface ASTNode {
         return o.toString();
     }
 
-    default String toString(List<Expression> params) {
+    default <T extends Expression>String toString(List<T> params) {
         return params == null ? "" : params.stream()
                 .map(Objects::toString)
                 .collect(Collectors.joining(", "));

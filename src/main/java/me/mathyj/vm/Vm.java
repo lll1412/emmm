@@ -95,7 +95,7 @@ public class Vm {
                     currentFrame().ip += operands.offset();
 
                     var index = currentFrame().bp + offset;
-                    stack[index]= popStack();
+                    stack[index] = popStack();
                 }
                 case GET_LOCAL -> {
                     var offset = operands.first();
@@ -120,8 +120,11 @@ public class Vm {
                 }
                 case INDEX -> executeIndexOperation();
                 case CALL -> {
-                    var fn = (CompiledFunctionObject) popStack();
-                    var fnFrame = new Frame(fn, sp);
+                    var argNums = operands.first();
+                    currentFrame().ip += operands.offset();
+
+                    var fn = (CompiledFunctionObject) stack[sp - 1 - argNums];// 跳过参数找到函数
+                    var fnFrame = new Frame(fn, sp - argNums);// bp 指向函数上面
                     pushFrame(fnFrame);
                     sp = fnFrame.bp + fn.numLocals;
                 }
@@ -129,12 +132,15 @@ public class Vm {
                     var retValue = popStack();//弹出函数返回值
                     // 从函数中退出到调用点
                     var frame = popFrame();
-                    sp = frame.bp;
+                    sp = frame.bp - 1;// 指向函数本身
+
                     pushStack(retValue);
                 }
                 case RETURN -> {
-                    var frame = popFrame();// 从函数中退出到调用点
-                    sp = frame.bp;
+                    // 从函数中退出到调用点
+                    var frame = popFrame();
+                    sp = frame.bp - 1;// 指向函数本身
+
                     pushStack(Object.NULL);
                 }
                 default -> throw new UnsupportedOpcode(opcode);

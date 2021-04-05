@@ -254,7 +254,7 @@ class CompilerTest {
     // 函数编译测试
     @Test
     void functionLiteral() {
-        compileCheck(Map.of(
+        compileCheck(MyMap.of(
                 "fn() { 5 + 10 };", new Bytecode(
                         List.of(IntegerObject.valueOf(5), IntegerObject.valueOf(10),
                                 new CompiledFunctionObject(makeConst(0), makeConst(1), make(Opcode.ADD), makeReturnValue())
@@ -270,7 +270,7 @@ class CompilerTest {
                 "fn(){12}()", new Bytecode(
                         List.of(IntegerObject.valueOf(12), new CompiledFunctionObject(makeConst(0), makeReturnValue())),
                         makeConst(1),
-                        make(Opcode.CALL),
+                        makeCall(),
                         makePop()
                 ),
                 "let noArg = fn(){24};noArg()", new Bytecode(
@@ -278,7 +278,26 @@ class CompilerTest {
                         makeConst(1),
                         make(Opcode.SET_GLOBAL, 0),
                         make(Opcode.GET_GLOBAL, 0),
-                        make(Opcode.CALL),
+                        makeCall(),
+                        makePop()
+                ),
+                """
+                        fn(a) { }(1)
+                        """, new Bytecode(
+                        List.of(new CompiledFunctionObject(makeReturn()), IntegerObject.valueOf(1)),
+                        makeConst(0),
+                        makeConst(1),
+                        makeCall(1),
+                        makePop()
+                ),
+                """
+                        fn(a, b) { }(1, 2)
+                        """, new Bytecode(
+                        List.of(new CompiledFunctionObject(makeReturn()), IntegerObject.valueOf(1), IntegerObject.valueOf(2)),
+                        makeConst(0),
+                        makeConst(1),
+                        makeConst(2),
+                        makeCall(2),
                         makePop()
                 )
         ));

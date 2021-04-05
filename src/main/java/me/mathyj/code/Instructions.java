@@ -68,6 +68,14 @@ public class Instructions {
         return make(Opcode.HASH, length);
     }
 
+    public static Instructions makeCall(int num) {
+        return make(Opcode.CALL, num);
+    }
+
+    public static Instructions makeCall() {
+        return make(Opcode.CALL, 0);
+    }
+
     /**
      * 大端序 offset位置开始 往后写入2字节数据
      */
@@ -148,8 +156,8 @@ public class Instructions {
             offset++;// 跳过操作码
             for (var width : op.operandsWidth) {// 操作数的位数, w个字节
                 switch (width) {
-                    case 2 -> sb.append(" ").append(this.readTwoByte( offset));
-                    case 1 -> sb.append(" ").append(this.readOneByte( offset));
+                    case 2 -> sb.append(" ").append(this.readTwoByte(offset));
+                    case 1 -> sb.append(" ").append(this.readOneByte(offset));
                 }
                 offset += width;
             }

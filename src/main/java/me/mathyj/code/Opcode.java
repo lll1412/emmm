@@ -52,8 +52,8 @@ public enum Opcode {
     JUMP_ALWAYS(2),
 
 
-    // 函数调用
-    CALL,
+    // 函数调用(参数个数，最多2^8个)
+    CALL(1),
     // 无返回值
     RETURN,
     // 返回值

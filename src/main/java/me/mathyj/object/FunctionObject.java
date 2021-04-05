@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 public class FunctionObject implements Object {
     private static final String TAB = "  ";
     // 形参
-    public final List<Expression> params;
+    public final List<Identifier> params;
     private final Environment localEnv;
     private final BlockStatement body;
 
-    public FunctionObject(List<Expression> params, BlockStatement body, Environment parent) {
+    public FunctionObject(List<Identifier> params, BlockStatement body, Environment parent) {
         this.localEnv = new Environment(parent);
         this.params = params;
         this.body = body;

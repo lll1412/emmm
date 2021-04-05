@@ -225,7 +225,7 @@ public class Parser {
             name = new Identifier(curToken.literal());
         }
         expectPeekIs(TokenType.LPAREN);
-        List<Expression> params = parseExpressionList(TokenType.RPAREN);
+        List<Identifier> params = parseExpressionList(TokenType.RPAREN);
         // 当前指向  Token(')')
         expectPeekIs(TokenType.LBRACE);
         var body = parseBlockStatement();

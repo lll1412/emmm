@@ -129,9 +129,10 @@ public class Compiler {
         } else if (node instanceof FunctionLiteral) {
             var functionLiteral = (FunctionLiteral) node;
             bytecode.enterScope();
-//            for (var param : functionLiteral.params) {
-//                compile(param);
-//            }
+            for (var param : functionLiteral.params) {
+                bytecode.symbolTable.define(param.value);
+            }
+
             compile(functionLiteral.body);
 
             // 如果没有显示声明return，则新增一个
@@ -147,11 +148,12 @@ public class Compiler {
             bytecode.emitConst(compiledFunctionObject);
         } else if (node instanceof CallExpression) {
             var callExpression = (CallExpression) node;
-//            for (Expression argument : callExpression.arguments) {
-//                compile(argument);
-//            }
             compile(callExpression.left);
-            bytecode.emit(Opcode.CALL);
+            var arguments = callExpression.arguments;
+            for (var argument : arguments) {
+                compile(argument);
+            }
+            bytecode.emit(Opcode.CALL, arguments.size());
 
         }
     }

@@ -33,6 +33,6 @@ public class CompiledFunctionObject implements Object {
 
     @Override
     public String toString() {
-        return "FUNCTION(%s)".formatted(instructions.print());
+        return "FUNCTION(\n%s)".formatted(instructions.print());
     }
 }

@@ -77,23 +77,14 @@ public class VmTest {
     @Test
     void letStatement() {
         var tests = MyMap.of(
-//                "let one = 1;", 1,
-//                "let one = 1; one", 1,
-//                "let one = 1; let two = one; two", 1,
-//                "let one = 1; let two = 2; one + two", 3,
-//                """
-//                        let num = 3;
-//                        fn() { let mul = 2; mul * num }()
-//                        """, 6,
+                "let one = 1;", 1,
+                "let one = 1; one", 1,
+                "let one = 1; let two = one; two", 1,
+                "let one = 1; let two = 2; one + two", 3,
                 """
-                        let global= 10;
-                        let f = fn() {
-                          let a = 1;
-                          let b = 2;
-                          a + b + global
-                        }
-                        f()
-                        """, 13
+                        let num = 3;
+                        fn() { let mul = 2; mul * num }()
+                        """, 6
 
         );
         vmRunCheck(tests);
@@ -143,13 +134,39 @@ public class VmTest {
     @Test
     void functionLiteral() {
         vmRunCheck(Map.of(
-                "let f = fn(){}; f()", NullObject.NULL,
-                "let r = fn() {1+2};r()", 3,
+//                "let f = fn(){}; f()", Object.NULL,
+//                "let r = fn() {1+2};r()", 3,
+//                """
+//                        let f1 = fn() { 1+ 1}
+//                        let f2 = fn() { f1 }
+//                        f2()()
+//                        """, 2,
+//                "let oneArg = fn(a) {}; oneArg(1)", Object.NULL,
+//                """
+//                        let add = fn(a,b) {
+//                            a + b
+//                        }
+//                        add(1, 3)
+//                        """, 4,
+//                """
+//                        let global= 10;
+//                        let f = fn() {
+//                          let a = 1;
+//                          let b = 2;
+//                          a + b + global
+//                        }
+//                        f()
+//                        """, 13,
                 """
-                        let f1 = fn() { 1+ 1}
-                        let f2 = fn() { f1 }
-                        f2()()
-                        """, 2
+                        let global = 10;
+                        let f1 = fn(a) {
+                            global + a + 1
+                        }
+                        let f2 = fn(a, b) {
+                            f1(a) + f1(b) + 3
+                        }
+                        f2(1, 2)
+                        """, 28
         ));
     }
 

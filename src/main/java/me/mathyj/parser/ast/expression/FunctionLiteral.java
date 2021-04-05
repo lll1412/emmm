@@ -14,21 +14,21 @@ import java.util.List;
  */
 public class FunctionLiteral extends Expression {
     private Identifier identifier;
-    public List<Expression> params;
+    public List<Identifier> params;
     public BlockStatement body;
 
-    public FunctionLiteral(Identifier identifier, List<Expression> params, BlockStatement body) {
+    public FunctionLiteral(Identifier identifier, List<Identifier> params, BlockStatement body) {
         this.identifier = identifier;
         this.params = params;
         this.body = body;
     }
 
-    public FunctionLiteral(List<Expression> params, BlockStatement body) {
+    public FunctionLiteral(List<Identifier> params, BlockStatement body) {
         this.params = params;
         this.body = body;
     }
 
-    public FunctionLiteral(List<Expression> params) {
+    public FunctionLiteral(List<Identifier> params) {
         this.params = params;
     }
 
