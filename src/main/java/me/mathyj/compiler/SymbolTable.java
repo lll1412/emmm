@@ -14,6 +14,7 @@ public class SymbolTable {
 
     public SymbolTable(SymbolTable parent) {
         this.parent = parent;
+//        if (parent != null) numDefinitions += parent.numDefinitions();
         this.store = new HashMap<>();
     }
 
@@ -27,5 +28,9 @@ public class SymbolTable {
 
     public Symbol resolve(String name) {
         return store.getOrDefault(name, parent == null ? null : parent.resolve(name));
+    }
+
+    public int numDefinitions() {
+        return numDefinitions;
     }
 }

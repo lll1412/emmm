@@ -2,18 +2,22 @@ package me.mathyj.vm;
 
 import me.mathyj.code.Instructions;
 import me.mathyj.object.CompiledFunctionObject;
-import me.mathyj.object.Object;
 
 public class Frame {
-    public static final int LOCAL_SIZE = 255;// todo 这里应该由编译时计算出来，暂时写死
-    public final Object[] locals;
+    // 函数指令
     private final CompiledFunctionObject fn;
+    // 指令指针
     int ip;
+    // 函数基址
+    int bp;
 
+    Frame(CompiledFunctionObject fn, int basePoint) {
+        this.fn = fn;
+        this.bp = basePoint;
+    }
 
     Frame(CompiledFunctionObject fn) {
-        this.fn = fn;
-        locals = new Object[LOCAL_SIZE];
+        this(fn, 0);
     }
 
     Instructions instructions() {

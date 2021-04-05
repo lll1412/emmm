@@ -77,14 +77,14 @@ public class VmTest {
     @Test
     void letStatement() {
         var tests = MyMap.of(
-                "let one = 1;", 1,
-                "let one = 1; one", 1,
-                "let one = 1; let two = one; two", 1,
-                "let one = 1; let two = 2; one + two", 3,
-                """
-                        let num = 3;
-                        fn() { num * 2 }()
-                        """, 6,
+//                "let one = 1;", 1,
+//                "let one = 1; one", 1,
+//                "let one = 1; let two = one; two", 1,
+//                "let one = 1; let two = 2; one + two", 3,
+//                """
+//                        let num = 3;
+//                        fn() { let mul = 2; mul * num }()
+//                        """, 6,
                 """
                         let global= 10;
                         let f = fn() {
@@ -163,12 +163,17 @@ public class VmTest {
             compiler.compile(program);
             var bytecode = compiler.bytecode();
             var vm = new Vm(bytecode);
-            vm.run();
+            try {
+                vm.run();
+            } catch (Exception e) {
+                System.err.println(bytecode.toString());
+                fail(e);
+            }
             var result = vm.lastPopped();
             if (expected instanceof Object)
-                assertEquals(expected, result, input);
+                assertEquals(expected, result, bytecode.toString());
             else
-                assertEquals(expected.toString(), result.toString(), input);
+                assertEquals(expected.toString(), result.toString(), bytecode.toString());
         });
     }
 }

@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Vm {
-    public static final int STACK_SIZE = 2048;
+    public static final int STACK_SIZE = 4096;
     public static final int MAX_FRAMES = 1024;
     public static final int GLOBALS_SIZE = 65535;
     // 常量池
@@ -30,7 +30,7 @@ public class Vm {
     private int frameIndex;
 
     public Vm(Bytecode bytecode, Object[] globals) {
-        var mainFn = new CompiledFunctionObject(bytecode.currentInstructions());
+        var mainFn = new CompiledFunctionObject(bytecode);
         var mainFrame = new Frame(mainFn);
 
         this.frames = new Frame[MAX_FRAMES];
@@ -91,14 +91,18 @@ public class Vm {
                     currentFrame().ip += operands.offset();
                 }
                 case SET_LOCAL -> {
-                    var localIndex = operands.first();
-                    currentFrame().locals[localIndex] = popStack();
+                    var offset = operands.first();
                     currentFrame().ip += operands.offset();
+
+                    var index = currentFrame().bp + offset;
+                    stack[index]= popStack();
                 }
                 case GET_LOCAL -> {
-                    var localIndex = operands.first();
-                    pushStack(currentFrame().locals[localIndex]);
+                    var offset = operands.first();
                     currentFrame().ip += operands.offset();
+
+                    var index = currentFrame().bp + offset;
+                    pushStack(stack[index]);
                 }
                 case ARRAY -> {
                     var arrayLength = operands.first();
@@ -116,20 +120,21 @@ public class Vm {
                 }
                 case INDEX -> executeIndexOperation();
                 case CALL -> {
-                    var fn = popStack();
-                    var fnFrame = new Frame(((CompiledFunctionObject) fn));
-                    pushStack(fn);// 当前调用函数入栈
+                    var fn = (CompiledFunctionObject) popStack();
+                    var fnFrame = new Frame(fn, sp);
                     pushFrame(fnFrame);
+                    sp = fnFrame.bp + fn.numLocals;
                 }
                 case RETURN_VALUE -> {
                     var retValue = popStack();//弹出函数返回值
-                    popFrame();// 从函数中退出到调用点
-                    popStack();// 当前函数出栈
+                    // 从函数中退出到调用点
+                    var frame = popFrame();
+                    sp = frame.bp;
                     pushStack(retValue);
                 }
                 case RETURN -> {
-                    popFrame();// 从函数中退出到调用点
-                    popStack();// 当前函数出栈
+                    var frame = popFrame();// 从函数中退出到调用点
+                    sp = frame.bp;
                     pushStack(Object.NULL);
                 }
                 default -> throw new UnsupportedOpcode(opcode);
@@ -326,6 +331,10 @@ public class Vm {
 
     Object getFromStack(int index) {
         return stack[index];
+    }
+
+    void putIntoStack(int index, Object obj) {
+        stack[index] = obj;
     }
 
     /**

@@ -141,8 +141,9 @@ public class Compiler {
             if (!bytecode().lastInsIs(Opcode.RETURN_VALUE)) {
                 bytecode.emit(Opcode.RETURN);
             }
+            var numLocals = bytecode.symbolTable.numDefinitions();
             var instructions = bytecode.leaveScope();
-            var compiledFunctionObject = new CompiledFunctionObject(instructions);
+            var compiledFunctionObject = new CompiledFunctionObject(numLocals, instructions);
             bytecode.emitConst(compiledFunctionObject);
         } else if (node instanceof CallExpression) {
             var callExpression = (CallExpression) node;
