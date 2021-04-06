@@ -299,6 +299,18 @@ class CompilerTest {
                         makeConst(2),
                         makeCall(2),
                         makePop()
+                ),
+                """
+                        let no1 = fn() {}
+                        fn nothing() {
+                        }
+                        """, new Bytecode(
+                        List.of(new CompiledFunctionObject(makeReturn()), new CompiledFunctionObject(makeReturn())),
+                        makeConst(0),
+                        make(Opcode.SET_GLOBAL, 0),
+                        makeConst(1),
+                        make(Opcode.SET_GLOBAL, 1)
+
                 )
         ));
 

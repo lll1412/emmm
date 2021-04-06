@@ -13,7 +13,7 @@ import java.util.List;
  * let identifier = fn (params...) { body }
  */
 public class FunctionLiteral extends Expression {
-    private Identifier identifier;
+    public Identifier identifier;
     public List<Identifier> params;
     public BlockStatement body;
 

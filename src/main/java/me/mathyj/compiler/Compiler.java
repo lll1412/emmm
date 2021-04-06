@@ -49,6 +49,10 @@ public class Compiler {
             compile(returnValue);
         } else if (node instanceof Expression) {
             compile(((Expression) node));
+            if (node instanceof FunctionLiteral && ((FunctionLiteral) node).identifier != null) {
+                // 这是函数申明，不算表达式，不pop
+                return;
+            }
             bytecode.emitPop();
         }
     }
@@ -147,6 +151,13 @@ public class Compiler {
             var instructions = bytecode.leaveScope();
             var compiledFunctionObject = new CompiledFunctionObject(numLocals, params.size(), instructions);
             bytecode.emitConst(compiledFunctionObject);
+
+            if (functionLiteral.identifier != null) {
+                // let  = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
+                // 这里的话，是 fn xx() {}这类带名字的函数，需要自己注册
+                var symbol = bytecode.symbolTable.define(functionLiteral.identifier.value);
+                bytecode.storeSymbol(symbol);
+            }
         } else if (node instanceof CallExpression) {
             var callExpression = (CallExpression) node;
             compile(callExpression.left);

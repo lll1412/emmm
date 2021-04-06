@@ -173,9 +173,24 @@ public class VmTest {
     @Test
     void builtinFunction() {
         vmRunCheck(Map.of(
-                "len([])",0,
-                "push([], 1, 2)","[1, 2]"
+                "len([])", 0,
+                "push([], 1, 2)", "[1, 2]"
         ));
+    }
+
+    @Test
+    void closureFunction() {
+        var tests = Map.of(
+                """
+                        let f1 = fn() {}
+                        f1()
+                        fn f2(a) {
+                            a + 1
+                        }
+                        f2(10)
+                        """,11
+        );
+        vmRunCheck(tests);
     }
 
     private <T> void vmRunCheck(Map<String, T> tests) {
