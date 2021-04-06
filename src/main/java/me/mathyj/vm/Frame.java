@@ -1,30 +1,30 @@
 package me.mathyj.vm;
 
 import me.mathyj.code.Instructions;
-import me.mathyj.object.CompiledFunctionObject;
+import me.mathyj.object.ClosureObject;
 
 public class Frame {
     // 函数指令
-    private final CompiledFunctionObject fn;
+    private final ClosureObject closure;
     // 指令指针
     int ip;
     // 函数基址
     int bp;
 
-    Frame(CompiledFunctionObject fn, int basePoint) {
-        this.fn = fn;
+    Frame(ClosureObject closure, int basePoint) {
+        this.closure = closure;
         this.bp = basePoint;
     }
 
-    Frame(CompiledFunctionObject fn) {
-        this(fn, 0);
+    Frame(ClosureObject closure) {
+        this(closure, 0);
     }
 
     Instructions instructions() {
-        return fn.instructions;
+        return closure.fn.instructions;
     }
 
     int instructionsSize() {
-        return fn.instructions.size();
+        return closure.fn.instructions.size();
     }
 }

@@ -28,7 +28,8 @@ public class Vm {
 
     public Vm(Bytecode bytecode, Object[] globals) {
         var mainFn = new CompiledFunctionObject(bytecode);
-        var mainFrame = new Frame(mainFn);
+        var mainClosure = new ClosureObject(mainFn);
+        var mainFrame = new Frame(mainClosure);
 
         this.frames = new Frame[MAX_FRAMES];
         frames[0] = mainFrame;
@@ -129,6 +130,15 @@ public class Vm {
                 }
                 case INDEX -> executeIndexOperation();
                 case CALL -> executeFunctionCall(operands);
+                case CLOSURE -> {
+                    var fnIndex = operands.operands()[0];
+                    var freeCount = operands.operands()[1];
+                    currentFrame().ip += operands.offset();
+
+                    var fn = ((CompiledFunctionObject) constantsPool.get(fnIndex));
+                    var cl = new ClosureObject(fn);
+                    pushStack(cl);
+                }
                 case RETURN_VALUE -> {
                     var retValue = popStack();//弹出函数返回值
                     // 从函数中退出到调用点
@@ -148,6 +158,7 @@ public class Vm {
             }
         }
     }
+
     // 函数调用
     private void executeFunctionCall(Operands operands) {
         var argNums = operands.first();
@@ -163,12 +174,12 @@ public class Vm {
                 var result = ((BuiltinObject) fnObject).apply(list);
                 pushStack(result);
             }
-            case COMPILED_FUNCTION -> {
-                var fn = (CompiledFunctionObject) fnObject;// 跳过参数找到函数
-                if (argNums != fn.numParams) throw new WrongArgumentsNumber(fn.numParams, argNums);
-                var fnFrame = new Frame(fn, sp - argNums);// bp 指向stack中函数的上面
+            case CLOSURE -> {
+                var cl = (ClosureObject) fnObject;// 跳过参数找到函数
+                if (argNums != cl.fn.numParams) throw new WrongArgumentsNumber(cl.fn.numParams, argNums);
+                var fnFrame = new Frame(cl, sp - argNums);// bp 指向stack中函数的上面
                 pushFrame(fnFrame);
-                sp = fnFrame.bp + fn.numLocals;
+                sp = fnFrame.bp + cl.fn.numLocals;
             }
         }
     }

@@ -77,6 +77,9 @@ public enum Opcode {
     // 内置函数
     GET_BUILTIN(1),
 
+    // 闭包
+    CLOSURE(2, 1),// 函数在常量池中的索引和自由变量个数
+
     // 出栈
     POP;
     public final int[] operandsWidth;// 指令每个操作数的宽度

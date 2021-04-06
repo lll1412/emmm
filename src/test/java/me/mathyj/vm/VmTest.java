@@ -166,7 +166,15 @@ public class VmTest {
                             f1(a) + f1(b) + 3
                         }
                         f2(1, 2)
-                        """, 28
+                        """, 28,
+                """
+                        let f1 = fn() {}
+                        f1()
+                        fn f2(a) {
+                            a + 1
+                        }
+                        f2(10)
+                        """, 11
         ));
     }
 
@@ -182,13 +190,21 @@ public class VmTest {
     void closureFunction() {
         var tests = Map.of(
                 """
-                        let f1 = fn() {}
-                        f1()
-                        fn f2(a) {
-                            a + 1
+                        let newAdder = fn(a) {
+                            let adder = fn(b) {a + b}
+                            adder
                         }
-                        f2(10)
-                        """,11
+                        let addTwo = newAdder(10)
+                        addTwo(12)
+                        """, 22,
+                """
+                        fn f1(a) {
+                            fn(b) {
+                                a + b
+                            }
+                        }
+                        f1(10)(20)
+                        """, 30
         );
         vmRunCheck(tests);
     }

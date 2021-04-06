@@ -13,5 +13,6 @@ public enum ObjectType {
     COMPILED_FUNCTION,
 
     BUILTIN,
+    CLOSURE,
     ;
 }

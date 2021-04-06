@@ -48,6 +48,10 @@ public class Instructions {
         return make(Opcode.CONSTANT, constant);
     }
 
+    public static Instructions makeClosure(int fnIndex, int freeCount) {
+        return make(Opcode.CLOSURE, fnIndex, freeCount);
+    }
+
     public static Instructions makePop() {
         return make(Opcode.POP);
     }

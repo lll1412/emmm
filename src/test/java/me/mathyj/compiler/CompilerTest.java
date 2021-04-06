@@ -63,7 +63,15 @@ class CompilerTest {
                         0001 CONSTANT 2
                         0004 CONSTANT 65535
                         """,
-                Instructions.concat(make(Opcode.ADD), makeConst(2), makeConst(65535))
+                Instructions.concat(make(Opcode.ADD), makeConst(2), makeConst(65535)),
+                """
+                        0000 ADD
+                        0001 GET_LOCAL 1
+                        0003 CONSTANT 2
+                        0006 CONSTANT 65535
+                        0009 CLOSURE 65535 255
+                        """,
+                Instructions.concat(make(Opcode.ADD), make(Opcode.GET_LOCAL, 1), makeConst(2), makeConst(65535), make(Opcode.CLOSURE, 65535, 255))
         );
         tests.forEach((expected, input) -> {
             assertEquals(expected, input.print());
@@ -151,7 +159,7 @@ class CompilerTest {
                         List.of(IntegerObject.valueOf(1), new CompiledFunctionObject(make(Opcode.GET_GLOBAL, 0), makeReturnValue())),
                         makeConst(0),
                         make(Opcode.SET_GLOBAL, 0),
-                        makeConst(1),
+                        makeClosure(1, 0),
                         makePop()
                 ),
                 """
@@ -161,7 +169,7 @@ class CompilerTest {
                         }
                         """, new Bytecode(
                         List.of(IntegerObject.valueOf(1), new CompiledFunctionObject(makeConst(0), make(Opcode.SET_LOCAL, 0), make(Opcode.GET_LOCAL, 0), make(Opcode.RETURN_VALUE))),
-                        makeConst(1),
+                        makeClosure(1, 0),
                         makePop()
                 ),
                 """
@@ -174,7 +182,7 @@ class CompilerTest {
                         List.of(IntegerObject.valueOf(1), IntegerObject.valueOf(2),
                                 new CompiledFunctionObject(makeConst(0), make(Opcode.SET_LOCAL, 0), makeConst(1), make(Opcode.SET_LOCAL, 1), make(Opcode.GET_LOCAL, 0), make(Opcode.GET_LOCAL, 1), make(Opcode.ADD), makeReturnValue())
                         ),
-                        makeConst(2),
+                        makeClosure(2, 0),
                         makePop()
                 )
         );
@@ -259,33 +267,38 @@ class CompilerTest {
                         List.of(IntegerObject.valueOf(5), IntegerObject.valueOf(10),
                                 new CompiledFunctionObject(makeConst(0), makeConst(1), make(Opcode.ADD), makeReturnValue())
                         ),
-                        makeConst(2),
+                        makeClosure(2, 0),
                         makePop()
                 ),
                 "fn(){}", new Bytecode(
                         List.of(new CompiledFunctionObject(makeReturn())),
-                        makeConst(0),
+                        makeClosure(0, 0),
                         makePop()
                 ),
                 "fn(){12}()", new Bytecode(
                         List.of(IntegerObject.valueOf(12), new CompiledFunctionObject(makeConst(0), makeReturnValue())),
-                        makeConst(1),
+                        makeClosure(1, 0),
                         makeCall(),
                         makePop()
                 ),
                 "let noArg = fn(){24};noArg()", new Bytecode(
                         List.of(IntegerObject.valueOf(24), new CompiledFunctionObject(makeConst(0), makeReturnValue())),
-                        makeConst(1),
+                        makeClosure(1, 0),
                         make(Opcode.SET_GLOBAL, 0),
                         make(Opcode.GET_GLOBAL, 0),
                         makeCall(),
                         makePop()
                 ),
+                "let oneArg = fn(a){24};", new Bytecode(
+                        List.of(IntegerObject.valueOf(24), new CompiledFunctionObject(makeConst(0), makeReturnValue())),
+                        makeClosure(1, 0),
+                        make(Opcode.SET_GLOBAL, 0)
+                ),
                 """
                         fn(a) { }(1)
                         """, new Bytecode(
                         List.of(new CompiledFunctionObject(makeReturn()), IntegerObject.valueOf(1)),
-                        makeConst(0),
+                        makeClosure(0, 0),
                         makeConst(1),
                         makeCall(1),
                         makePop()
@@ -294,7 +307,7 @@ class CompilerTest {
                         fn(a, b) { }(1, 2)
                         """, new Bytecode(
                         List.of(new CompiledFunctionObject(makeReturn()), IntegerObject.valueOf(1), IntegerObject.valueOf(2)),
-                        makeConst(0),
+                        makeClosure(0, 0),
                         makeConst(1),
                         makeConst(2),
                         makeCall(2),
@@ -306,9 +319,9 @@ class CompilerTest {
                         }
                         """, new Bytecode(
                         List.of(new CompiledFunctionObject(makeReturn()), new CompiledFunctionObject(makeReturn())),
-                        makeConst(0),
+                        makeClosure(0, 0),
                         make(Opcode.SET_GLOBAL, 0),
-                        makeConst(1),
+                        makeClosure(1, 0),
                         make(Opcode.SET_GLOBAL, 1)
 
                 )
@@ -325,6 +338,25 @@ class CompilerTest {
                         makeCall(1),
                         makePop()
                 )
+        ));
+    }
+
+    @Test
+    void closureFunction() {
+        compileCheck(Map.of(
+                """
+                        fn f1(a) {
+                            fn(b) {
+                                a + b
+                            }
+                        }
+                        """, new Bytecode(
+                        List.of(new CompiledFunctionObject(make(Opcode.GET_LOCAL, 0), make(Opcode.GET_LOCAL, 1), make(Opcode.ADD), makeReturnValue()),
+                                new CompiledFunctionObject(makeClosure(0, 0), makeReturnValue())),
+                        makeClosure(1, 0),
+                        make(Opcode.SET_GLOBAL, 0)
+                )
+
         ));
     }
 

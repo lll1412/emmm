@@ -150,7 +150,7 @@ public class Compiler {
             var numLocals = bytecode.symbolTable.numDefinitions();
             var instructions = bytecode.leaveScope();
             var compiledFunctionObject = new CompiledFunctionObject(numLocals, params.size(), instructions);
-            bytecode.emitConst(compiledFunctionObject);
+            bytecode.emitClosure(compiledFunctionObject);
 
             if (functionLiteral.identifier != null) {
                 // let  = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了

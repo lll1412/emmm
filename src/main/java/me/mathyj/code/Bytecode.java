@@ -83,6 +83,12 @@ public class Bytecode {
         emit(Opcode.CONSTANT, index);
     }
 
+    public void emitClosure(Object fn) {
+        constantsPool.add(fn);
+        var index = constantsPool.size() - 1;// 添加到常量池，返回索引
+        emit(Opcode.CLOSURE, index, 0);
+    }
+
     // 生成pop指令
     public void emitPop() {
         emit(Opcode.POP);
