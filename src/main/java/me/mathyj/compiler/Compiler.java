@@ -38,8 +38,8 @@ public class Compiler {
         if (node instanceof BlockStatement blockStatement) {
             compile(blockStatement);
         } else if (node instanceof LetStatement letStatement) {
-            compile(letStatement.value);
             var symbol = bytecode.symbolTable.define(letStatement.name());
+            compile(letStatement.value);
             bytecode.storeSymbol(symbol);
         } else if (node instanceof ReturnStatement returnStatement) {
             var returnValue = returnStatement.returnValue;
@@ -118,6 +118,12 @@ public class Compiler {
             compile(indexExpression.index);
             bytecode.emit(Opcode.INDEX);
         } else if (node instanceof FunctionLiteral functionLiteral) {
+            if (functionLiteral.identifier != null) {
+                // let xx = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
+                // 这里的话，是 fn xx() {}这类带名字的函数，需要自己注册
+                var symbol = bytecode.symbolTable.define(functionLiteral.identifier.value);
+                bytecode.storeSymbol(symbol);
+            }
             bytecode.enterScope();
             var params = functionLiteral.params;
             for (var param : params) {
@@ -141,13 +147,6 @@ public class Compiler {
             }
             var compiledFunctionObject = new CompiledFunctionObject(numLocals, params.size(), instructions);
             bytecode.emitClosure(compiledFunctionObject, freeSymbols.size());
-
-            if (functionLiteral.identifier != null) {
-                // let xx = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
-                // 这里的话，是 fn xx() {}这类带名字的函数，需要自己注册
-                var symbol = bytecode.symbolTable.define(functionLiteral.identifier.value);
-                bytecode.storeSymbol(symbol);
-            }
         } else if (node instanceof CallExpression callExpression) {
             compile(callExpression.left);
             var arguments = callExpression.arguments;

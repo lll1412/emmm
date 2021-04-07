@@ -2,7 +2,7 @@ package me.mathyj.object;
 
 import java.util.Objects;
 
-public record StringObject(String val) implements Object {
+public record StringObject(String value) implements Object {
 
     public static StringObject valueOf(String val) {
         return new StringObject(val);
@@ -13,10 +13,6 @@ public record StringObject(String val) implements Object {
         return ObjectType.STRING;
     }
 
-    @Override
-    public String value() {
-        return val;
-    }
 
     @Override
     public String toString() {
@@ -28,11 +24,11 @@ public record StringObject(String val) implements Object {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StringObject that = (StringObject) o;
-        return Objects.equals(val, that.val);
+        return Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(val);
+        return Objects.hash(value);
     }
 }

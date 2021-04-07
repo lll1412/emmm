@@ -45,6 +45,9 @@ public enum Opcode {
     // <
     LT,
 
+    AND,
+    OR,
+
     /* 跳转指令 */
     // 条件跳转
     JUMP_IF_NOT_TRUTHY(2),
@@ -83,7 +86,8 @@ public enum Opcode {
     GET_FREE(1),
 
     // 出栈
-    POP;
+    POP,
+    ;
     public final int[] operandsWidth;// 指令每个操作数的宽度
 
     // 下面这两个虽然可以直接调用方法获取 ，但不确定要用现在的方式，可能会改
@@ -118,6 +122,7 @@ public enum Opcode {
             case NOT_EQUALS -> Opcode.NE;
             case GREATER_THEN -> Opcode.GT;
             case LESS_THEN -> Opcode.LT;
+            case OR -> Opcode.OR;
             default -> throw new UnknownOperatorException(binOp);
         };
     }

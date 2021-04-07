@@ -8,15 +8,16 @@ import me.mathyj.parser.token.Token;
 public enum Precedence {
     LOWEST,
     ASSIGN,
+    // && ||
+    LOGIC,
     // ==
     EQUALS,
-    // > or <
-    LESS_GRATER,
     // + -
     SUM,
+    // > or <
+    LESS_GRATER,
     // * /
     PRODUCT,
-    LOGIC,
     // !x or -x
     PREFIX,
     // myFunction(x)
@@ -29,7 +30,7 @@ public enum Precedence {
         return switch (token.type()) {
             case LBRACKET -> INDEX;
             case LPAREN -> CALL;
-            case AND,OR -> LOGIC;
+            case AND, OR -> LOGIC;
             case ASTERISK, SLASH, ASTERISK_ASSIGN, SLASH_ASSIGN -> PRODUCT;
             case PLUS, MINUS, PLUS_ASSIGN, MINUS_ASSIGN -> SUM;
             case LT, LE, GT, GE -> LESS_GRATER;

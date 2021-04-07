@@ -62,7 +62,7 @@ public class Vm {
                     var constObject = constantsPool.get(constIndex);
                     pushStack(constObject);
                 }
-                case ADD, SUB, MUL, DIV, EQ, NE, GT, LT -> executeBinaryOperation(opcode);
+                case ADD, SUB, MUL, DIV, EQ, NE, GT, LT, OR -> executeBinaryOperation(opcode);
                 case TRUE -> pushStack(Object.TRUE);
                 case FALSE -> pushStack(Object.FALSE);
                 case NOT, NEG -> executeUnaryOperation(opcode);
@@ -310,12 +310,12 @@ public class Vm {
         var right = popStack();
         var left = popStack();
         Object val;
-        if (left instanceof IntegerObject && right instanceof IntegerObject) {
-            val = executeBinaryIntegerOperation((IntegerObject) left, (IntegerObject) right, opcode);
-        } else if (left instanceof BooleanObject && right instanceof BooleanObject) {
-            val = executeBinaryBooleanOperation(((BooleanObject) left), ((BooleanObject) right), opcode);
-        } else if (left instanceof StringObject && opcode.equals(Opcode.ADD)) {
-            val = StringObject.valueOf(left.value() + right.toString());
+        if (left instanceof IntegerObject leftVal && right instanceof IntegerObject rightVal) {
+            val = executeBinaryIntegerOperation(leftVal, rightVal, opcode);
+        } else if (left instanceof BooleanObject leftVal && right instanceof BooleanObject rightVal) {
+            val = executeBinaryBooleanOperation(leftVal, rightVal, opcode);
+        } else if (left instanceof StringObject leftVal && opcode.equals(Opcode.ADD)) {
+            val = StringObject.valueOf(leftVal.value() + right.toString());
         } else {
             throw new UnsupportedBinaryOperation(left, right, opcode);
         }
@@ -331,6 +331,8 @@ public class Vm {
         return switch (opcode) {
             case EQ -> BooleanObject.valueOf(leftVal == rightVal);
             case NE -> BooleanObject.valueOf(leftVal != rightVal);
+            case OR -> BooleanObject.valueOf(leftVal || rightVal);
+            case AND -> BooleanObject.valueOf(leftVal && rightVal);
             default -> throw new UnsupportedBinaryOperation(left, right, opcode);
         };
     }
