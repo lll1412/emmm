@@ -78,7 +78,9 @@ public enum Opcode {
     GET_BUILTIN(1),
 
     // 闭包
-    CLOSURE(2, 1),// 函数在常量池中的索引和自由变量个数
+    CLOSURE(2, 1),// 函数在常量池中的索引 和 自由变量个数
+    // 自由变量
+    GET_FREE(1),
 
     // 出栈
     POP;

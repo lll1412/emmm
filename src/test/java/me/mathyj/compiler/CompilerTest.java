@@ -345,19 +345,37 @@ class CompilerTest {
     void closureFunction() {
         compileCheck(Map.of(
                 """
-                        fn f1(a) {
+                        fn(a) {
                             fn(b) {
                                 a + b
                             }
                         }
                         """, new Bytecode(
-                        List.of(new CompiledFunctionObject(make(Opcode.GET_LOCAL, 0), make(Opcode.GET_LOCAL, 1), make(Opcode.ADD), makeReturnValue()),
-                                new CompiledFunctionObject(makeClosure(0, 0), makeReturnValue())),
+                        List.of(new CompiledFunctionObject(make(Opcode.GET_FREE, 0), make(Opcode.GET_LOCAL, 0), make(Opcode.ADD), makeReturnValue()),
+                                new CompiledFunctionObject(make(Opcode.GET_LOCAL, 0), makeClosure(0, 1), makeReturnValue())),
                         makeClosure(1, 0),
-                        make(Opcode.SET_GLOBAL, 0)
+                        makePop()
+                ),
+                """
+                        fn(a) {
+                            fn(b) {
+                                fn(c) {
+                                    a + b + c
+                                }
+                            }
+                        }
+                        """, new Bytecode(
+                        List.of(
+                                new CompiledFunctionObject(make(Opcode.GET_FREE, 0), make(Opcode.GET_FREE, 1), make(Opcode.ADD), make(Opcode.GET_LOCAL), make(Opcode.ADD), makeReturnValue()),
+                                new CompiledFunctionObject(make(Opcode.GET_FREE, 0), make(Opcode.GET_LOCAL, 0), makeClosure(0, 2), makeReturnValue()),
+                                new CompiledFunctionObject(make(Opcode.GET_LOCAL, 0), makeClosure(1, 1), makeReturnValue())
+                        ),
+                        makeClosure(2, 0),
+                        makePop()
                 )
 
         ));
+
     }
 
     private <T> void compileCheck(Map<String, T> tests) {

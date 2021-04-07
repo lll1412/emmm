@@ -9,8 +9,7 @@ public class CompiledFunctionObject implements Object {
     public final int numParams;// 形参个数
 
     public CompiledFunctionObject(int numLocals, int numParams, Instructions... instructions) {
-        if (instructions.length == 1) this.instructions = instructions[0];
-        else this.instructions = Instructions.concat(instructions);
+        this.instructions = Instructions.concat(instructions);
         this.numLocals = numLocals;
         this.numParams = numParams;
     }

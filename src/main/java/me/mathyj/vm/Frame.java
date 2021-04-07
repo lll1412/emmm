@@ -5,7 +5,7 @@ import me.mathyj.object.ClosureObject;
 
 public class Frame {
     // 函数指令
-    private final ClosureObject closure;
+    public final ClosureObject closure;
     // 指令指针
     int ip;
     // 函数基址

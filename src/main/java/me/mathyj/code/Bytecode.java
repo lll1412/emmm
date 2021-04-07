@@ -54,7 +54,7 @@ public class Bytecode {
     // 返回到上一层 并返回该层的指令
     public Instructions leaveScope() {
         var instructions = scopes[scopeIndex--].instructions;
-        this.symbolTable = symbolTable.parent;
+        this.symbolTable = symbolTable.outer;
         return instructions;
     }
 
@@ -83,10 +83,10 @@ public class Bytecode {
         emit(Opcode.CONSTANT, index);
     }
 
-    public void emitClosure(Object fn) {
+    public void emitClosure(Object fn, int freeCount) {
         constantsPool.add(fn);
         var index = constantsPool.size() - 1;// 添加到常量池，返回索引
-        emit(Opcode.CLOSURE, index, 0);
+        emit(Opcode.CLOSURE, index, freeCount);
     }
 
     // 生成pop指令
@@ -109,6 +109,7 @@ public class Bytecode {
             case GLOBAL -> emit(Opcode.GET_GLOBAL, index);
             case LOCAL -> emit(Opcode.GET_LOCAL, index);
             case BUILTIN -> emit(Opcode.GET_BUILTIN, index);
+            case FREE -> emit(Opcode.GET_FREE, index);
         }
     }
 

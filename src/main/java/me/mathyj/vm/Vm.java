@@ -136,8 +136,19 @@ public class Vm {
                     currentFrame().ip += operands.offset();
 
                     var fn = ((CompiledFunctionObject) constantsPool.get(fnIndex));
-                    var cl = new ClosureObject(fn);
+                    var frees = new Object[freeCount];
+                    for (int i = 0; i < freeCount; i++) {
+                        frees[i] = stack[sp - freeCount + i];
+                    }
+                    sp -= freeCount;
+                    var cl = new ClosureObject(fn, frees);
                     pushStack(cl);
+                }
+                case GET_FREE -> {
+                    var freeIndex = operands.first();
+                    currentFrame().ip += operands.offset();
+                    var currentClosure = currentFrame().closure;
+                    pushStack(currentClosure.free[freeIndex]);
                 }
                 case RETURN_VALUE -> {
                     var retValue = popStack();//弹出函数返回值
@@ -217,11 +228,11 @@ public class Vm {
         var offset = 0;
         var operandsWidth = op.operandsWidth;
         var operands = new int[operandsWidth.length];
-        for (int i = 0; i < operandsWidth.length; i++) {
-            int w = operandsWidth[i];
+        for (var i = 0; i < operandsWidth.length; i++) {
+            var w = operandsWidth[i];
             operands[i] = switch (w) {
-                case 2 -> currentInstructions().readTwoByte(start);
-                case 1 -> currentInstructions().readOneByte(start);
+                case 2 -> currentInstructions().readTwoByte(start + offset);
+                case 1 -> currentInstructions().readOneByte(start + offset);
                 default -> throw new IllegalStateException("Unexpected value: " + w);
             };
             offset += w;

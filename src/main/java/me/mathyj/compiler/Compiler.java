@@ -147,10 +147,14 @@ public class Compiler {
             if (!bytecode().lastInsIs(Opcode.RETURN_VALUE)) {
                 bytecode.emit(Opcode.RETURN);
             }
+            var freeSymbols = bytecode.symbolTable.freeSymbols;
             var numLocals = bytecode.symbolTable.numDefinitions();
             var instructions = bytecode.leaveScope();
+            for (var freeSymbol : freeSymbols) {
+                bytecode.loadSymbol(freeSymbol);
+            }
             var compiledFunctionObject = new CompiledFunctionObject(numLocals, params.size(), instructions);
-            bytecode.emitClosure(compiledFunctionObject);
+            bytecode.emitClosure(compiledFunctionObject, freeSymbols.size());
 
             if (functionLiteral.identifier != null) {
                 // let  = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了

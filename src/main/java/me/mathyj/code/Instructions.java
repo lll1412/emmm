@@ -44,42 +44,6 @@ public class Instructions {
         return new Instructions(bytes);
     }
 
-    public static Instructions makeConst(int constant) {
-        return make(Opcode.CONSTANT, constant);
-    }
-
-    public static Instructions makeClosure(int fnIndex, int freeCount) {
-        return make(Opcode.CLOSURE, fnIndex, freeCount);
-    }
-
-    public static Instructions makePop() {
-        return make(Opcode.POP);
-    }
-
-    public static Instructions makeReturn() {
-        return make(Opcode.RETURN);
-    }
-
-    public static Instructions makeReturnValue() {
-        return make(Opcode.RETURN_VALUE);
-    }
-
-    public static Instructions makeArray(int length) {
-        return make(Opcode.ARRAY, length);
-    }
-
-    public static Instructions makeHash(int length) {
-        return make(Opcode.HASH, length);
-    }
-
-    public static Instructions makeCall(int num) {
-        return make(Opcode.CALL, num);
-    }
-
-    public static Instructions makeCall() {
-        return make(Opcode.CALL, 0);
-    }
-
     /**
      * 大端序 offset位置开始 往后写入2字节数据
      */
@@ -101,6 +65,7 @@ public class Instructions {
      */
     public static Instructions concat(Instructions... instructions) {
         if (instructions == null || instructions.length == 0) return new Instructions();
+        else if (instructions.length == 1) return instructions[0];
         var len = 0;
         for (var instruction : instructions) {
             len += instruction.bytes.length;
@@ -168,5 +133,44 @@ public class Instructions {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    /*
+        以下都只是为了测试方便
+     */
+    public static Instructions makeConst(int constant) {
+        return make(Opcode.CONSTANT, constant);
+    }
+
+    public static Instructions makeClosure(int fnIndex, int freeCount) {
+        return make(Opcode.CLOSURE, fnIndex, freeCount);
+    }
+
+    public static Instructions makePop() {
+        return make(Opcode.POP);
+    }
+
+    public static Instructions makeReturn() {
+        return make(Opcode.RETURN);
+    }
+
+    public static Instructions makeReturnValue() {
+        return make(Opcode.RETURN_VALUE);
+    }
+
+    public static Instructions makeArray(int length) {
+        return make(Opcode.ARRAY, length);
+    }
+
+    public static Instructions makeHash(int length) {
+        return make(Opcode.HASH, length);
+    }
+
+    public static Instructions makeCall(int num) {
+        return make(Opcode.CALL, num);
+    }
+
+    public static Instructions makeCall() {
+        return make(Opcode.CALL, 0);
     }
 }
