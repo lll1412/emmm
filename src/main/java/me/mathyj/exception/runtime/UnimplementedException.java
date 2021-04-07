@@ -1,4 +1,4 @@
-package me.mathyj.exception;
+package me.mathyj.exception.runtime;
 
 public class UnimplementedException extends RuntimeException {
     private final String name;

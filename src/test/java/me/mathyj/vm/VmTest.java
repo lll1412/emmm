@@ -213,8 +213,14 @@ public class VmTest {
                                 }
                             }
                         }
-                        f1(10)(20)
-                        """, 30
+                        f1(10)(20)(16)
+                        """, 46
+//                ,"""
+//                        fn fibonacci(n) {
+//                            if(n < 2) {return n};
+//                            return fibonacci(n - 1) + fibonacci(n - 2)
+//                        }
+//                        """,20
         );
         vmRunCheck(tests);
     }

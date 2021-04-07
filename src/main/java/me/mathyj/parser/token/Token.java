@@ -50,10 +50,12 @@ public record Token(TokenType type, String literal) {
 
     @Override
     public String toString() {
-        var format = switch (type) {
-            case INT -> "%s(%s)";
-            default -> "%s('%s')";
-        };
+        String format;
+        if (type == TokenType.INT) {
+            format = "%s(%s)";
+        } else {
+            format = "%s('%s')";
+        }
         return format.formatted(type, literal);
     }
 

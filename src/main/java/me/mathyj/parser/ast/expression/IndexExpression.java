@@ -20,12 +20,10 @@ public class IndexExpression extends Expression {
     public Object eval(Environment env) {
         var leftObj = left.eval(env);
         var indexObj = index.eval(env);
-        if (leftObj instanceof ArrayObject) {
-            var arrayObject = (ArrayObject) leftObj;
+        if (leftObj instanceof ArrayObject arrayObject) {
             var index = ((IntegerObject) indexObj);
             return arrayObject.get(index.value);
-        } else if (leftObj instanceof HashObject) {
-            var hashObject = ((HashObject) leftObj);
+        } else if (leftObj instanceof HashObject hashObject) {
             return hashObject.get(indexObj);
         }
         return Object.NULL;

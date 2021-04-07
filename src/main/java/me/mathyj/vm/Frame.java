@@ -5,11 +5,11 @@ import me.mathyj.object.ClosureObject;
 
 public class Frame {
     // 函数指令
-    public final ClosureObject closure;
+    final ClosureObject closure;
     // 指令指针
     int ip;
     // 函数基址
-    int bp;
+    final int bp;
 
     Frame(ClosureObject closure, int basePoint) {
         this.closure = closure;
@@ -21,10 +21,10 @@ public class Frame {
     }
 
     Instructions instructions() {
-        return closure.fn.instructions;
+        return closure.fn().instructions;
     }
 
     int instructionsSize() {
-        return closure.fn.instructions.size();
+        return closure.fn().instructions.size();
     }
 }

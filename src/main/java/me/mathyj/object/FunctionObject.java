@@ -30,7 +30,7 @@ public class FunctionObject implements Object {
             var expr = arguments.get(i);
             var val = expr.eval(localEnv);
             var param = params.get(i);
-            localEnv.set(((Identifier) param).value, val);
+            localEnv.set(param.value, val);
         }
         return body.eval(localEnv);
     }

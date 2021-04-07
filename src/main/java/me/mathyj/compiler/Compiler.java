@@ -35,16 +35,13 @@ public class Compiler {
     }
 
     private void compile(Statement node) {
-        if (node instanceof BlockStatement) {
-            var blockStatement = (BlockStatement) node;
+        if (node instanceof BlockStatement blockStatement) {
             compile(blockStatement);
-        } else if (node instanceof LetStatement) {
-            var letStatement = (LetStatement) node;
+        } else if (node instanceof LetStatement letStatement) {
             compile(letStatement.value);
             var symbol = bytecode.symbolTable.define(letStatement.name());
             bytecode.storeSymbol(symbol);
-        } else if (node instanceof ReturnStatement) {
-            var returnStatement = (ReturnStatement) node;
+        } else if (node instanceof ReturnStatement returnStatement) {
             var returnValue = returnStatement.returnValue;
             compile(returnValue);
         } else if (node instanceof Expression) {
@@ -58,29 +55,24 @@ public class Compiler {
     }
 
     private void compile(Expression node) {
-        if (node instanceof BinaryExpression) {
-            var binaryExpression = (BinaryExpression) node;
+        if (node instanceof BinaryExpression binaryExpression) {
             var operator = binaryExpression.operator;
             compile(binaryExpression.left);
             compile(binaryExpression.right);
             var op = Opcode.from(operator);
             bytecode.emit(op);
-        } else if (node instanceof IntegerLiteral) {
-            var integerLiteral = (IntegerLiteral) node;
+        } else if (node instanceof IntegerLiteral integerLiteral) {
             var integer = IntegerObject.valueOf(integerLiteral.value);
             bytecode.emitConst(integer);
-        } else if (node instanceof BooleanLiteral) {
-            var booleanLiteral = (BooleanLiteral) node;
+        } else if (node instanceof BooleanLiteral booleanLiteral) {
             var op = Opcode.from(booleanLiteral);
             bytecode.emit(op);
-        } else if (node instanceof UnaryExpression) {
-            var unaryExpression = (UnaryExpression) node;
+        } else if (node instanceof UnaryExpression unaryExpression) {
             var operator = unaryExpression.operator;
             compile(unaryExpression.right);
             var op = Opcode.from(operator);
             bytecode.emit(op);
-        } else if (node instanceof IfExpression) {
-            var ifExpression = (IfExpression) node;
+        } else if (node instanceof IfExpression ifExpression) {
             compile(ifExpression.condition);
             var jumpIfOpPos = bytecode.emit(Opcode.JUMP_IF_NOT_TRUTHY, 0);// 随便设置一个值，根据后续指令调整
             compile(ifExpression.consequence);
@@ -102,36 +94,30 @@ public class Compiler {
             // 矫正jump_always指令的跳转位置
             var afterAlternative = bytecode.instructionsSize();
             bytecode.changeOperand(jumpAlwaysOpPos, afterAlternative);// 调整为正确的跳转地址
-        } else if (node instanceof Identifier) {
-            var identifier = (Identifier) node;
+        } else if (node instanceof Identifier identifier) {
             var value = identifier.value;
             var symbol = bytecode.symbolTable.resolve(value);
             if (symbol == null) throw new UndefinedVariable(value);
             bytecode.loadSymbol(symbol);
-        } else if (node instanceof StringLiteral) {
-            var stringLiteral = (StringLiteral) node;
+        } else if (node instanceof StringLiteral stringLiteral) {
             var value = StringObject.valueOf(stringLiteral.val);
             bytecode.emitConst(value);
-        } else if (node instanceof ArrayLiteral) {
-            var arrayLiteral = (ArrayLiteral) node;
+        } else if (node instanceof ArrayLiteral arrayLiteral) {
             for (var element : arrayLiteral.elements) {
                 compile(element);
             }
             bytecode.emit(Opcode.ARRAY, arrayLiteral.elements.size());
-        } else if (node instanceof HashLiteral) {
-            var hashLiteral = (HashLiteral) node;
+        } else if (node instanceof HashLiteral hashLiteral) {
             for (var pair : hashLiteral.pairs) {
-                compile(pair.key);
-                compile(pair.val);
+                compile(pair.key());
+                compile(pair.val());
             }
             bytecode.emit(Opcode.HASH, hashLiteral.pairs.size());
-        } else if (node instanceof IndexExpression) {
-            var indexExpression = (IndexExpression) node;
+        } else if (node instanceof IndexExpression indexExpression) {
             compile(indexExpression.left);
             compile(indexExpression.index);
             bytecode.emit(Opcode.INDEX);
-        } else if (node instanceof FunctionLiteral) {
-            var functionLiteral = (FunctionLiteral) node;
+        } else if (node instanceof FunctionLiteral functionLiteral) {
             bytecode.enterScope();
             var params = functionLiteral.params;
             for (var param : params) {
@@ -157,13 +143,12 @@ public class Compiler {
             bytecode.emitClosure(compiledFunctionObject, freeSymbols.size());
 
             if (functionLiteral.identifier != null) {
-                // let  = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
+                // let xx = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
                 // 这里的话，是 fn xx() {}这类带名字的函数，需要自己注册
                 var symbol = bytecode.symbolTable.define(functionLiteral.identifier.value);
                 bytecode.storeSymbol(symbol);
             }
-        } else if (node instanceof CallExpression) {
-            var callExpression = (CallExpression) node;
+        } else if (node instanceof CallExpression callExpression) {
             compile(callExpression.left);
             var arguments = callExpression.arguments;
             for (var argument : arguments) {

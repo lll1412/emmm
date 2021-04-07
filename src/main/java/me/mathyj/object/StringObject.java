@@ -2,12 +2,7 @@ package me.mathyj.object;
 
 import java.util.Objects;
 
-public class StringObject implements Object {
-    private final String val;
-
-    public StringObject(String val) {
-        this.val = val;
-    }
+public record StringObject(String val) implements Object {
 
     public static StringObject valueOf(String val) {
         return new StringObject(val);

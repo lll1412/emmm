@@ -14,5 +14,4 @@ public enum ObjectType {
 
     BUILTIN,
     CLOSURE,
-    ;
 }

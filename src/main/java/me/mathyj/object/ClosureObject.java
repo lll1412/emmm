@@ -1,14 +1,7 @@
 package me.mathyj.object;
 
-public class ClosureObject implements Object {
-    public final Object[] free;
-    public final CompiledFunctionObject fn;
-
-    public ClosureObject(CompiledFunctionObject fn, Object... free) {
-        this.fn = fn;
-        this.free = free;
-    }
-
+public record ClosureObject(CompiledFunctionObject fn,
+                            Object... free) implements Object {
     @Override
     public ObjectType type() {
         return ObjectType.CLOSURE;

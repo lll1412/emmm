@@ -30,8 +30,7 @@ public class CallExpression extends Expression {
     @Override
     public Object eval(Environment env) {
         var obj = left.eval(env);
-        if (obj instanceof FunctionObject) {
-            var fn = ((FunctionObject) obj);
+        if (obj instanceof FunctionObject fn) {
             if (arguments.size() != fn.params.size()) {
                 throw new ErrorArgumentsCount(fn.params.size(), arguments.size());
             }

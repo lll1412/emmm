@@ -136,6 +136,7 @@ public class Vm {
                     currentFrame().ip += operands.offset();
 
                     var fn = ((CompiledFunctionObject) constantsPool.get(fnIndex));
+                    // 捕获到的自由变量复制到闭包中
                     var frees = new Object[freeCount];
                     for (int i = 0; i < freeCount; i++) {
                         frees[i] = stack[sp - freeCount + i];
@@ -148,7 +149,7 @@ public class Vm {
                     var freeIndex = operands.first();
                     currentFrame().ip += operands.offset();
                     var currentClosure = currentFrame().closure;
-                    pushStack(currentClosure.free[freeIndex]);
+                    pushStack(currentClosure.free()[freeIndex]);
                 }
                 case RETURN_VALUE -> {
                     var retValue = popStack();//弹出函数返回值
@@ -187,10 +188,10 @@ public class Vm {
             }
             case CLOSURE -> {
                 var cl = (ClosureObject) fnObject;// 跳过参数找到函数
-                if (argNums != cl.fn.numParams) throw new WrongArgumentsNumber(cl.fn.numParams, argNums);
+                if (argNums != cl.fn().numParams) throw new WrongArgumentsNumber(cl.fn().numParams, argNums);
                 var fnFrame = new Frame(cl, sp - argNums);// bp 指向stack中函数的上面
                 pushFrame(fnFrame);
-                sp = fnFrame.bp + cl.fn.numLocals;
+                sp = fnFrame.bp + cl.fn().numLocals;
             }
         }
     }
@@ -216,8 +217,7 @@ public class Vm {
     private Opcode fetchOpcode() {
         var ip = currentFrame().ip;
         var c = currentInstructions().bytes[ip];
-        var opcode = Opcode.lookup(c);
-        return opcode;
+        return Opcode.lookup(c);
     }
 
     /**
@@ -247,12 +247,9 @@ public class Vm {
     private void executeIndexOperation() {
         var indexObj = popStack();
         var object = popStack();
-        if (object instanceof ArrayObject && indexObj instanceof IntegerObject) {
-            var arrayObject = (ArrayObject) object;
-            var index = (IntegerObject) indexObj;
+        if (object instanceof ArrayObject arrayObject && indexObj instanceof IntegerObject index) {
             pushStack(arrayObject.get(index.value));
-        } else if (object instanceof HashObject) {
-            var hashObject = (HashObject) object;
+        } else if (object instanceof HashObject hashObject) {
             pushStack(hashObject.get(indexObj));
         } else {
             throw new UnsupportedIndexOpcode(object, indexObj);
@@ -384,10 +381,6 @@ public class Vm {
 
     Object getFromStack(int index) {
         return stack[index];
-    }
-
-    void putIntoStack(int index, Object obj) {
-        stack[index] = obj;
     }
 
     /**

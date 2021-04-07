@@ -18,17 +18,7 @@ class OpcodeTest {
         }
     }
 
-    private static class T {
-        Opcode op;
-        int[] operands;
-        Instructions expected;
-
-        public T(Opcode op, int[] operands, Instructions expected) {
-            this.op = op;
-            this.operands = operands;
-            this.expected = expected;
-        }
-
+    private record T(Opcode op, int[] operands, Instructions expected) {
         public static T of(Opcode op, int[] operands, Instructions expected) {
             return new T(op, operands, expected);
         }

@@ -8,9 +8,10 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BuiltinObject implements Object {
+public record BuiltinObject(
+        Function<List<Object>, Object> fn) implements Object {
     public static final List<Object> builtins;
-    public static Map<String, Object> builtinMap = new LinkedHashMap<>() {{
+    public static final Map<String, Object> builtinMap = new LinkedHashMap<>() {{
         put("len", new BuiltinObject(lenFn()));
         put("first", new BuiltinObject(firstFn()));
         put("last", new BuiltinObject(lastFn()));
@@ -22,12 +23,6 @@ public class BuiltinObject implements Object {
     static {
         builtins = new ArrayList<>(builtinMap.size());
         builtinMap.forEach((k, v) -> builtins.add(v));
-    }
-
-    private final Function<List<Object>, Object> fn;
-
-    private BuiltinObject(Function<List<Object>, Object> fn) {
-        this.fn = fn;
     }
 
     private static Function<List<Object>, Object> evalFn() {
@@ -73,8 +68,7 @@ public class BuiltinObject implements Object {
             var arg = args.get(0);
             if (arg instanceof StringObject) {
                 return StringObject.valueOf(String.valueOf(arg.value().charAt(arg.value().length() - 1)));
-            } else if (arg instanceof ArrayObject) {
-                var arrayObject = (ArrayObject) arg;
+            } else if (arg instanceof ArrayObject arrayObject) {
                 return arrayObject.get(arrayObject.size() - 1);
             }
             throw new UnsupportedArgumentException(arg.type(), "last");
@@ -100,8 +94,7 @@ public class BuiltinObject implements Object {
             else if (args.size() == 1) return args.get(0);
 //            assertArgCount(2, args.size(), "push");
             var arr = args.get(0);
-            if (arr instanceof ArrayObject) {
-                var array = ((ArrayObject) arr);
+            if (arr instanceof ArrayObject array) {
                 for (int i = 1; i < args.size(); i++) {
                     var arg = args.get(i);
                     array.add(arg);

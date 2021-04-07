@@ -6,10 +6,6 @@ public class UnsupportedBinaryOperator extends ParseException {
     public UnsupportedBinaryOperator(java.lang.Object token) {
         this.token = token;
     }
-//
-//    public UnsupportedBinaryOperator(BinaryOperator assignOp) {
-//        this.token = assignOp;
-//    }
 
     @Override
     public String getMessage() {

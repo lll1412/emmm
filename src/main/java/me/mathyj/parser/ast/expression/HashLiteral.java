@@ -38,14 +38,7 @@ public class HashLiteral extends Expression {
         return "{%s}".formatted(s);
     }
 
-    public static class Pair {
-        public final Expression key;
-        public final Expression val;
-
-        private Pair(Expression key, Expression val) {
-            this.key = key;
-            this.val = val;
-        }
+    public record Pair(Expression key, Expression val) {
 
         public static Pair of(Expression key, Expression val) {
             return new Pair(key, val);

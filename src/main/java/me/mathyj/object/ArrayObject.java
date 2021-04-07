@@ -34,9 +34,8 @@ public class ArrayObject implements Object {
         return elements == null ? 0 : elements.size();
     }
 
-    public Object add(Object arg) {
+    public void add(Object arg) {
         elements.add(arg);
-        return this;
     }
 
     @Override

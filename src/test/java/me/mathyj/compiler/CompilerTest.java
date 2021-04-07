@@ -73,9 +73,7 @@ class CompilerTest {
                         """,
                 Instructions.concat(make(Opcode.ADD), make(Opcode.GET_LOCAL, 1), makeConst(2), makeConst(65535), make(Opcode.CLOSURE, 65535, 255))
         );
-        tests.forEach((expected, input) -> {
-            assertEquals(expected, input.print());
-        });
+        tests.forEach((expected, input) -> assertEquals(expected, input.print()));
 
     }
 

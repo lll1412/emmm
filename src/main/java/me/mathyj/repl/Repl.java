@@ -2,7 +2,6 @@ package me.mathyj.repl;
 
 import me.mathyj.compiler.Compiler;
 import me.mathyj.compiler.SymbolTable;
-import me.mathyj.object.Environment;
 import me.mathyj.object.Object;
 import me.mathyj.parser.Parser;
 import me.mathyj.parser.ast.Program;
@@ -21,7 +20,6 @@ public class Repl {
     public static void start(InputStream is, OutputStream os) {
         var sc = new Scanner(is);
         var out = new PrintStream(os);
-        var env = new Environment();
         var constantsPool = new ArrayList<Object>();
         var globals = new Object[Vm.GLOBALS_SIZE];
         var symbolTable = new SymbolTable();
@@ -36,8 +34,6 @@ public class Repl {
             if (program.hasErrors()) {
                 printErrors(out, program.getErrors());
             } else {
-//                var eval = program.eval(env);
-//                out.println(eval.value());
                 printProgram(out, program, symbolTable, constantsPool, globals);
             }
         }

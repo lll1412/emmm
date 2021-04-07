@@ -15,10 +15,6 @@ public class BooleanLiteral extends Expression {
         this.bool = bool;
     }
 
-    public static BooleanLiteral valueOf(boolean bool) {
-        return bool ? TRUE : FALSE;
-    }
-
     public static BooleanLiteral valueOf(Token token) {
         return token.type().equals(TokenType.TRUE) ? BooleanLiteral.TRUE : BooleanLiteral.FALSE;
     }

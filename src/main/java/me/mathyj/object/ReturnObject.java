@@ -2,13 +2,7 @@ package me.mathyj.object;
 
 import java.util.Objects;
 
-public class ReturnObject implements Object {
-    public final Object retObj;
-
-    public ReturnObject(Object retObj) {
-        this.retObj = retObj;
-    }
-
+public record ReturnObject(Object retObj) implements Object {
     @Override
     public ObjectType type() {
         return ObjectType.RETURN;
