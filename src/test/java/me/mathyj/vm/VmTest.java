@@ -189,18 +189,28 @@ public class VmTest {
     @Test
     void closureFunction() {
         var tests = Map.of(
-//                """
-//                        let newAdder = fn(a) {
-//                            let adder = fn(b) {a + b}
-//                            adder
-//                        }
-//                        let addTwo = newAdder(10)
-//                        addTwo(12)
-//                        """, 22,
+                """
+                        let newAdder = fn(a) {
+                            let adder = fn(b) {a + b}
+                            adder
+                        }
+                        let addTwo = newAdder(10)
+                        addTwo(12)
+                        """, 22,
                 """
                         fn f1(a) {
                             fn(b) {
                                 a + b
+                            }
+                        }
+                        f1(10)(20)
+                        """, 30,
+                """
+                        fn f1(a) {
+                            fn(b) {
+                                fn(c) {
+                                    a + b + c
+                                }
                             }
                         }
                         f1(10)(20)

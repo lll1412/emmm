@@ -46,18 +46,19 @@ public class SymbolTable {
     }
 
     public Symbol resolve(String name) {
-        if (store.containsKey(name)) {
+        if (store.containsKey(name)) {//优先但当前作用域查询
             return store.get(name);
-        } else if (outer != null) {
+        } else if (outer != null) {//外部函数作用域查找
             var symbol = outer.resolve(name);
-            if (symbol == null) return builtins.get(name);
+            if (symbol == null) return null;
             if (symbol.scope() == Symbol.Scope.GLOBAL || symbol.scope() == Symbol.Scope.BUILTIN) {
                 return symbol;
             }
+            // 外部函数的local变量，就是自由变量
             return defineFree(symbol);
+        } else {
+            return builtins.get(name);// 内置函数
         }
-        return builtins.get(name);
-//        return store.getOrDefault(name, parent != null ? parent.resolve(name) : builtins.get(name));
     }
 
     public int numDefinitions() {
