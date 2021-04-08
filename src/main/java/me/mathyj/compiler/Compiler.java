@@ -115,6 +115,12 @@ public class Compiler {
             compile(indexExpression.index);
             bytecode.emit(Opcode.INDEX);
         } else if (node instanceof FunctionLiteral functionLiteral) {
+            Symbol symbol = null;
+            if (functionLiteral.identifier != null) {
+                // let xx = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
+                // 这里的话，是 fn xx() {}这类带名字的函数，需要自己注册
+                symbol = bytecode.symbolTable.define(functionLiteral.identifier.value);
+            }
             bytecode.enterScope();
             if (functionLiteral.identifier != null) {
                 bytecode.symbolTable.defineFunction(functionLiteral.identifier.value);
@@ -141,10 +147,7 @@ public class Compiler {
             }
             var compiledFunctionObject = new CompiledFunctionObject(numLocals, params.size(), instructions);
             bytecode.emitClosure(compiledFunctionObject, freeSymbols.size());
-            if (functionLiteral.identifier != null) {
-                // let xx = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
-                // 这里的话，是 fn xx() {}这类带名字的函数，需要自己注册
-                var symbol = bytecode.symbolTable.define(functionLiteral.identifier.value);
+            if (symbol != null) {
                 bytecode.storeSymbol(symbol);
             }
         } else if (node instanceof CallExpression callExpression) {

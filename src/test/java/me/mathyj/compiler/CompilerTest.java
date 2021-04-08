@@ -395,7 +395,7 @@ class CompilerTest {
                         makeConst(2),
                         makeCall(1),
                         makePop()
-                )/*,
+                ),
                 """
                         let wrapper = fn() {
                             let cd = fn(x) {
@@ -415,7 +415,7 @@ class CompilerTest {
                         make(Opcode.GET_GLOBAL, 0),
                         makeCall(0),
                         makePop()
-                )*/
+                )
         ));
     }
 

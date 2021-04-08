@@ -222,23 +222,23 @@ public class VmTest {
     @Test
     void recursive() {
         vmRunCheck(Map.of(
-//                """
-//                        let fib = fn(n) {
-//                            if(n == 1 || n == 2) {
-//                                return 1;
-//                            } else {
-//                                return fib(n - 1) + fib(n - 2);
-//                            }
-//                        }
-//                        fib(6)
-//                        """, 8,
-//                """
-//                        let cd = fn(x) {
-//                            if(x == 0) { return 0;}
-//                            else { return cd(x - 1); }
-//                        }
-//                        cd(2)
-//                        """, 0,
+                """
+                        let fib = fn(n) {
+                            if(n == 1 || n == 2) {
+                                return 1;
+                            } else {
+                                return fib(n - 1) + fib(n - 2);
+                            }
+                        }
+                        fib(6)
+                        """, 8,
+                """
+                        let cd = fn(x) {
+                            if(x == 0) { return 0;}
+                            else { return cd(x - 1); }
+                        }
+                        cd(2)
+                        """, 0,
                 """
                         fn wrapper() {
                             fn cd(x) {
