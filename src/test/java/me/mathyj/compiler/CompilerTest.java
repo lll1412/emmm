@@ -376,12 +376,56 @@ class CompilerTest {
 
     }
 
+    @Test
+    void recursive() {
+        compileCheck(Map.of(
+                """
+                        fn cd(x) {
+                            cd(x - 1)
+                        }
+                        cd(1)
+                        """, new Bytecode(
+                        List.of(IntegerObject.valueOf(1),
+                                new CompiledFunctionObject(make(Opcode.CURRENT_CLOSURE), make(Opcode.GET_LOCAL, 0), makeConst(0), make(Opcode.SUB), makeCall(1), makeReturnValue()),
+                                IntegerObject.valueOf(1)
+                        ),
+                        makeClosure(1, 0),
+                        make(Opcode.SET_GLOBAL, 0),
+                        make(Opcode.GET_GLOBAL, 0),
+                        makeConst(2),
+                        makeCall(1),
+                        makePop()
+                )/*,
+                """
+                        let wrapper = fn() {
+                            let cd = fn(x) {
+                                cd(x - 1)
+                            }
+                            cd(1)
+                        }
+                        wrapper()
+                        """, new Bytecode(
+                        List.of(IntegerObject.valueOf(1),
+                                new CompiledFunctionObject(make(Opcode.CURRENT_CLOSURE), make(Opcode.GET_LOCAL, 0), makeConst(0), make(Opcode.SUB), makeCall(1), makeReturnValue()),
+                                IntegerObject.valueOf(1),
+                                new CompiledFunctionObject(makeClosure(1, 0), make(Opcode.SET_LOCAL, 0), make(Opcode.GET_LOCAL, 0), makeConst(2), makeCall(1), makeReturnValue())
+                        ),
+                        makeClosure(3, 0),
+                        make(Opcode.SET_GLOBAL, 0),
+                        make(Opcode.GET_GLOBAL, 0),
+                        makeCall(0),
+                        makePop()
+                )*/
+        ));
+    }
+
     private <T> void compileCheck(Map<String, T> tests) {
         tests.forEach((input, expectedBytecode) -> {
             var program = new Parser(input).parseProgram();
             var compiler = new Compiler();
             compiler.compile(program);
             var actualBytecode = compiler.bytecode();
+            System.out.println(actualBytecode);
             assertEquals(expectedBytecode.toString(), actualBytecode.toString(), input);
         });
     }

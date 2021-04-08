@@ -18,11 +18,8 @@ import java.util.List;
 
 public class Compiler {
     private final Bytecode bytecode;
-    // 全局变量符号表
-//    private final SymbolTable symbolTable;
 
     public Compiler(SymbolTable symbolTable, List<Object> constantsPool) {
-//        this.symbolTable = symbolTable;
         this.bytecode = new Bytecode(constantsPool, symbolTable);
     }
 
@@ -46,7 +43,7 @@ public class Compiler {
             compile(returnValue);
         } else if (node instanceof Expression) {
             compile(((Expression) node));
-            if (node instanceof FunctionLiteral && ((FunctionLiteral) node).identifier != null) {
+            if (node instanceof FunctionLiteral fl && fl.identifier != null) {
                 // 这是函数申明，不算表达式，不pop
                 return;
             }
@@ -118,13 +115,10 @@ public class Compiler {
             compile(indexExpression.index);
             bytecode.emit(Opcode.INDEX);
         } else if (node instanceof FunctionLiteral functionLiteral) {
-            if (functionLiteral.identifier != null) {
-                // let xx = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
-                // 这里的话，是 fn xx() {}这类带名字的函数，需要自己注册
-                var symbol = bytecode.symbolTable.define(functionLiteral.identifier.value);
-                bytecode.storeSymbol(symbol);
-            }
             bytecode.enterScope();
+            if (functionLiteral.identifier != null) {
+                bytecode.symbolTable.defineFunction(functionLiteral.identifier.value);
+            }
             var params = functionLiteral.params;
             for (var param : params) {
                 bytecode.symbolTable.define(param.value);
@@ -147,6 +141,12 @@ public class Compiler {
             }
             var compiledFunctionObject = new CompiledFunctionObject(numLocals, params.size(), instructions);
             bytecode.emitClosure(compiledFunctionObject, freeSymbols.size());
+            if (functionLiteral.identifier != null) {
+                // let xx = fn(){} 这类的函数申明 在 let语句处把函数名注册到符号表了
+                // 这里的话，是 fn xx() {}这类带名字的函数，需要自己注册
+                var symbol = bytecode.symbolTable.define(functionLiteral.identifier.value);
+                bytecode.storeSymbol(symbol);
+            }
         } else if (node instanceof CallExpression callExpression) {
             compile(callExpression.left);
             var arguments = callExpression.arguments;

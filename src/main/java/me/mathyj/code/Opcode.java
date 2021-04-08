@@ -82,6 +82,7 @@ public enum Opcode {
 
     // 闭包
     CLOSURE(2, 1),// 函数在常量池中的索引 和 自由变量个数
+    CURRENT_CLOSURE,
     // 自由变量
     GET_FREE(1),
 

@@ -7,5 +7,6 @@ public record Symbol(String name, Scope scope, int index) {
         FREE,
         GLOBAL,
         BUILTIN,
+        FUNCTION,
     }
 }

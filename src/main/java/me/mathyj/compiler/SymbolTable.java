@@ -31,6 +31,7 @@ public class SymbolTable {
     }
 
     public Symbol define(String name) {
+        if (store.containsKey(name)) return null;
         var scope = outer == null ? Symbol.Scope.GLOBAL : Symbol.Scope.LOCAL;
         var symbol = new Symbol(name, scope, numDefinitions);
         store.put(name, symbol);
@@ -43,6 +44,11 @@ public class SymbolTable {
         var symbol = new Symbol(original.name(), Symbol.Scope.FREE, freeSymbols.size() - 1);
         store.put(original.name(), symbol);
         return symbol;
+    }
+
+    public void defineFunction(String name) {
+        var symbol = new Symbol(name, Symbol.Scope.FUNCTION, 0);
+        store.put(name, symbol);
     }
 
     public Symbol resolve(String name) {

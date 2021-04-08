@@ -50,6 +50,7 @@ public class Parser {
             case LET -> parseLetStatement();
             case RETURN -> parseReturnStatement();
             case FOR -> parseForStatement();
+            case FUNCTION -> parseFunctionLiteral();
             default -> parseExpressionStatement();
         };
     }
@@ -119,6 +120,9 @@ public class Parser {
         // 当前指向 '='
         nextToken();
         var value = parseExpression();
+        if (value instanceof FunctionLiteral fl) {
+            fl.identifier = name;
+        }
         // 当前指向 结尾分号
         if (peekTokenIs(TokenType.SEMICOLON)) {
             nextToken();

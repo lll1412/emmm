@@ -62,7 +62,7 @@ public class Vm {
                     var constObject = constantsPool.get(constIndex);
                     pushStack(constObject);
                 }
-                case ADD, SUB, MUL, DIV, EQ, NE, GT, LT, OR -> executeBinaryOperation(opcode);
+                case ADD, SUB, MUL, DIV, EQ, NE, GT, LT, OR, AND -> executeBinaryOperation(opcode);
                 case TRUE -> pushStack(Object.TRUE);
                 case FALSE -> pushStack(Object.FALSE);
                 case NOT, NEG -> executeUnaryOperation(opcode);
@@ -144,6 +144,10 @@ public class Vm {
                     sp -= freeCount;
                     var cl = new ClosureObject(fn, frees);
                     pushStack(cl);
+                }
+                case CURRENT_CLOSURE -> {
+                    var closure = currentFrame().closure;
+                    pushStack(closure);
                 }
                 case GET_FREE -> {
                     var freeIndex = operands.first();

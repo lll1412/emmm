@@ -110,6 +110,7 @@ public class Bytecode {
             case LOCAL -> emit(Opcode.GET_LOCAL, index);
             case BUILTIN -> emit(Opcode.GET_BUILTIN, index);
             case FREE -> emit(Opcode.GET_FREE, index);
+            case FUNCTION -> emit(Opcode.CURRENT_CLOSURE);
         }
     }
 
